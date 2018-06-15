@@ -4,19 +4,22 @@
 
 
 import deap.tools as tools
-import gym
-import matplotlib.pyplot as plt
-from matplotlib import style
-
 import fuzznnrl.core.ga.schedule as sch
 import fuzznnrl.core.plot.analysis as ana
+import gym
+import matplotlib.pyplot as plt
 from fuzznnrl.core.algorithm.alg import Algorithm
+from fuzznnrl.core.conf import Constants
 from fuzznnrl.core.conf.parser import *
 from fuzznnrl.core.ga.genalg import GeneticAlgorithm
 from fuzznnrl.core.ga.op import Operator
 from fuzznnrl.core.io.buffer import Cache
+from matplotlib import style
 
 style.use("seaborn-paper")
+
+Constants.MF_TUNING_RANGE = [0, 0.1]
+Constants.RAND_SEED = 2
 
 NUM_OF_GENS = 1000
 NUM_EPISODES_PER_IND = 1
@@ -50,7 +53,7 @@ def main():
     ga = GeneticAlgorithm(registry=reg)
 
     # create a mutation probability schedule
-    mut_sch = sch.ExponentialDecaySchedule(initial_prob=0.1, decay_factor=1e-2)
+    mut_sch = sch.ExponentialDecaySchedule(initial_prob=0.6, decay_factor=1e-2)
 
     # create GFT algorithm object with the registry
     alg = Algorithm(registry=reg)
@@ -64,8 +67,8 @@ def main():
     # initialize epoch or generation counter
     epoch = 0
 
-    # initialize individual counter and max return
-    count = 0
+    # initialize individual counter
+    ind_count = 0
 
     # create an object for retrieving input values
     obs_cartpole = CartPoleObs()
@@ -78,72 +81,73 @@ def main():
 
         # Run the simulation with the current population
         for ind in pop:
-            count += 1
+            ind_count += 1
 
             # initialize reward accumulator for the individual
-            env_return = 0
+            total_reward = 0
 
             # configure the GFT with the current individual
             alg.configuregft(chromosome=ind)
 
             # control the environment with the configured GFT
-            for i_episode in range(NUM_EPISODES_PER_IND):
+            # for i_episode in range(NUM_EPISODES_PER_IND):
 
-                # reset the environment
-                observation = env.reset()
+            # reset the environment
+            observation = env.reset()
+
+            # set the received observation as the current array for retrieving input values
+            obs_cartpole.current_observation = observation
+
+            # run through the time steps of the simulation
+            for t in range(MAX_TIME_STEPS):
+
+                # show the environment
+                env.render()
+
+                # since only one agent applies to this case study set a dummy agent ID
+                agent_id = 0
+
+                # get an action
+                code, action, input_vec_dict, probs_dict = alg.executegft(obs_cartpole, agent_id)
+
+                # apply the selected action to the environment and observe feedback
+                next_state, reward, done, _ = env.step(code)
+
+                # mark the GFSs that executed for the agent in this time step
+                cache.mark(probs_dict_keys=probs_dict.keys())
+
+                # decompose the received reward
+                reward_dict = cache.decomposeReward(reward)
+
+                # create experiences for the agent with respect to each GFSs that executed for the agent
+                exp_dict = cache.createExperiences(agent_id=agent_id, action_code=code, dec_reward_dict=reward_dict,
+                                                   input_vec_dict=input_vec_dict, probs_dict=probs_dict)
+
+                # add the experiences of the agent to the cache
+                cache.addExperiences(time_step=t, exp_dict=exp_dict)
 
                 # set the received observation as the current array for retrieving input values
-                obs_cartpole.current_observation = observation
+                obs_cartpole.current_observation = next_state
 
-                # run through the time steps of the simulation
-                for t in range(MAX_TIME_STEPS):
+                # accumulate the rewards of all time steps
+                total_reward += reward
 
-                    # show the environment
-                    env.render()
-
-                    # since only one agent applies to this case study set a dummy agent ID
-                    agent_id = 0
-
-                    # get an action
-                    code, action, input_vec_dict, probs_dict = alg.executegft(obs_cartpole, agent_id)
-
-                    # apply the selected action to the environment and observe feedback
-                    observation, reward, done, info = env.step(code)
-
-                    # mark the GFSs that executed for the agent in this time step
-                    cache.mark(probs_dict_keys=probs_dict.keys())
-
-                    # decompose the received reward
-                    reward_dict = cache.decomposeReward(reward)
-
-                    # create experiences for the agent with respect to each GFSs that executed for the agent
-                    exp_dict = cache.createExperiences(agent_id=agent_id, action_code=code, dec_reward_dict=reward_dict,
-                                                       input_vec_dict=input_vec_dict, probs_dict=probs_dict)
-
-                    # add the experiences of the agent to the cache
-                    cache.addExperiences(time_step=t, exp_dict=exp_dict)
-
-                    # set the received observation as the current array for retrieving input values
-                    obs_cartpole.current_observation = observation
-
-                    # accumulate the rewards of all time steps
-                    env_return += reward
-
-                    # if the episode is over ahead of the maximum time steps allowed stop the loop
-                    if done:
-                        print("Episode finished after {} time steps".format(t + 1))
-                        break
+                # if the episode is over ahead of the maximum time steps allowed stop the loop
+                if done:
+                    # print("Episode finished after {} time steps".format(t + 1))
+                    print("Episode: {}/{} | score: {}".format(ind_count, (NUM_OF_GENS * POP_SIZE), total_reward))
+                    break
 
                 # save contents of the cache and clear it for the next episode
                 cache.save_csv()
 
             # set the return from the environment as the fitness value of the current individual
-            ind.fitness.values = (env_return,)
+            ind.fitness.values = (total_reward,)
 
             # store the performance of this individual in the corresponding series
-            all_ind_series.addrecord(count, env_return)
-            weighted_avg.update(env_return)
-            avg_series.addrecord(count, weighted_avg.value)
+            all_ind_series.addrecord(ind_count, total_reward)
+            weighted_avg.update(total_reward)
+            avg_series.addrecord(ind_count, weighted_avg.value)
 
         # Logging and other I/O operations
         print("Epoch {} completed".format(epoch))
