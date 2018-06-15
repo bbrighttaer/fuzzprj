@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+    <!-- XML Schema Generated from XML Document on Mon Nov 20 2017 22:51:25 GMT+0800 (China Standard Time) -->
+    <!-- with XmlGrid.net Free Online Service http://xmlgrid.net -->
+    <xs:element name="linguisticVariables">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="variable" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="terms">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="term" maxOccurs="unbounded">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="mf">
+                                                        <xs:simpleType>
+                                                            <xs:restriction base="xs:string">
+                                                                <xs:enumeration value="LTunableTerminalTriangle"/>
+                                                                <xs:enumeration value="TunableTriangle"/>
+                                                                <xs:enumeration value="RTunableTerminalTriangle"/>
+                                                                <xs:enumeration value="Triangle"/>
+                                                                <xs:enumeration value="Gaussian"/>
+                                                                <xs:enumeration value="Sigmoid"/>
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
+                                                    <xs:element name="params">
+                                                        <xs:simpleType>
+                                                            <xs:list itemType="xs:double"/>
+                                                        </xs:simpleType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                                <xs:attribute name="name" type="xs:string" use="required"/>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="name" type="xs:string" use="required"/>
+                        <xs:attribute name="rangeMin" type="xs:double" use="required"/>
+                        <xs:attribute name="rangeMax" type="xs:double" use="required"/>
+                        <xs:attribute name="type" type="varType" use="required"/>
+                        <xs:attribute name="procedure" type="xs:string"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:simpleType name="varType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="input"/>
+            <xs:enumeration value="output"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

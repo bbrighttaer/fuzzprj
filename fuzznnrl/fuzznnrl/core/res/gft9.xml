@@ -1,0 +1,157 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<fuzzyInferenceSystems xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:noNamespaceSchemaLocation="gftlv0.1.1.xsd" rootInfSystem="Assignment">
+    <fuzzyInferenceSystem name="Assignment">
+        <outputGeneRange>0 2</outputGeneRange>
+        <rbSize>243</rbSize>
+        <mfSize>30</mfSize>
+        <position>0</position>
+        <rbOffset>0</rbOffset>
+        <mfOffset>267</mfOffset>
+        <description>Determines the task category for an agent operation</description>
+        <inputVariables>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="UnconqueredIslands" type="UnconqueredIslands"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="PGF_attacked" type="PGF_attacked"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="PGF_moved" type="PGF_moved"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="PGF_conquered" type="PGF_conquered"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="PGF_retreated" type="PGF_retreated"/>
+            </inputVar>
+        </inputVariables>
+        <outputVariable type="BeliefFunction">
+            <term code="0">
+                <successOpTitle>CONQUERING</successOpTitle>
+                <target targetType="fis" name="Conquer"/>
+            </term>
+            <term code="1">
+                <successOpTitle>ATTACKING</successOpTitle>
+                <target targetType="fis" name="Protect"/>
+            </term>
+            <term code="2">
+                <successOpTitle>RETREATING</successOpTitle>
+                <target targetType="fis" name="Operation"/>
+            </term>
+        </outputVariable>
+    </fuzzyInferenceSystem>
+    <fuzzyInferenceSystem name="Protect">
+        <outputGeneRange>0 1</outputGeneRange>
+        <rbSize>3</rbSize>
+        <mfSize>6</mfSize>
+        <position>1</position>
+        <rbOffset>243</rbOffset>
+        <mfOffset>297</mfOffset>
+        <description>Selects the method for conquering islands</description>
+        <inputVariables>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="DetectedEnemies" type="DetectedEnemies"/>
+            </inputVar>
+        </inputVariables>
+        <outputVariable type="ProtectOutput">
+            <term code="0">
+                <successOpTitle>DETOUR</successOpTitle>
+                <target targetType="action" name="detour"/>
+            </term>
+            <term code="1">
+                <successOpTitle>RETREAT</successOpTitle>
+                <target targetType="action" name="retreat"/>
+            </term>
+        </outputVariable>
+    </fuzzyInferenceSystem>
+    <fuzzyInferenceSystem name="Operation">
+        <outputGeneRange>0 1</outputGeneRange>
+        <rbSize>9</rbSize>
+        <mfSize>12</mfSize>
+        <position>2</position>
+        <rbOffset>246</rbOffset>
+        <mfOffset>303</mfOffset>
+        <description>Selects the protection strategy</description>
+        <inputVariables>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="LiveRemaining" type="StayingPower"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="DetectedEnemies" type="DetectedEnemies"/>
+            </inputVar>
+        </inputVariables>
+        <outputVariable type="OperationOutput">
+            <term code="0">
+                <successOpTitle>TRACK</successOpTitle>
+                <target targetType="action" name="track"/>
+            </term>
+            <term code="1">
+                <successOpTitle>COOPERATE</successOpTitle>
+                <target targetType="fis" name="Cooperate"/>
+            </term>
+        </outputVariable>
+    </fuzzyInferenceSystem>
+    <fuzzyInferenceSystem name="Cooperate">
+        <outputGeneRange>0 1</outputGeneRange>
+        <rbSize>9</rbSize>
+        <mfSize>12</mfSize>
+        <position>3</position>
+        <rbOffset>255</rbOffset>
+        <mfOffset>315</mfOffset>
+        <description>Selects an attack-oriented action</description>
+        <inputVariables>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="NumOfUnderFireTeammates" type="UnderFireTeammates"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="LiveRemaining" type="StayingPower"/>
+            </inputVar>
+        </inputVariables>
+        <outputVariable type="CooperateOutput">
+            <term code="0">
+                <successOpTitle>CALL</successOpTitle>
+                <target targetType="action" name="call"/>
+            </term>
+            <term code="1">
+                <successOpTitle>ASSIST</successOpTitle>
+                <target targetType="action" name="assist"/>
+            </term>
+        </outputVariable>
+    </fuzzyInferenceSystem>
+    <fuzzyInferenceSystem name="Conquer">
+        <outputGeneRange>0 1</outputGeneRange>
+        <rbSize>3</rbSize>
+        <mfSize>6</mfSize>
+        <position>4</position>
+        <rbOffset>264</rbOffset>
+        <mfOffset>327</mfOffset>
+        <description>Selects an attack-oriented action</description>
+        <inputVariables>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="UnconqueredIslands" type="UnconqueredIslands"/>
+            </inputVar>
+        </inputVariables>
+        <outputVariable type="ConquerOutput">
+            <term code="0">
+                <successOpTitle>UNITS</successOpTitle>
+                <target targetType="action" name="conquerInUnits"/>
+            </term>
+            <term code="1">
+                <successOpTitle>CLOSEST</successOpTitle>
+                <target targetType="action" name="conquerClosest"/>
+            </term>
+        </outputVariable>
+    </fuzzyInferenceSystem>
+</fuzzyInferenceSystems>

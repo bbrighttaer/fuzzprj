@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<linguisticVariables xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xsi:noNamespaceSchemaLocation="linguisticVariables.xsd">
+    <variable name="UnconqueredIslands" rangeMin="-2.0" rangeMax="7.5" type="input"
+              procedure="getNumberOfUnconqueredIslands">
+        <terms>
+            <term name="NONE">
+                <mf>LTunableTerminalTriangle</mf>
+                <params>-2 0 1</params>
+            </term>
+            <term name="MODERATE">
+                <mf>TunableTriangle</mf>
+                <params>0 3 4.5</params>
+            </term>
+            <term name="MANY">
+                <mf>RTunableTerminalTriangle</mf>
+                <params>3.5 5 7.5</params>
+            </term>
+        </terms>
+    </variable>
+    <variable name="DetectedEnemies" rangeMin="-2.0" rangeMax="7.5" type="input" procedure="getNumberOfDetectedEnemies">
+        <terms>
+            <term name="NONE">
+                <mf>LTunableTerminalTriangle</mf>
+                <params>-2 0 2</params>
+            </term>
+            <term name="MODERATE">
+                <mf>TunableTriangle</mf>
+                <params>1.5 3 4.5</params>
+            </term>
+            <term name="MANY">
+                <mf>RTunableTerminalTriangle</mf>
+                <params>3.5 5 7.5</params>
+            </term>
+        </terms>
+    </variable>
+    <variable name="StayingPower" rangeMin="-2.0" rangeMax="7.5" type="input" procedure="getStayingPower">
+        <terms>
+            <term name="LITTLE">
+                <mf>LTunableTerminalTriangle</mf>
+                <params>-2 0 2</params>
+            </term>
+            <term name="MODERATE">
+                <mf>TunableTriangle</mf>
+                <params>1.5 3 4</params>
+            </term>
+            <term name="MUCH">
+                <mf>RTunableTerminalTriangle</mf>
+                <params>3.5 5 7.5</params>
+            </term>
+        </terms>
+    </variable>
+    <variable name="UnderFireTeammates" rangeMin="-2.0" rangeMax="7.5" type="input"
+              procedure="getNumTeammatesUnderFire">
+        <terms>
+            <term name="LITTLE">
+                <mf>LTunableTerminalTriangle</mf>
+                <params>-2 0 2</params>
+            </term>
+            <term name="MODERATE">
+                <mf>TunableTriangle</mf>
+                <params>1.5 3 4</params>
+            </term>
+            <term name="MUCH">
+                <mf>RTunableTerminalTriangle</mf>
+                <params>3.5 5 7.5</params>
+            </term>
+        </terms>
+    </variable>
+    <variable name="PrincipalEigenVal" rangeMin="-2.0" rangeMax="6.0" type="input" procedure="getPrincipalEigenValue">
+        <terms>
+            <term name="SMALL">
+                <mf>LTunableTerminalTriangle</mf>
+                <params>-2 0 2</params>
+            </term>
+            <term name="MODERATE">
+                <mf>TunableTriangle</mf>
+                <params>0 2 4.0</params>
+            </term>
+            <term name="BIG">
+                <mf>RTunableTerminalTriangle</mf>
+                <params>2 4 6.0</params>
+            </term>
+        </terms>
+    </variable>
+
+    <!-- OUTPUT VARIABLES -->
+    <variable name="AssignmentOutput" rangeMin="-1.0" rangeMax="3.0" type="output">
+        <terms>
+            <term name="CONQUER">
+                <mf>TunableTriangle</mf>
+                <params>-1 0 0.5</params>
+            </term>
+            <term name="COMBAT">
+                <mf>TunableTriangle</mf>
+                <params>0.4 1 2</params>
+            </term>
+            <term name="RETREAT">
+                <mf>TunableTriangle</mf>
+                <params>1.8 2 3</params>
+            </term>
+        </terms>
+    </variable>
+    <variable name="ConquerOutput" rangeMin="-1.0" rangeMax="2.0" type="output">
+        <terms>
+            <term name="UNITS">
+                <mf>TunableTriangle</mf>
+                <params>-1 0 1</params>
+            </term>
+            <term name="CLOSEST">
+                <mf>TunableTriangle</mf>
+                <params>0 1 2</params>
+            </term>
+        </terms>
+    </variable>
+    <variable name="EngageOutput" rangeMin="-1.0" rangeMax="3.0" type="output">
+        <terms>
+            <term name="DETOUR">
+                <mf>TunableTriangle</mf>
+                <params>-1 0 1</params>
+            </term>
+            <term name="SEARCH">
+                <mf>TunableTriangle</mf>
+                <params>0 1 2</params>
+            </term>
+            <term name="TRACK">
+                <mf>TunableTriangle</mf>
+                <params>1 2 3</params>
+            </term>
+        </terms>
+    </variable>
+    <variable name="CombatOutput" rangeMin="-1.0" rangeMax="2.0" type="output">
+        <terms>
+            <term name="ENGAGE">
+                <mf>TunableTriangle</mf>
+                <params>-1 0 1</params>
+            </term>
+            <term name="COOPERATE">
+                <mf>TunableTriangle</mf>
+                <params>0 1 2</params>
+            </term>
+        </terms>
+    </variable>
+    <variable name="CooperateOutput" rangeMin="-1.0" rangeMax="2.0" type="output">
+        <terms>
+            <term name="CALL">
+                <mf>TunableTriangle</mf>
+                <params>-1 0 1</params>
+            </term>
+            <term name="ASSIST">
+                <mf>TunableTriangle</mf>
+                <params>0 1 2</params>
+            </term>
+        </terms>
+    </variable>
+</linguisticVariables>
