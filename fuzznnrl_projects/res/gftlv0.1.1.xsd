@@ -1,0 +1,78 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:annotation>
+        <xs:appinfo>Genetic-Fuzzy-Tree-Layering (GFT-L) configuration file schema v0.1</xs:appinfo>
+        <xs:documentation>Created with EditiX (http://www.editix.com) at Thu Oct 19 15:11:11 CST 2017</xs:documentation>
+    </xs:annotation>
+    <xs:element name="fuzzyInferenceSystems">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" name="fuzzyInferenceSystem">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="outputGeneRange">
+                                <xs:simpleType>
+                                    <xs:list itemType="xs:int"/>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="rbSize" type="xs:int"/>
+                            <xs:element name="mfSize" type="xs:int"/>
+                            <xs:element name="position" type="xs:int"/>
+                            <xs:element name="rbOffset" type="PartialChromOffsets"/>
+                            <xs:element name="mfOffset" type="PartialChromOffsets"/>
+                            <xs:element name="description" type="xs:string"/>
+                            <xs:element name="inputVariables">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element maxOccurs="unbounded" name="inputVar">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="tune" type="xs:boolean"/>
+                                                    <xs:element name="identity" type="varInfo"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element maxOccurs="1" minOccurs="1" name="outputVariable" type="OutputVariableTerm"/>
+                        </xs:sequence>
+                        <xs:attribute name="name" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="rootInfSystem" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:simpleType name="PartialChromOffsets">
+        <xs:list itemType="xs:int"/>
+    </xs:simpleType>
+    <xs:complexType name="OutputVariableTerm">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" name="term">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="successOpTitle" type="xs:string"/>
+                        <xs:element name="target">
+                            <xs:complexType>
+                                <xs:attribute name="targetType" type="outputTargetType" use="required"/>
+                                <xs:attribute name="name" type="xs:string" use="required"/>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                    <xs:attribute name="code" type="xs:integer" use="required"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="type" type="xs:string" use="required"/>
+    </xs:complexType>
+    <xs:simpleType name="outputTargetType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="fis"/>
+            <xs:enumeration value="action"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="varInfo">
+        <xs:attribute name="name" use="required"/>
+        <xs:attribute name="type" use="required"/>
+    </xs:complexType>
+</xs:schema>

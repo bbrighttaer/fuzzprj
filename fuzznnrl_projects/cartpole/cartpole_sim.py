@@ -2,31 +2,34 @@
 # Copyright (C) 6/11/18 - 1:48 PM
 # Author: bbrighttaer
 
-
 import deap.tools as tools
 import fuzznnrl.core.ga.schedule as sch
 import fuzznnrl.core.plot.analysis as ana
 import gym
 import matplotlib.pyplot as plt
+import numpy as np
 from fuzznnrl.core.algorithm.alg import Algorithm
 from fuzznnrl.core.conf import Constants
 from fuzznnrl.core.conf.parser import *
 from fuzznnrl.core.ga.genalg import GeneticAlgorithm
 from fuzznnrl.core.ga.op import Operator
 from fuzznnrl.core.io.buffer import Cache
+from fuzznnrl.core.io.simdata import Document, Text, Line
 from matplotlib import style
 
 style.use("seaborn-paper")
 
-Constants.MF_TUNING_RANGE = [0, 0.1]
-Constants.RAND_SEED = 2
+Constants.MF_TUNING_RANGE = [-0.1, 0.1]
 
-NUM_OF_GENS = 1000
+NUM_OF_GENS = 10
 NUM_EPISODES_PER_IND = 1
 MAX_TIME_STEPS = 200
 POP_SIZE = 20
 LIN_VARS_FILE = "cartpole_linvars.xml"
 GFT_FILE = "cartpole_gft.xml"
+LOAD_INIT_POP = False
+APPLY_EVO = True
+QUAL_IND_FILE = "qualified.txt"
 
 
 def main():
@@ -37,9 +40,9 @@ def main():
     print("observation space ranges\nhigh = {}\nlow = {}\n".format(str(env.observation_space.high),
                                                                    str(env.observation_space.low)))
     # chart series
-    weighted_avg = ana.WeightedAvg(beta=0.95)
+    weighted_avg = ana.WeightedAvg(beta=0.9)
     all_ind_series = ana.Series(name="Individuals Performance")
-    avg_series = ana.Series(name="Moving average (window = {})".format(round((1 / (1 - weighted_avg.beta)))))
+    avg_series = ana.Series(name="Average (window = {})".format(round((1 / (1 - weighted_avg.beta)))))
     gen_series = ana.Series(name="Generation Performance")
     mut_prob_series = ana.Series(name="Mutation probability")
 
@@ -50,10 +53,10 @@ def main():
     reg = xmlToGFT(open(GFT_FILE).read(), registry=reg)
 
     # create GA instance with the registry object
-    ga = GeneticAlgorithm(registry=reg)
+    ga = GeneticAlgorithm(registry=reg, seed=2)
 
     # create a mutation probability schedule
-    mut_sch = sch.ExponentialDecaySchedule(initial_prob=0.6, decay_factor=1e-2)
+    mut_sch = sch.TimeBasedSchedule(decay_factor=2e-1)
 
     # create GFT algorithm object with the registry
     alg = Algorithm(registry=reg)
@@ -62,7 +65,10 @@ def main():
     cache = Cache(reg.gft_dict.keys())
 
     # get initial population
-    pop = ga.generate_initial_population(POP_SIZE)
+    if LOAD_INIT_POP:
+        pop = ga.load_initial_population(QUAL_IND_FILE, POP_SIZE)
+    else:
+        pop = ga.generate_initial_population(POP_SIZE)
 
     # initialize epoch or generation counter
     epoch = 0
@@ -72,9 +78,6 @@ def main():
 
     # create an object for retrieving input values
     obs_cartpole = CartPoleObs()
-
-    # reward accumulator
-    reward_accum = 0
 
     # perform the simulation for a specified number of generations
     while epoch < NUM_OF_GENS:
@@ -134,6 +137,8 @@ def main():
 
                 # if the episode is over ahead of the maximum time steps allowed stop the loop
                 if done:
+                    # if total_reward < 50:
+                    #     total_reward = - 50
                     # print("Episode finished after {} time steps".format(t + 1))
                     print("Episode: {}/{} | score: {}".format(ind_count, (NUM_OF_GENS * POP_SIZE), total_reward))
                     break
@@ -144,6 +149,12 @@ def main():
             # set the return from the environment as the fitness value of the current individual
             ind.fitness.values = (total_reward,)
 
+            # save qualified individual
+            if total_reward > 100:
+                document = Document(name=QUAL_IND_FILE)
+                document.addline(line=Line().add(text=Text(str(ind))))
+                document.save(append=True)
+
             # store the performance of this individual in the corresponding series
             all_ind_series.addrecord(ind_count, total_reward)
             weighted_avg.update(total_reward)
@@ -152,21 +163,20 @@ def main():
         # Logging and other I/O operations
         print("Epoch {} completed".format(epoch))
         record = ga.stats.compile(pop)
-        record.get("max")
         print("Statistics for epoch {} = {}".format(epoch, record))
         ga.logbook.record(epoch=epoch, **record)
 
         # store max return
         gen_series.addrecord(epoch, record["max"])
+        if APPLY_EVO:
+            # perform evolution
+            offspring = applyEvolution(population=pop, ga_alg=ga, mut_sch=mut_sch, epoch=epoch)
+
+            # set offspring as current population
+            pop = offspring
 
         # update mutation probability series
         mut_prob_series.addrecord(epoch, mut_sch.prob)
-
-        # perform evolution
-        offspring = applyEvolution(population=pop, ga_alg=ga, mut_sch=mut_sch, epoch=epoch)
-
-        # set offspring as current population
-        pop = offspring
         # increment epoch
         epoch += 1
 
@@ -198,7 +208,7 @@ def plot_charts(avg_series, ga, mut_prob_series):
              color=avg_series.color,
              marker=avg_series.marker,
              linestyle=avg_series.linestyle)
-    ax1.legend(fancybox=True, shadow=True, fontsize='small')  # loc="upper right"
+    # ax1.legend(fancybox=True, shadow=True, fontsize='small')  # loc="upper right"
     # plt.grid(True)
     # fig2 = plt.figure(2)
     ax2.set_title(mut_prob_series.name)
@@ -209,7 +219,7 @@ def plot_charts(avg_series, ga, mut_prob_series):
              color=mut_prob_series.color,
              marker=mut_prob_series.marker,
              linestyle=mut_prob_series.linestyle)
-    ax2.legend(fancybox=True, shadow=True, fontsize='small')  # loc="upper right"
+    # ax2.legend(fancybox=True, shadow=True, fontsize='small')  # loc="upper right"
     plt.grid(True)
     fig.suptitle("cartpole simulation")
     plt.subplots_adjust(left=0.2, wspace=0.8, top=0.8)
@@ -244,8 +254,10 @@ def applyEvolution(population, ga_alg, mut_sch, epoch):
     mutop = Operator(tools.mutGaussian, **mutargs)
 
     # Perform one step of evolution
+    prob = mut_sch.get_prob(epoch)
+    # print("{} - {}".format(epoch, prob))
     offspring = ga_alg.evolve(population, selop=selop, crossop=crossop,
-                              mutop=mutop, mut_prob=mut_sch.get_prob(epoch), cross_prob=0.7)
+                              mutop=mutop, mut_prob=prob, cross_prob=0.7)
     return offspring
 
 
@@ -260,7 +272,7 @@ class CartPoleObs(object):
     def getCartVelocity(self, agentId):
         assert self.current_observation is not None
         # return  normalize(self.current_observation[1], -3.4028235e+38, 3.4028235e+38, -10, 10)
-        return self.current_observation[1]
+        return sigmoid(self.current_observation[1])
 
     def getPoleAngle(self, agentId):
         assert self.current_observation is not None
@@ -269,7 +281,11 @@ class CartPoleObs(object):
     def getPoleVelocity(self, agentId):
         assert self.current_observation is not None
         # return normalize(self.current_observation[3], 3.4028235e+38, 3.4028235e+38, -10, 10)
-        return self.current_observation[3]
+        return sigmoid(self.current_observation[3])
+
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
 
 
 if __name__ == "__main__":

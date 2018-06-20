@@ -22,14 +22,9 @@ def tunetrimf(a, b, c, delta, eta):
     """
     assert a <= b <= c
     # left or right shift of MF on the x axis
-    a = a + delta
+    a = (a + delta) - eta
     b = b + delta
-    c = c + delta
-    # shrinking or expansion of MF
-    if a < b:
-        a -= eta
-    if b < c:
-        c -= eta
+    c = (c + delta) - eta
     assert a <= b <= c
     return a, b, c
 

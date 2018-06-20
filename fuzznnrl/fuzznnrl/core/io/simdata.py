@@ -126,7 +126,7 @@ class Document(object):
     Models a document of lines that can be saved to disk
     """
 
-    def __init__(self, name, path, lines=None):
+    def __init__(self, name, path='', lines=None):
         self.__doc = []
         if lines:
             for line in lines:

@@ -2,8 +2,10 @@ class Constants:
     """
     Maintains all operating constants of core modules
     """
-    RAND_SEED = 1
-    MF_TUNING_RANGE = [0.0, 0.1]
+    # RAND_SEED = 1
+    MF_TUNING_RANGE = [-0.2, 0.2]
+    LEARN_RULE_OP = True
+    ZEROS_MF_SEGMENT = 0.01
 
 
 def setconstants(**kwargs):

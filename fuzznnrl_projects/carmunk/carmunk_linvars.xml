@@ -2,84 +2,71 @@
 <!-- Linguistic variables for OpenAI Gym CartPole-v1 -->
 <linguisticVariables xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                      xsi:noNamespaceSchemaLocation="../core/res/linguisticVariables.xsd">
-    <variable name="cartPosition" rangeMin="-4.8" rangeMax="4.8" type="input" procedure="getCartPosition">
+    <variable name="leftSensors" rangeMin="0" rangeMax="5" type="input" procedure="getleftsensors">
         <terms>
             <term name="LOW">
                 <mf>Triangle</mf>
-                <params>-5.8 -4.8 -1</params>
+                <params>-2.5 0 2.5</params>
             </term>
             <term name="MEDIUM">
                 <mf>Triangle</mf>
-                <params>-1.5 0 1.5</params>
+                <params>0 2.5 5</params>
             </term>
             <term name="HIGH">
                 <mf>Triangle</mf>
-                <params>1 4.8  5.8</params>
+                <params>2.5 5 7.5</params>
             </term>
         </terms>
     </variable>
 
-    <variable name="cartVelocity" rangeMin="0.0" rangeMax="1.0" type="input" procedure="getCartVelocity">
+    <variable name="midSensors" rangeMin="0" rangeMax="5" type="input" procedure="getmidsensors">
         <terms>
             <term name="LOW">
                 <mf>Triangle</mf>
-                <params>-0.5 0 0.5</params>
+                <params>-2.5 0 2.5</params>
             </term>
             <term name="MEDIUM">
                 <mf>Triangle</mf>
-                <params>0 0.5 1</params>
+                <params>0 2.5 5</params>
             </term>
             <term name="HIGH">
                 <mf>Triangle</mf>
-                <params>0.5 1 1.5</params>
+                <params>2.5 5 7.5</params>
             </term>
         </terms>
     </variable>
 
-    <variable name="poleAngle" rangeMin="-0.42" rangeMax="0.42" type="input" procedure="getPoleAngle">
+    <variable name="rightSensors" rangeMin="0" rangeMax="5" type="input" procedure="getrightsensors">
         <terms>
             <term name="LOW">
                 <mf>Triangle</mf>
-                <params>-0.52 -0.42 0</params>
+                <params>-2.5 0 2.5</params>
             </term>
             <term name="MEDIUM">
                 <mf>Triangle</mf>
-                <params>-0.21 0.0 0.21</params>
+                <params>0 2.5 5</params>
             </term>
             <term name="HIGH">
                 <mf>Triangle</mf>
-                <params>0.0 0.42 0.52</params>
-            </term>
-        </terms>
-    </variable>
-
-    <variable name="poleVelocity" rangeMin="0.0" rangeMax="1.0" type="input" procedure="getPoleVelocity">
-        <terms>
-            <term name="LOW">
-                <mf>Triangle</mf>
-                <params>-0.5 0 0.5</params>
-            </term>
-            <term name="MEDIUM">
-                <mf>Triangle</mf>
-                <params>0 0.5 1</params>
-            </term>
-            <term name="HIGH">
-                <mf>Triangle</mf>
-                <params>0.5 1 1.5</params>
+                <params>2.5 5 7.5</params>
             </term>
         </terms>
     </variable>
 
     <!-- output variable -->
-    <variable name="Movement" rangeMin="0.0" rangeMax="1.0" type="output">
+    <variable name="Movement" rangeMin="0.0" rangeMax="2.0" type="output">
         <terms>
             <term name="LEFT">
                 <mf>Triangle</mf>
-                <params>0 0 1</params>
+                <params>-1 0 1</params>
             </term>
             <term name="RIGHT">
                 <mf>Triangle</mf>
-                <params>0 1 1</params>
+                <params>0 1 2</params>
+            </term>
+            <term name="NOOP">
+                <mf>Triangle</mf>
+                <params>1 2 3</params>
             </term>
         </terms>
     </variable>

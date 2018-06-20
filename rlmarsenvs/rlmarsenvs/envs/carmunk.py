@@ -106,7 +106,8 @@ class _GameState:
         # self.create_car(self.__car_init_x, self.__car_init_y, self.__car_init_angle)
         self.__entities_init()
         do_nothing = 2
-        return self.frame_step(action=do_nothing)
+        ob, _, _, _ = self.frame_step(action=do_nothing)
+        return ob
 
     def render(self):
         screen.fill(THECOLORS["black"])

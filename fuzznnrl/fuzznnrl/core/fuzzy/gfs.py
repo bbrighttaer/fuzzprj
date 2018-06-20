@@ -1,10 +1,10 @@
 import sys
 
+import fuzznnrl.core.conf.exceptions as ex
 import numpy as np
 import skfuzzy as fuzz
 import skfuzzy.control as ctrl
-
-import fuzznnrl.core.conf.exceptions as ex
+from fuzznnrl.core.conf import Constants as const
 from fuzznnrl.core.fuzzy import GAUSSIAN_MF, SIGMOID_MF, TRAPEZOID_MF
 from fuzznnrl.core.fuzzy.tunemf import tunemf, gettuningparamsize
 
@@ -80,23 +80,26 @@ class GeneticFuzzySystem(object):
     def buildControlSystem(self):
         pass
 
-    def buildControlSystemSim(self, rb_chrom, mf_chrom):
+    def buildControlSystemSim(self, rb_chrom, mf_chrom, rb_op_chrom=None):
         """
         Creates the control system for simulation if no control system has been created or
         reuse created properties by re-configuring them with the submitted rb_chrom and mf_chrom
         :param rb_chrom: The RCGA string for constructing the GFS-RB
         :param mf_chrom: The RCGA string for tuning tunable MFs
+        :param rb_op_chrom: The RCGA string for setting rule operators (AND and OR)
         """
         if self.__controlSystem_created:
             self.__redefineAntecedentMFs(mf_chrom)
             self.__redefineConsequentTerms(rb_chrom)
+            if const.LEARN_RULE_OP and rb_op_chrom is not None:
+                self.__redefineRuleOperators(rb_op_chrom)
         else:
             # step 1. create rule antecedents and consequent
             self.__createAntecedents(mf_chrom=mf_chrom)
             self.__createConsequent()
 
             # step 2. create rules
-            self.__createFuzzyRules(rb_chrom=rb_chrom, depth=len(self.__antecedents))
+            self.__createFuzzyRules(rb_chrom=rb_chrom, rb_op_chrom=rb_op_chrom, depth=len(self.__antecedents))
 
             # step 3. create control system simulation
             self.__controlSystem = ctrl.ControlSystem(self.__rules)
@@ -163,7 +166,7 @@ class GeneticFuzzySystem(object):
                 SIGMOID_MF: lambda *args: fuzz.sigmf(*args)
                 }.get(mf_type.lower(), lambda *args: fuzz.trimf(*args))(universe, params)
 
-    def __createFuzzyRules(self, rb_chrom, depth, rule_terms_list=[]):
+    def __createFuzzyRules(self, rb_chrom, rb_op_chrom, depth, rule_terms_list=[]):
         """
         Uses recursion to form rules
 
@@ -183,7 +186,14 @@ class GeneticFuzzySystem(object):
 
                 # for the antecedent parts of the rule
                 for t in rule_terms_list:
-                    arg = arg & t
+                    if const.LEARN_RULE_OP:
+                        # 0 - & (AND), 1 - | (OR)
+                        if rb_op_chrom[len(self.__rules)] == 1:
+                            arg = arg | t
+                        else:
+                            arg = arg & t
+                    else:  # default case
+                        arg = arg & t
 
                 # form the rule with the joined antecedents
                 rule = ctrl.Rule(arg, self.__consequent[self.__getOutputTerm(rb_chrom[len(self.__rules)])])
@@ -192,7 +202,8 @@ class GeneticFuzzySystem(object):
         else:
             for _, term in antecedent.terms.items():
                 rule_terms_list.append(term)
-                self.__createFuzzyRules(rb_chrom=rb_chrom, rule_terms_list=rule_terms_list, depth=depth)
+                self.__createFuzzyRules(rb_chrom=rb_chrom, rb_op_chrom=rb_op_chrom, rule_terms_list=rule_terms_list,
+                                        depth=depth)
                 rule_terms_list.pop()
 
     def __getOutputTerm(self, code):
@@ -249,5 +260,35 @@ class GeneticFuzzySystem(object):
         # else:
         #     print("All antecedents for {} GFS tuned successfully".format(self.name))
 
+    def reset(self):
+        self.__controlSystemSimulation.reset()
+
     def __str__(self):
         return "{0}\n\t{1}\n\t{2}".format(self.name, str(self.__antecedents), str(self.__consequent))
+
+    def __redefineRuleOperators(self, rb_op_chrom):
+        """
+        Re-configures the conjunction operators of the rule antecedents (The AND and OR)
+        :param rb_op_chrom: The RCGA string for the reconfiguration
+        """
+        if len(rb_op_chrom) > 0:
+            step_size = len(self.__descriptor.inputVariables.inputVar) - 1
+            i = 0
+            for rule in self.__rules:
+                antecedent = rule.antecedent
+                self.__setantecedentoperator(antecedent, depth=step_size, op_codes=rb_op_chrom[i:(i + step_size)])
+                i += step_size
+
+    def __setantecedentoperator(self, antecedent, depth, op_codes):
+        """
+        recursively sets the operator of two terms
+        :return:
+        """
+        depth -= 1
+        # 0 - & (AND), 1 - | (OR)
+        if op_codes[depth] == 1:
+            antecedent.kind = "or"
+        else:
+            antecedent.kind = "and"
+        if depth > 0:
+            self.__setantecedentoperator(antecedent.term1, depth, op_codes)

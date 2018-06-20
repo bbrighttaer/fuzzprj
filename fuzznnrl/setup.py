@@ -10,5 +10,6 @@ setup(
     license='MIT',
     author='bbrighttaer',
     author_email='brighteragyemang@gmail.com',
-    description='Library for GFT operations'
+    description='Library for GFT operations',
+    install_requires=['numpy', 'deap', 'scikit-fuzzy']
 )

@@ -34,13 +34,15 @@ class Algorithm(object):
         for _, gfs in self.__reg.gft_dict.items():
             rb_segment = chromosome[gfs.descriptor.position]
             mf_segment = chromosome[gfs.descriptor.position + num_gfs]
-            gfs.buildControlSystemSim(rb_chrom=rb_segment, mf_chrom=mf_segment)
+            rb_op_segment = chromosome[gfs.descriptor.position + (2 * num_gfs)]
+            gfs.buildControlSystemSim(rb_chrom=rb_segment, mf_chrom=mf_segment, rb_op_chrom=rb_op_segment)
 
     def executegft(self, obclassobj, agent_id, gfs_name=None, func_format_val=floor, input_vec_dict=OrderedDict(),
                    probs_dict=OrderedDict()):
         """
         Executes the GFT algorithm to get the action for an agent
         -------
+        :param input_vec_dict: keeps track of all input vectors to the GFSs executed in the tree
         :param func_format_val: A user-defined function for receiving the crisp value of the inference process and
         returning the code for determining the final output term. The must have only one argument. math.floor is the
         default function.
@@ -67,49 +69,55 @@ class Algorithm(object):
         input_vector = []
 
         gfs = self.__reg.gft_dict[gfs_name]
-        # try:
-        for var in gfs.descriptor.inputVariables.inputVar:
-            # get config details from registry
-            var_config = self.__reg.linvar_dict[var.identity.type]
-            # select procedure for input value
-            func = getattr(obclassobj, var_config.procedure)
-            # set input value of variable
-            input_value = func(agent_id)
-            gfs.controlSystemSimulation.input[var.identity.name] = input_value
-            input_vector.append(input_value)
+        if gfs is not None:
+            # Clear previous data in memory
+            gfs.reset()
 
-        # record the current input vector in the dictionary
-        input_vec_dict[gfs_name] = input_vector
+            # try:
+            for var in gfs.descriptor.inputVariables.inputVar:
+                # get config details from registry
+                var_config = self.__reg.linvar_dict[var.identity.type]
+                # select procedure for input value
+                func = getattr(obclassobj, var_config.procedure)
+                # set input value of variable
+                input_value = func(agent_id)
+                gfs.controlSystemSimulation.input[var.identity.name] = input_value
+                input_vector.append(input_value)
 
-        # execute the control system
-        gfs.controlSystemSimulation.compute()
+            # record the current input vector in the dictionary
+            input_vec_dict[gfs_name] = input_vector
 
-        # get the crisp value from the control system
-        out = gfs.controlSystemSimulation.output[gfs.consequent.label]
-        out = func_format_val(out)
+            # execute the control system
+            gfs.controlSystemSimulation.compute()
 
-        # adds the action probabilities to the dictionary
-        probs_dict[gfs_name] = self.__getActionProbs(gfs.consequent, gfs.controlSystemSimulation)
+            # get the crisp value from the control system
+            out = gfs.controlSystemSimulation.output[gfs.consequent.label]
+            out = func_format_val(out)
 
-        # search for the corresponding output term
-        selected_term = None
-        for term in gfs.descriptor.outputVariable.term:
-            if term.code == out:
-                selected_term = term
-                break
+            # adds the action probabilities to the dictionary
+            probs_dict[gfs_name] = self.__getActionProbs(gfs.consequent, gfs.controlSystemSimulation)
 
-        if selected_term is not None:
-            # if the target is another FIS or GFS to be executed start a recursive call
-            if selected_term.target.targetType == "fis":
-                return self.executegft(obclassobj, agent_id, selected_term.target.name, func_format_val, input_vec_dict,
-                                       probs_dict)
-            # if the target is an action report it
+            # search for the corresponding output term
+            selected_term = None
+            for term in gfs.descriptor.outputVariable.term:
+                if term.code == out:
+                    selected_term = term
+                    break
+
+            if selected_term is not None:
+                # if the target is another FIS or GFS to be executed start a recursive call
+                if selected_term.target.targetType == "fis":
+                    return self.executegft(obclassobj, agent_id, selected_term.target.name, func_format_val, input_vec_dict,
+                                           probs_dict)
+                # if the target is an action report it
+                else:
+                    return out, selected_term.target.name, input_vec_dict, probs_dict
             else:
-                return out, selected_term.target.name, input_vec_dict, probs_dict
+                print("Term with code {} could not be found in GFS: {}", out, gfs_name)
+            # except:
+            #     print("Error executing GFT. Stage:", gfs_name)
         else:
-            print("Term with code {} could not be found in GFS: {}", out, gfs_name)
-        # except:
-        #     print("Error executing GFT. Stage:", gfs_name)
+            print("{} could not be found".format(gfs_name))
 
     def executenntree(self, obclassobj, agent_id):
         """

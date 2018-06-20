@@ -2,7 +2,7 @@
 # Copyright (C) 6/14/18 - 10:28 AM
 # Author: bbrighttaer
 from abc import abstractmethod, ABCMeta
-from math import exp, floor
+from math import exp, floor, pow
 
 
 class ProbabilitySchedule(metaclass=ABCMeta):
@@ -83,7 +83,7 @@ class StepDecaySchedule(ProbabilitySchedule):
         self.__init_prob = initial_prob
 
     def get_prob(self, epoch):
-        self.prob = self.__init_prob * pow(self.__epochs_drop, floor((1 + epoch) / self.__epochs_drop))
+        self.prob = self.__init_prob * pow(self.decay_factor, floor((1 + epoch) / self.__epochs_drop))
         return self.prob
 
 
@@ -96,5 +96,5 @@ class TimeBasedSchedule(ProbabilitySchedule):
         super().__init__(initial_prob=0, decay_factor=decay_factor)
 
     def get_prob(self, epoch):
-        self.prob = 1 / (1 + self.decay_factor * epoch)
+        self.prob = 1. / (1. + self.decay_factor * epoch)
         return self.prob

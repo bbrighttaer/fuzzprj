@@ -12,5 +12,6 @@ setup(
     license='MIT',
     author='bbrighttaer',
     author_email='brighteragyemang@gmail.com',
-    description='Root folder of fuzznnrl project'
+    description='Root folder of fuzznnrl project', install_requires=['deap', 'numpy', 'scikit-fuzzy', 'gym',
+                                                                     'matplotlib']
 )
