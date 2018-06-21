@@ -44,7 +44,7 @@ class ProbabilitySchedule(metaclass=ABCMeta):
         """
 
 
-class ConstantDecaySchedule(ProbabilitySchedule):
+class LinearDecaySchedule(ProbabilitySchedule):
     """
     Decays the probability by a constant factor
     """

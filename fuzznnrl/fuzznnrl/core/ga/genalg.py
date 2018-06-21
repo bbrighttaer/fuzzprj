@@ -4,7 +4,7 @@ import numpy as np
 from deap import base
 from deap import creator
 from deap import tools
-from fuzznnrl.core.conf import Constants as const
+from fuzznnrl.core.conf import Constants as const, Constants
 
 
 class GeneticAlgorithm(object):
@@ -203,7 +203,8 @@ class GeneticAlgorithm(object):
                                    const.MF_TUNING_RANGE[1], apply_round=False)
 
                 # RB operator segment
-                self.__checkbounds(mutant[fis.descriptor.position + (2 * num_gfts)], 0, 1)
+                if Constants.LEARN_RULE_OP:
+                    self.__checkbounds(mutant[fis.descriptor.position + (2 * num_gfts)], 0, 1)
 
     def __checkbounds(self, child, min, max, apply_round=True):
         """

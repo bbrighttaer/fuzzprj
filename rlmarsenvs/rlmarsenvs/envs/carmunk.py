@@ -29,7 +29,7 @@ VERSION = "v2"
 
 class Carmunk(gym.Env):
     metadata = {'render.modes': ['human']}
-    reward_range = (-500, 30)
+    reward_range = (-500, 39)
 
     def __init__(self):
         self.__version__ = VERSION
@@ -62,6 +62,11 @@ class _GameState:
         self.__car_init_y = 100
         self.__car_init_angle = 0.5
         self.__entities_init()
+
+        # check spinning
+        self.__last_action = None
+        self.__action_freq = 0
+        self.__last_pos = None
 
     def __entities_init(self):
         # Physics stuff.
@@ -98,6 +103,7 @@ class _GameState:
         self.obstacles.append(self.create_obstacle(200, 350, 100))
         self.obstacles.append(self.create_obstacle(700, 200, 125))
         self.obstacles.append(self.create_obstacle(600, 600, 35))
+        # self.obstacles.append(self.create_obstacle(70, 70, 25))
         # Create a cat.
         self.create_cat()
 
@@ -148,6 +154,13 @@ class _GameState:
         self.space.add(self.car_body, self.car_shape)
 
     def frame_step(self, action):
+        if self.__last_action == action:
+            self.__action_freq += 1
+        else:
+            self.__last_action = action
+            self.__action_freq = 1
+            self.__last_pos = self.car_body.position
+
         if action == 0:  # Turn left.
             self.car_body.angle -= .2
         elif action == 1:  # Turn right.
@@ -165,7 +178,7 @@ class _GameState:
         self.car_body.velocity = 100 * driving_direction
 
         # steps the environment
-        self.space.step(1. / 10)
+        self.space.step(1. / 60)
 
         # Get the current location and the readings there.
         x, y = self.car_body.position
@@ -181,6 +194,13 @@ class _GameState:
             # Higher readings are better, so return the sum.
             reward = -5 + int(self.sum_readings(readings) / 10)
         self.num_steps += 1
+
+        # check for and end spinning
+        if self.__action_freq > 7:
+            dist = self.euclidean_dist(self.__last_pos[0], self.__last_pos[1],
+                                       self.car_body.position[0], self.car_body.position[1])
+            if dist < 10:
+                reward = -500
 
         # observation, reward, done, info
         return np.squeeze(state), reward, self.__crashed, {}
@@ -290,3 +310,6 @@ class _GameState:
             return 0
         else:
             return 1
+
+    def euclidean_dist(self, x1, y1, x2, y2):
+        return math.sqrt(pow((x1 - x2), 2) + pow((y1 - y2), 2))

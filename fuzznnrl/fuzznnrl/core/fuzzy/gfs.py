@@ -8,13 +8,16 @@ from fuzznnrl.core.conf import Constants as const
 from fuzznnrl.core.fuzzy import GAUSSIAN_MF, SIGMOID_MF, TRAPEZOID_MF
 from fuzznnrl.core.fuzzy.tunemf import tunemf, gettuningparamsize
 
+# customized version of scikit-fuzzy skfuzzext.py
+from .skfuzzext import RuleGenerator
+
 
 class GeneticFuzzySystem(object):
     """
     The structure of Genetic Fuzzy Systems in a GFT
     """
 
-    def __init__(self, descriptor, vars_config_dict={}, defuzz_method="lom"):
+    def __init__(self, descriptor, vars_config_dict, defuzz_method="lom"):
         """
         Creates an GFS
         ---------------
@@ -30,12 +33,8 @@ class GeneticFuzzySystem(object):
         self.__descriptor = descriptor
         self.__vars_config_dict = vars_config_dict
         self.__defuzz_method = defuzz_method
-        self.__rules = []
-        self.__controlSystem = None
-        self.__controlSystemSimulation = None
-        self.__antecedents = []
-        self.__consequent = None
-        self.__controlSystem_created = False
+        self.__undefined_code = -1
+        self._initialize()
 
     @property
     def name(self):
@@ -77,9 +76,6 @@ class GeneticFuzzySystem(object):
     def controlSystemSimulation(self):
         return self.__controlSystemSimulation
 
-    def buildControlSystem(self):
-        pass
-
     def buildControlSystemSim(self, rb_chrom, mf_chrom, rb_op_chrom=None):
         """
         Creates the control system for simulation if no control system has been created or
@@ -88,25 +84,45 @@ class GeneticFuzzySystem(object):
         :param mf_chrom: The RCGA string for tuning tunable MFs
         :param rb_op_chrom: The RCGA string for setting rule operators (AND and OR)
         """
-        if self.__controlSystem_created:
-            self.__redefineAntecedentMFs(mf_chrom)
-            self.__redefineConsequentTerms(rb_chrom)
-            if const.LEARN_RULE_OP and rb_op_chrom is not None:
-                self.__redefineRuleOperators(rb_op_chrom)
-        else:
-            # step 1. create rule antecedents and consequent
-            self.__createAntecedents(mf_chrom=mf_chrom)
-            self.__createConsequent()
+        # if self.__controlSystem_created:
+        #     self.__redefineAntecedentMFs(mf_chrom)
+        #     self.__redefineConsequentTerms(rb_chrom)
+        #     if const.LEARN_RULE_OP and rb_op_chrom is not None:
+        #         self.__redefineRuleOperators(rb_op_chrom)
+        # else:
 
-            # step 2. create rules
-            self.__createFuzzyRules(rb_chrom=rb_chrom, rb_op_chrom=rb_op_chrom, depth=len(self.__antecedents))
+        self._initialize()
 
-            # step 3. create control system simulation
-            self.__controlSystem = ctrl.ControlSystem(self.__rules)
+        # step 1. create rule antecedents and consequent
+        self.__createAntecedents(mf_chrom=mf_chrom)
+        self.__createConsequent()
 
-            self.__controlSystemSimulation = ctrl.ControlSystemSimulation(control_system=self.__controlSystem,
-                                                                          clip_to_bounds=False)
-            self.__controlSystem_created = True
+        # step 2. create rules
+        self.__createFuzzyRules(rb_chrom=rb_chrom, rb_op_chrom=rb_op_chrom, depth=len(self.__antecedents))
+
+        # step 3.1 create control system simulation
+        self.__controlSystem = ctrl.ControlSystem()
+
+        # step 3.2 overwrite the default scikit-fuzzy rule generator to avoid recursion
+        self.__controlSystem._rule_generator = RuleGenerator(self.__controlSystem)
+
+        # step 3.3 add all rules to the control system
+        for rule in self.__rules:
+            self.__controlSystem.addrule(rule)
+
+        # step 4
+        self.__controlSystemSimulation = ctrl.ControlSystemSimulation(control_system=self.__controlSystem,
+                                                                      clip_to_bounds=False)
+        self.__controlSystem_created = True
+
+    def _initialize(self):
+        self.__rules = []
+        self.__controlSystem = None
+        self.__controlSystemSimulation = None
+        self.__antecedents = []
+        self.__consequent = None
+        self.__controlSystem_created = False
+        self.__rules_count = 0
 
     def __createAntecedents(self, mf_chrom):
         pointer = 0
@@ -136,8 +152,8 @@ class GeneticFuzzySystem(object):
         except IndexError:
             print("Error creating antecedents for {}".format(self.name))
             sys.exit(-1)
-        else:
-            print("All antecedents for {} GFS created successfully".format(self.name))
+        # else:
+        #     print("All antecedents for {} GFS created successfully".format(self.name))
 
     def __createConsequent(self):
         var = self.__descriptor.outputVariable
@@ -184,11 +200,16 @@ class GeneticFuzzySystem(object):
             for _, term in antecedent.terms.items():
                 arg = term
 
+                rb_code = rb_chrom[self.__rules_count]
+                if rb_code == self.__undefined_code:
+                    self.__rules_count += 1
+                    continue
+
                 # for the antecedent parts of the rule
                 for t in rule_terms_list:
                     if const.LEARN_RULE_OP:
                         # 0 - & (AND), 1 - | (OR)
-                        if rb_op_chrom[len(self.__rules)] == 1:
+                        if rb_op_chrom[self.__rules_count] == 1:
                             arg = arg | t
                         else:
                             arg = arg & t
@@ -196,9 +217,10 @@ class GeneticFuzzySystem(object):
                         arg = arg & t
 
                 # form the rule with the joined antecedents
-                rule = ctrl.Rule(arg, self.__consequent[self.__getOutputTerm(rb_chrom[len(self.__rules)])])
+                rule = ctrl.Rule(arg, self.__consequent[self.__getOutputTerm(rb_code)])
                 # add the created rule to the list of rules
                 self.__rules.append(rule)
+                self.__rules_count += 1
         else:
             for _, term in antecedent.terms.items():
                 rule_terms_list.append(term)
@@ -227,7 +249,7 @@ class GeneticFuzzySystem(object):
         -------------
         :param rb_chrom: RB string for the redefinition process
         """
-        assert len(rb_chrom) == len(self.__rules)
+        assert len(rb_chrom) == self.__rules_count
         for i, rule in zip(rb_chrom, self.__rules):
             rule.consequent = self.__consequent[self.__getOutputTerm(code=i)]
 

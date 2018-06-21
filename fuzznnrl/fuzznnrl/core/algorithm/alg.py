@@ -4,9 +4,10 @@
 from collections import OrderedDict
 from math import floor
 
+import numpy as np
+from fuzznnrl.core.conf import Constants
+from fuzznnrl.core.util.ops import softmax, boltzmanexp
 from skfuzzy import interp_membership
-
-from fuzznnrl.core.util.ops import softmax
 
 
 class Algorithm(object):
@@ -34,11 +35,13 @@ class Algorithm(object):
         for _, gfs in self.__reg.gft_dict.items():
             rb_segment = chromosome[gfs.descriptor.position]
             mf_segment = chromosome[gfs.descriptor.position + num_gfs]
-            rb_op_segment = chromosome[gfs.descriptor.position + (2 * num_gfs)]
+            rb_op_segment = None
+            if Constants.LEARN_RULE_OP:
+                rb_op_segment = chromosome[gfs.descriptor.position + (2 * num_gfs)]
             gfs.buildControlSystemSim(rb_chrom=rb_segment, mf_chrom=mf_segment, rb_op_chrom=rb_op_segment)
 
     def executegft(self, obclassobj, agent_id, gfs_name=None, func_format_val=floor, input_vec_dict=OrderedDict(),
-                   probs_dict=OrderedDict()):
+                   probs_dict=OrderedDict(), boltzmann=False, tau=1):
         """
         Executes the GFT algorithm to get the action for an agent
         -------
@@ -95,7 +98,12 @@ class Algorithm(object):
             out = func_format_val(out)
 
             # adds the action probabilities to the dictionary
-            probs_dict[gfs_name] = self.__getActionProbs(gfs.consequent, gfs.controlSystemSimulation)
+            probs = self.__getActionProbs(gfs.consequent, gfs.controlSystemSimulation)
+            probs_dict[gfs_name] = probs
+
+            # check for boltzmann exploration
+            if boltzmann:
+                out = np.where(probs == np.random.choice(probs, p=boltzmanexp(probs, tau=tau)))[0][0]
 
             # search for the corresponding output term
             selected_term = None
@@ -107,7 +115,8 @@ class Algorithm(object):
             if selected_term is not None:
                 # if the target is another FIS or GFS to be executed start a recursive call
                 if selected_term.target.targetType == "fis":
-                    return self.executegft(obclassobj, agent_id, selected_term.target.name, func_format_val, input_vec_dict,
+                    return self.executegft(obclassobj, agent_id, selected_term.target.name, func_format_val,
+                                           input_vec_dict,
                                            probs_dict)
                 # if the target is an action report it
                 else:

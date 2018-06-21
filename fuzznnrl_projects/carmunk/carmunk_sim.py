@@ -14,10 +14,6 @@ import fuzznnrl.core.ga.schedule as sch
 import fuzznnrl.core.plot.analysis as ana
 import gym
 import matplotlib.pyplot as plt
-
-# registers the environment to use the gym interface
-import rlmarsenvs
-
 from fuzznnrl.core.algorithm.alg import Algorithm
 from fuzznnrl.core.conf import Constants
 from fuzznnrl.core.conf.parser import *
@@ -28,12 +24,15 @@ from fuzznnrl.core.io.simdata import Document, Text, Line
 from fuzznnrl.core.util.ops import normalize
 from matplotlib import style
 
+# registers the environment to use the gym interface
+import rlmarsenvs
+
 style.use("seaborn-paper")
 
 Constants.MF_TUNING_RANGE = [-0.15, 0.15]
 random.seed(1)
 
-NUM_OF_GENS = 10000
+NUM_OF_GENS = 5000
 MAX_TIME_STEPS = 100000
 POP_SIZE = 20
 LIN_VARS_FILE = "carmunk_linvars.xml"
@@ -90,6 +89,9 @@ def main():
     # create an object for retrieving input values
     obs_carmunk = CarmunkObs()
 
+    # Tau for Boltzmann exploration strategy
+    tau_sch = sch.ExponentialDecaySchedule(initial_prob=20, decay_factor=0.02)
+
     # perform the simulation for a specified number of generations
     while epoch < NUM_OF_GENS:
 
@@ -113,7 +115,9 @@ def main():
             obs_carmunk.current_observation = observation
 
             # run through the time steps of the simulation
-            for t in range(MAX_TIME_STEPS):
+            t = 0
+            while True:
+                t += 1
 
                 # show the environment
                 env.render()
@@ -122,7 +126,9 @@ def main():
                 agent_id = 0
 
                 # get an action
-                code, action, input_vec_dict, probs_dict = alg.executegft(obs_carmunk, agent_id)
+                code, action, input_vec_dict, probs_dict = alg.executegft(obs_carmunk, agent_id,
+                                                                          boltzmann=True,
+                                                                          tau=tau_sch.get_prob(epoch))
 
                 # apply the selected action to the environment and observe feedback
                 next_state, reward, done, _ = env.step(code)
@@ -150,18 +156,19 @@ def main():
                 if done:
                     # if total_reward < 50:
                     #     total_reward = - 50
-                    # print("Episode finished after {} time steps".format(t + 1))
+                    print("Episode finished after {} time steps".format(t + 1))
                     print("Episode: {}/{} | score: {}".format(ind_count, (NUM_OF_GENS * POP_SIZE), total_reward))
+                    print(tau_sch.prob)
                     break
 
                 # save contents of the cache and clear it for the next episode
-                cache.save_csv()
+            cache.save_csv()
 
             # set the return from the environment as the fitness value of the current individual
             ind.fitness.values = (total_reward,)
 
             # save qualified individual
-            if total_reward > 1000:
+            if total_reward > 5000:
                 document = Document(name=QUAL_IND_FILE)
                 document.addline(line=Line().add(text=Text(str(ind))))
                 document.save(append=True)
@@ -196,13 +203,13 @@ def main():
     print(ga.logbook)
 
     # plotting
-    plot_charts(avg_series, ga, mut_prob_series)
+    plot_charts(avg_series, mut_prob_series)
 
     # terminates environment
     env.close()
 
 
-def plot_charts(avg_series, ga, mut_prob_series):
+def plot_charts(avg_series, mut_prob_series):
     fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, dpi=300)
     # epochs = ga.logbook.select("epoch")
     # fit_avg = ga.logbook.select("avg")

@@ -75,11 +75,11 @@
         <terms>
             <term name="LEFT">
                 <mf>Triangle</mf>
-                <params>0 0 1</params>
+                <params>-1 0 1</params>
             </term>
             <term name="RIGHT">
                 <mf>Triangle</mf>
-                <params>0 1 1</params>
+                <params>0 1 2</params>
             </term>
         </terms>
     </variable>

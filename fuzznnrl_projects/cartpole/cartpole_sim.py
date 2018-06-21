@@ -20,8 +20,9 @@ from matplotlib import style
 style.use("seaborn-paper")
 
 Constants.MF_TUNING_RANGE = [-0.1, 0.1]
+Constants.LEARN_RULE_OP = False
 
-NUM_OF_GENS = 10
+NUM_OF_GENS = 50
 NUM_EPISODES_PER_IND = 1
 MAX_TIME_STEPS = 200
 POP_SIZE = 20
@@ -56,7 +57,9 @@ def main():
     ga = GeneticAlgorithm(registry=reg, seed=2)
 
     # create a mutation probability schedule
-    mut_sch = sch.TimeBasedSchedule(decay_factor=2e-1)
+    mut_sch = sch.ExponentialDecaySchedule(initial_prob=.2, decay_factor=1e-2)
+
+    tau_sch = sch.ExponentialDecaySchedule(initial_prob=.5, decay_factor=1e-1)
 
     # create GFT algorithm object with the registry
     alg = Algorithm(registry=reg)
@@ -111,7 +114,9 @@ def main():
                 agent_id = 0
 
                 # get an action
-                code, action, input_vec_dict, probs_dict = alg.executegft(obs_cartpole, agent_id)
+                code, action, input_vec_dict, probs_dict = alg.executegft(obs_cartpole, agent_id,
+                                                                          boltzmann=False,
+                                                                          tau=tau_sch.get_prob(epoch))
 
                 # apply the selected action to the environment and observe feedback
                 next_state, reward, done, _ = env.step(code)
@@ -137,14 +142,15 @@ def main():
 
                 # if the episode is over ahead of the maximum time steps allowed stop the loop
                 if done:
-                    # if total_reward < 50:
-                    #     total_reward = - 50
-                    # print("Episode finished after {} time steps".format(t + 1))
-                    print("Episode: {}/{} | score: {}".format(ind_count, (NUM_OF_GENS * POP_SIZE), total_reward))
                     break
 
                 # save contents of the cache and clear it for the next episode
                 cache.save_csv()
+
+            # if total_reward < 50:
+            #     total_reward = - 50
+            # print("Episode finished after {} time steps".format(t + 1))
+            print("Episode: {}/{} | score: {}".format(ind_count, (NUM_OF_GENS * POP_SIZE), total_reward))
 
             # set the return from the environment as the fitness value of the current individual
             ind.fitness.values = (total_reward,)
@@ -185,13 +191,13 @@ def main():
     print(ga.logbook)
 
     # plotting
-    plot_charts(avg_series, ga, mut_prob_series)
+    plot_charts(avg_series, mut_prob_series)
 
     # terminates environment
     env.close()
 
 
-def plot_charts(avg_series, ga, mut_prob_series):
+def plot_charts(avg_series, mut_prob_series):
     fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, dpi=300)
     # epochs = ga.logbook.select("epoch")
     # fit_avg = ga.logbook.select("avg")
@@ -250,7 +256,7 @@ def applyEvolution(population, ga_alg, mut_sch, epoch):
     # create mutation operator
     mutargs = {"mu": 0,
                "sigma": 0.1,
-               "indpb": 0.2}
+               "indpb": 0.1}
     mutop = Operator(tools.mutGaussian, **mutargs)
 
     # Perform one step of evolution

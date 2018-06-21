@@ -13,5 +13,5 @@ setup(
     author='bbrighttaer',
     author_email='brighteragyemang@gmail.com',
     description='Root folder of fuzznnrl project', install_requires=['deap', 'numpy', 'scikit-fuzzy', 'gym',
-                                                                     'matplotlib']
+                                                                     'matplotlib', 'networkx']
 )

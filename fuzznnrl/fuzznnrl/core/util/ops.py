@@ -20,6 +20,15 @@ def softmax(x, axis=0):
     return e_x / e_x.sum(axis=axis)
 
 
+def boltzmanexp(probs, tau):
+    vals = []
+    exp_sum = np.sum(np.exp(probs[:] / tau))
+    for p in probs:
+        val = np.exp(p / tau) / exp_sum
+        vals.append(val)
+    return np.array(vals)
+
+
 def normalize(x, dl, dh, nl, nh):
     """
     Performs a range normalization operation.

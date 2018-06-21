@@ -2,7 +2,7 @@
 <fuzzyInferenceSystems xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                        xsi:noNamespaceSchemaLocation="gftlv0.1.1.xsd" rootInfSystem="Assignment">
     <fuzzyInferenceSystem name="Assignment">
-        <outputGeneRange>0 2</outputGeneRange>
+        <outputGeneRange>-1 2</outputGeneRange>
         <rbSize>243</rbSize>
         <mfSize>30</mfSize>
         <position>0</position>
@@ -47,7 +47,7 @@
         </outputVariable>
     </fuzzyInferenceSystem>
     <fuzzyInferenceSystem name="Protect">
-        <outputGeneRange>0 1</outputGeneRange>
+        <outputGeneRange>-1 1</outputGeneRange>
         <rbSize>3</rbSize>
         <mfSize>6</mfSize>
         <position>1</position>
@@ -72,7 +72,7 @@
         </outputVariable>
     </fuzzyInferenceSystem>
     <fuzzyInferenceSystem name="Operation">
-        <outputGeneRange>0 1</outputGeneRange>
+        <outputGeneRange>-1 1</outputGeneRange>
         <rbSize>9</rbSize>
         <mfSize>12</mfSize>
         <position>2</position>
@@ -101,7 +101,7 @@
         </outputVariable>
     </fuzzyInferenceSystem>
     <fuzzyInferenceSystem name="Cooperate">
-        <outputGeneRange>0 1</outputGeneRange>
+        <outputGeneRange>-1 1</outputGeneRange>
         <rbSize>9</rbSize>
         <mfSize>12</mfSize>
         <position>3</position>
@@ -130,7 +130,7 @@
         </outputVariable>
     </fuzzyInferenceSystem>
     <fuzzyInferenceSystem name="Conquer">
-        <outputGeneRange>0 1</outputGeneRange>
+        <outputGeneRange>-1 1</outputGeneRange>
         <rbSize>3</rbSize>
         <mfSize>6</mfSize>
         <position>4</position>

@@ -8,7 +8,7 @@ decay_factor = 1e-1
 
 class MyTestCase(unittest.TestCase):
     def test_ConstantDecaySchedule(self):
-        s = sch.ConstantDecaySchedule(initial_prob=init_prob, decay=decay_factor)
+        s = sch.LinearDecaySchedule(initial_prob=init_prob, decay=decay_factor)
         runschedule(s)
 
     def test_ExponentialDecaySchedule(self):
