@@ -24,13 +24,15 @@ Constants.LEARN_RULE_OP = False
 
 NUM_OF_GENS = 50
 NUM_EPISODES_PER_IND = 1
-MAX_TIME_STEPS = 200
-POP_SIZE = 20
+MAX_TIME_STEPS = 500
+POP_SIZE = 100
 LIN_VARS_FILE = "cartpole_linvars.xml"
 GFT_FILE = "cartpole_gft.xml"
-LOAD_INIT_POP = False
-APPLY_EVO = True
-QUAL_IND_FILE = "qualified.txt"
+LOAD_INIT_POP = True
+APPLY_EVO = False
+QLFD_IND_FILE = "qualified.txt"
+SAVE_BEST = False
+SCORE_THRESHOLD = 200
 
 
 def main():
@@ -69,7 +71,8 @@ def main():
 
     # get initial population
     if LOAD_INIT_POP:
-        pop = ga.load_initial_population(QUAL_IND_FILE, POP_SIZE)
+        pop = ga.load_initial_population(QLFD_IND_FILE, POP_SIZE)
+        pop = pop[::-1]
     else:
         pop = ga.generate_initial_population(POP_SIZE)
 
@@ -140,12 +143,12 @@ def main():
                 # accumulate the rewards of all time steps
                 total_reward += reward
 
-                # if the episode is over ahead of the maximum time steps allowed stop the loop
+                # # if the episode is over end the current episode
                 if done:
                     break
 
-                # save contents of the cache and clear it for the next episode
-                cache.save_csv()
+            # save contents of the cache and clear it for the next episode
+            cache.save_csv()
 
             # if total_reward < 50:
             #     total_reward = - 50
@@ -156,8 +159,8 @@ def main():
             ind.fitness.values = (total_reward,)
 
             # save qualified individual
-            if total_reward > 100:
-                document = Document(name=QUAL_IND_FILE)
+            if SAVE_BEST and total_reward > SCORE_THRESHOLD:
+                document = Document(name=QLFD_IND_FILE)
                 document.addline(line=Line().add(text=Text(str(ind))))
                 document.save(append=True)
 

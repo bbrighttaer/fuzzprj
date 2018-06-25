@@ -49,8 +49,8 @@ class LinearDecaySchedule(ProbabilitySchedule):
     Decays the probability by a constant factor
     """
 
-    def __init__(self, initial_prob, decay):
-        super().__init__(initial_prob, decay)
+    def __init__(self, initial_prob, decay_factor):
+        super().__init__(initial_prob, decay_factor)
 
     def get_prob(self, epoch):
         v = self.prob

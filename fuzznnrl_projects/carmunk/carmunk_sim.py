@@ -7,7 +7,6 @@
 # Copyright (C) 6/11/18 - 1:48 PM
 # Author: bbrighttaer
 
-import random
 
 import deap.tools as tools
 import fuzznnrl.core.ga.schedule as sch
@@ -30,16 +29,17 @@ import rlmarsenvs
 style.use("seaborn-paper")
 
 Constants.MF_TUNING_RANGE = [-0.15, 0.15]
-random.seed(1)
+Constants.LEARN_RULE_OP = False
 
-NUM_OF_GENS = 5000
-MAX_TIME_STEPS = 100000
+NUM_OF_GENS = 50
 POP_SIZE = 20
 LIN_VARS_FILE = "carmunk_linvars.xml"
 GFT_FILE = "carmunk_gft.xml"
-LOAD_INIT_POP = False
-APPLY_EVO = True
-QUAL_IND_FILE = "qualified.txt"
+LOAD_INIT_POP = True
+APPLY_EVO = False
+QLFD_IND_FILE = "qualified.txt"
+SAVE_BEST = False
+SCORE_THRESHOLD = 5000
 
 
 def main():
@@ -66,7 +66,8 @@ def main():
     ga = GeneticAlgorithm(registry=reg, seed=123)
 
     # create a mutation probability schedule
-    mut_sch = sch.TimeBasedSchedule(decay_factor=1e-4)
+    # mut_sch = sch.TimeBasedSchedule(decay_factor=1e-4)
+    mut_sch = sch.LinearDecaySchedule(initial_prob=1.025, decay_factor=1e-2)
 
     # create GFT algorithm object with the registry
     alg = Algorithm(registry=reg)
@@ -76,7 +77,8 @@ def main():
 
     # get initial population
     if LOAD_INIT_POP:
-        pop = ga.load_initial_population(QUAL_IND_FILE, POP_SIZE)
+        pop = ga.load_initial_population(QLFD_IND_FILE, POP_SIZE)
+        pop = pop[::-1]
     else:
         pop = ga.generate_initial_population(POP_SIZE)
 
@@ -90,7 +92,7 @@ def main():
     obs_carmunk = CarmunkObs()
 
     # Tau for Boltzmann exploration strategy
-    tau_sch = sch.ExponentialDecaySchedule(initial_prob=20, decay_factor=0.02)
+    tau_sch = sch.LinearDecaySchedule(initial_prob=20, decay_factor=0.02)
 
     # perform the simulation for a specified number of generations
     while epoch < NUM_OF_GENS:
@@ -127,7 +129,7 @@ def main():
 
                 # get an action
                 code, action, input_vec_dict, probs_dict = alg.executegft(obs_carmunk, agent_id,
-                                                                          boltzmann=True,
+                                                                          boltzmann=False,
                                                                           tau=tau_sch.get_prob(epoch))
 
                 # apply the selected action to the environment and observe feedback
@@ -152,24 +154,24 @@ def main():
                 # accumulate the rewards of all time steps
                 total_reward += reward
 
-                # if the episode is over ahead of the maximum time steps allowed stop the loop
+                # if the episode is over end the current episode
                 if done:
-                    # if total_reward < 50:
-                    #     total_reward = - 50
-                    print("Episode finished after {} time steps".format(t + 1))
-                    print("Episode: {}/{} | score: {}".format(ind_count, (NUM_OF_GENS * POP_SIZE), total_reward))
-                    print(tau_sch.prob)
                     break
 
-                # save contents of the cache and clear it for the next episode
+            # save contents of the cache and clear it for the next episode
             cache.save_csv()
+
+            # if total_reward < 50:
+            #     total_reward = - 50
+            print("Episode finished after {} time steps".format(t + 1))
+            print("Episode: {}/{} | score: {}".format(ind_count, (NUM_OF_GENS * POP_SIZE), total_reward))
 
             # set the return from the environment as the fitness value of the current individual
             ind.fitness.values = (total_reward,)
 
             # save qualified individual
-            if total_reward > 5000:
-                document = Document(name=QUAL_IND_FILE)
+            if SAVE_BEST and total_reward > SCORE_THRESHOLD:
+                document = Document(name=QLFD_IND_FILE)
                 document.addline(line=Line().add(text=Text(str(ind))))
                 document.save(append=True)
 

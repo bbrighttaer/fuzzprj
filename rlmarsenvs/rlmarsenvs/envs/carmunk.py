@@ -195,12 +195,12 @@ class _GameState:
             reward = -5 + int(self.sum_readings(readings) / 10)
         self.num_steps += 1
 
-        # check for and end spinning
-        if self.__action_freq > 7:
-            dist = self.euclidean_dist(self.__last_pos[0], self.__last_pos[1],
-                                       self.car_body.position[0], self.car_body.position[1])
-            if dist < 10:
-                reward = -500
+        # # check for and end spinning
+        # if self.__action_freq > 7:
+        #     dist = self.euclidean_dist(self.__last_pos[0], self.__last_pos[1],
+        #                                self.car_body.position[0], self.car_body.position[1])
+        #     if dist < 10:
+        #         reward = -500
 
         # observation, reward, done, info
         return np.squeeze(state), reward, self.__crashed, {}
