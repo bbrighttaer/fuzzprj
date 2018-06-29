@@ -3,6 +3,7 @@
 # Author: bbrighttaer
 
 
+import random
 from collections import OrderedDict
 
 from fuzznnrl.core.io.simdata import *
@@ -129,24 +130,34 @@ class Cache:
     #     for k, _ in self.__count_dict.items():
     #         self.__count_dict[k] = 0
 
-    def createExperiences(self, agent_id, action_code, dec_reward_dict, input_vec_dict, probs_dict):
+    def createExperiences(self, agent_id, action_code, dec_reward_dict, input_vec_dict, probs_dict,
+                          next_state_dict=None):
         """
         Creates experiences for the given agent from GFT algorithm execution outputs.
 
         Parameters
         ------------
+        :param next_state_dict: A dictionary containing the corresponding next states of each node in the tree
+
         :param agent_id: The ID of the agent
+
         :param action_code: The selected action (code) from the
+
         :param dec_reward_dict: A dictionary of decomposed rewards indicating the reward of each node in the tree
         with respect to the time step under consideration.
+
         :param input_vec_dict: A dictionary containing the corresponding input vectors of each node in the tree
+
         :param probs_dict: A dictionary containing the output probabilities of each node in the tree
+
         :return: A dictionary of experiences corresponding to nodes in the GFT for the given agent
         """
         exp_dict = OrderedDict()
         for key, input_vec, output_vec in zip(input_vec_dict.keys(), input_vec_dict.values(), probs_dict.values()):
             exp = Experience(agent_Id=agent_id, state=input_vec, action_probs=output_vec,
                              action=action_code, reward=dec_reward_dict.get(key, 0))
+            if next_state_dict is not None:
+                exp.next_state = next_state_dict.get(key, None)
             exp_dict[key] = exp
         return exp_dict
 
@@ -250,4 +261,42 @@ class ReplayBuffer:
     """
     Implements an experience replay buffer
     """
-    pass
+
+    def __init__(self, max_size=300, label=''):
+        self.__max_size = max_size
+        self.__replay_buffer = []  # initializes buffer
+        self.__label = label
+
+    @property
+    def label(self):
+        return self.__label
+
+    @label.setter
+    def label(self, l):
+        self.__label = l
+
+    def add(self, exp):
+        """
+        Adds an experience to the replay buffer
+        :param exp: the experience object of dtype: @link{Experience}
+        :return:
+        """
+        if exp is not None:
+            # if the buffer is full remove the oldest experience
+            if len(self.__replay_buffer) > self.__max_size:
+                self.__replay_buffer.pop(0)
+            self.__replay_buffer.append(exp)
+
+    def get_mini_batch(self, batch_size=128):
+        """
+        Gets a mini batch for training
+        :param batch_size: The batch size
+        :return:
+        """
+        return random.sample(self.__replay_buffer, batch_size)
+
+    def clear_buffer(self):
+        self.__replay_buffer.clear()
+
+    def size(self):
+        return len(self.__replay_buffer)

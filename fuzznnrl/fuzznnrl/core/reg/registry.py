@@ -24,6 +24,9 @@ class Registry(object):
         # an object representing the parsed details of the GFT configuration file
         self.__gft_config = None
 
+        # dictionary of NN models corresponding to the nodes in the GFT.
+        self.__nn_models_dict = {}
+
     @property
     def label(self):
         return self.__label
@@ -63,3 +66,11 @@ class Registry(object):
     @gft_config.setter
     def gft_config(self, config):
         self.__gft_config = config
+
+    @property
+    def nn_models_dict(self):
+        return self.__nn_models_dict
+
+    @nn_models_dict.setter
+    def nn_models_dict(self, models_dict):
+        self.__nn_models_dict = models_dict

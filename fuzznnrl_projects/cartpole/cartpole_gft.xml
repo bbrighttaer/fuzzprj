@@ -3,7 +3,7 @@
 <fuzzyInferenceSystems xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                        xsi:noNamespaceSchemaLocation="../core/res/gftlv0.1.1.xsd" rootInfSystem="CartPoleMovement">
     <fuzzyInferenceSystem name="CartPoleMovement">
-        <outputGeneRange>-1 1</outputGeneRange>
+        <outputGeneRange>0 1</outputGeneRange>
         <rbSize>81</rbSize>
         <mfSize>24</mfSize>
         <position>0</position>

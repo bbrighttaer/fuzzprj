@@ -6,7 +6,7 @@ from math import floor
 
 import numpy as np
 from fuzznnrl.core.conf import Constants
-from fuzznnrl.core.util.ops import softmax, boltzmanexp
+from fuzznnrl.core.util.ops import softmax
 from skfuzzy import interp_membership
 
 
@@ -22,8 +22,8 @@ class Algorithm(object):
         """
         self.__reg = registry
         # get the name of the root GFS of the GFT
-        self.__root_gfs = self.__reg.gft_config.rootInfSystem
-        print("root =", self.__root_gfs)
+        self.__root = self.__reg.gft_config.rootInfSystem
+        print("root =", self.__root)
 
     def configuregft(self, chromosome):
         """
@@ -40,15 +40,14 @@ class Algorithm(object):
                 rb_op_segment = chromosome[gfs.descriptor.position + (2 * num_gfs)]
             gfs.buildControlSystemSim(rb_chrom=rb_segment, mf_chrom=mf_segment, rb_op_chrom=rb_op_segment)
 
-    def executegft(self, obclassobj, agent_id, gfs_name=None, func_format_val=floor, input_vec_dict=OrderedDict(),
-                   probs_dict=OrderedDict(), boltzmann=False, tau=1):
+    def executegft(self, obclassobj, agent_id, gfs_name=None, formatting_func=round, input_vec_dict=OrderedDict(),
+                   probs_dict=OrderedDict()):
         """
         Executes the GFT algorithm to get the action for an agent
         -------
         :param input_vec_dict: keeps track of all input vectors to the GFSs executed in the tree
-        :param func_format_val: A user-defined function for receiving the crisp value of the inference process and
-        returning the code for determining the final output term. The must have only one argument. math.floor is the
-        default function.
+        :param formatting_func: A user-defined function for receiving the crisp value of the inference process and
+        returning the code for determining the final output term. The function must have only one required parameter.
 
         :param gfs_name: The name of GFS to be executed
 
@@ -66,7 +65,7 @@ class Algorithm(object):
         """
         # select the gfs for execution
         if gfs_name is None:
-            gfs_name = self.__root_gfs
+            gfs_name = self.__root
 
         # stores the input values of the currently executing GFS
         input_vector = []
@@ -95,15 +94,12 @@ class Algorithm(object):
 
             # get the crisp value from the control system
             out = gfs.controlSystemSimulation.output[gfs.consequent.label]
-            out = func_format_val(out)
+            if formatting_func is not None:
+                out = formatting_func(out)
 
             # adds the action probabilities to the dictionary
-            probs = self.__getActionProbs(gfs.consequent, gfs.controlSystemSimulation)
+            probs = self.__get_action_probs(gfs.consequent, gfs.controlSystemSimulation)
             probs_dict[gfs_name] = probs
-
-            # check for boltzmann exploration
-            if boltzmann:
-                out = np.where(probs == np.random.choice(probs, p=boltzmanexp(probs, tau=tau)))[0][0]
 
             # search for the corresponding output term
             selected_term = None
@@ -115,7 +111,7 @@ class Algorithm(object):
             if selected_term is not None:
                 # if the target is another FIS or GFS to be executed start a recursive call
                 if selected_term.target.targetType == "fis":
-                    return self.executegft(obclassobj, agent_id, selected_term.target.name, func_format_val,
+                    return self.executegft(obclassobj, agent_id, selected_term.target.name, formatting_func,
                                            input_vec_dict,
                                            probs_dict)
                 # if the target is an action report it
@@ -123,24 +119,98 @@ class Algorithm(object):
                     return out, selected_term.target.name, input_vec_dict, probs_dict
             else:
                 print("Term with code {} could not be found in GFS: {}", out, gfs_name)
-            # except:
-            #     print("Error executing GFT. Stage:", gfs_name)
         else:
             print("{} could not be found".format(gfs_name))
 
-    def executenntree(self, obclassobj, agent_id):
+    def executenntree(self, obclassobj, agent_id, action_selection_func, func_args=None, nn_name=None,
+                      input_vec_dict=OrderedDict(),
+                      probs_dict=OrderedDict()):
         """
         Executes the NN tree algorithm to get the action for an agent
 
+        Parameters:
+        -----------
+
+        :param func_args: Function arguments that are passed to the action selection function with the action probabilities
         :param obclassobj: The instance of the observation class which implements procedures for getting input values
 
-        :param agent_id: The ID of the agent triggering the execution
+        :param agent_id: The ID of the agent whose action is being computed
 
-        :return: an action for the agent to take in the environment
+        :param action_selection_func: A callback function that implements an exploration-exploitation strategy.
+        The predictions of the NN model are passed as a numpy array argument to the function. This action selection
+        function shall return the code (integer) of the action to be taken.
+
+        :param nn_name: The name of the NN model to be executed. Default is None to indicate execution starts from root
+
+        :param input_vec_dict: A dictionary containing the inputs to each NN model in a single pass through the tree
+
+        :param probs_dict: A dictionary containing the predicted probabilities of each node in a single pass through
+        the tree
+
+        :return:  output code, action name, input_vec_dict, probs_dict
         """
-        pass
+        # select the nn_model for execution
+        if nn_name is None:
+            nn_name = self.__root
 
-    def __getActionProbs(self, out_var, sim):
+        # stores the input values of the currently executing GFS
+        input_vector = []
+
+        nn_model = self.__reg.nn_models_dict[nn_name]
+        gfs = self.__reg.gft_dict[nn_name]
+        if gfs is not None:
+            # try:
+            num_inputs = 0
+            for var in gfs.descriptor.inputVariables.inputVar:
+                # get config details from registry
+                var_config = self.__reg.linvar_dict[var.identity.type]
+                # select procedure for input value
+                func = getattr(obclassobj, var_config.procedure)
+                # set input value of variable
+                input_value = func(agent_id)
+                input_vector.append(input_value)
+                num_inputs += 1
+
+            # record the current input vector in the dictionary
+            input_vec_dict[nn_name] = input_vector
+
+            # predict the action to be taken using the NN model
+            if hasattr(nn_model, "predict"):
+                input_vector = np.array(input_vector).reshape((1, num_inputs))
+                predictions = nn_model.predict(input_vector)
+
+                # Use an action selection strategy to select the output code of the action to be taken
+                if func_args is not None and hasattr(func_args, "__iter__"):
+                    out = action_selection_func(predictions, *func_args)
+                else:
+                    out = action_selection_func(predictions)
+
+                # adds the predictions to the dictionary
+                probs_dict[nn_name] = predictions
+
+                selected_term = None
+                for term in gfs.descriptor.outputVariable.term:
+                    if term.code == out:
+                        selected_term = term
+                        break
+
+                if selected_term is not None:
+                    # if the target is another NN model to be executed start a recursive call
+                    if selected_term.target.targetType == "fis":
+                        return self.executegft(obclassobj, agent_id, action_selection_func,
+                                               selected_term.target.name,
+                                               input_vec_dict,
+                                               probs_dict)
+                    # if the target is an action report it
+                    else:
+                        return out, selected_term.target.name, input_vec_dict, probs_dict
+                else:
+                    print("Term with code {} could not be found in NN: {}", out, nn_name)
+        else:
+            print("{} could not be found".format(nn_name))
+
+    @staticmethod
+    def __get_action_probs(out_var, sim):
         """
         Gets the fuzzy values for all possible actions and transform them into probabilities
         as a softmax layer of an NN would

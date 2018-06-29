@@ -1,0 +1,2165 @@
+/home/bbrighttaer/anaconda3/bin/python /home/bbrighttaer/PycharmProjects/fuzzprj/fuzznnrl_projects/carmunk/carmunk_sim.py
+Loading chipmunk for Linux (64bit) [/home/bbrighttaer/anaconda3/lib/python3.6/site-packages/pymunk/libchipmunk64.so]
+INFO: carmunk v2
+Initializing cpSpace - Chipmunk v6.2.0 (Debug Enabled)
+Compile with -DNDEBUG defined to disable debug mode and runtime assertion checks
+observation space ranges
+high = [39 39 39]
+low = [0 0 0]
+
+Instances with absent namespaces can only be reconstructed in-session
+root = CarMovement
+Episode finished after 187 time steps
+Episode: 1/1000 | score: -527
+Episode finished after 577 time steps
+Episode: 2/1000 | score: 945
+Episode finished after 90 time steps
+Episode: 3/1000 | score: -411
+Episode finished after 361 time steps
+Episode: 4/1000 | score: -255
+Episode finished after 645 time steps
+Episode: 5/1000 | score: 931
+Episode finished after 586 time steps
+Episode: 6/1000 | score: 1072
+Episode finished after 595 time steps
+Episode: 7/1000 | score: 1022
+Episode finished after 155 time steps
+Episode: 8/1000 | score: -404
+Episode finished after 595 time steps
+Episode: 9/1000 | score: 1025
+Episode finished after 626 time steps
+Episode: 10/1000 | score: 1517
+Episode finished after 579 time steps
+Episode: 11/1000 | score: 1039
+Episode finished after 592 time steps
+Episode: 12/1000 | score: 1103
+Episode finished after 601 time steps
+Episode: 13/1000 | score: 1078
+Episode finished after 607 time steps
+Episode: 14/1000 | score: 1019
+Episode finished after 287 time steps
+Episode: 15/1000 | score: 355
+Episode finished after 579 time steps
+Episode: 16/1000 | score: 1094
+Episode finished after 416 time steps
+Episode: 17/1000 | score: 1271
+Episode finished after 444 time steps
+Episode: 18/1000 | score: 1277
+Episode finished after 595 time steps
+Episode: 19/1000 | score: 1087
+Episode finished after 521 time steps
+Episode: 20/1000 | score: 1146
+Epoch 0 completed
+Statistics for epoch 0 = {'avg': 769.2, 'std': 620.780846998359, 'min': -527.0, 'max': 1517.0}
+Episode finished after 630 time steps
+Episode: 21/1000 | score: 1470
+Episode finished after 626 time steps
+Episode: 22/1000 | score: 1477
+Episode finished after 306 time steps
+Episode: 23/1000 | score: 499
+Episode finished after 622 time steps
+Episode: 24/1000 | score: 1558
+Episode finished after 426 time steps
+Episode: 25/1000 | score: 1116
+Episode finished after 422 time steps
+Episode: 26/1000 | score: 1163
+Episode finished after 515 time steps
+Episode: 27/1000 | score: 1144
+Episode finished after 444 time steps
+Episode: 28/1000 | score: 1056
+Episode finished after 310 time steps
+Episode: 29/1000 | score: 386
+Episode finished after 595 time steps
+Episode: 30/1000 | score: 1091
+Episode finished after 591 time steps
+Episode: 31/1000 | score: 1059
+Episode finished after 584 time steps
+Episode: 32/1000 | score: 1163
+Episode finished after 625 time steps
+Episode: 33/1000 | score: 1547
+Episode finished after 625 time steps
+Episode: 34/1000 | score: 1556
+Episode finished after 617 time steps
+Episode: 35/1000 | score: 1526
+Episode finished after 624 time steps
+Episode: 36/1000 | score: 1516
+Episode finished after 408 time steps
+Episode: 37/1000 | score: 1106
+Episode finished after 740 time steps
+Episode: 38/1000 | score: 1329
+Episode finished after 521 time steps
+Episode: 39/1000 | score: 1131
+Episode finished after 299 time steps
+Episode: 40/1000 | score: 472
+Epoch 1 completed
+Statistics for epoch 1 = {'avg': 1168.25, 'std': 352.8849493815229, 'min': 386.0, 'max': 1558.0}
+Episode finished after 299 time steps
+Episode: 41/1000 | score: 475
+Episode finished after 93 time steps
+Episode: 42/1000 | score: -424
+Episode finished after 623 time steps
+Episode: 43/1000 | score: 1547
+Episode finished after 626 time steps
+Episode: 44/1000 | score: 1527
+Episode finished after 619 time steps
+Episode: 45/1000 | score: 1544
+Episode finished after 624 time steps
+Episode: 46/1000 | score: 1513
+Episode finished after 623 time steps
+Episode: 47/1000 | score: 1565
+Episode finished after 162 time steps
+Episode: 48/1000 | score: 12
+Episode finished after 624 time steps
+Episode: 49/1000 | score: 1562
+Episode finished after 92 time steps
+Episode: 50/1000 | score: -424
+Episode finished after 659 time steps
+Episode: 51/1000 | score: 1220
+Episode finished after 597 time steps
+Episode: 52/1000 | score: 1055
+Episode finished after 648 time steps
+Episode: 53/1000 | score: 995
+Episode finished after 161 time steps
+Episode: 54/1000 | score: 10
+Episode finished after 445 time steps
+Episode: 55/1000 | score: 559
+Episode finished after 414 time steps
+Episode: 56/1000 | score: 1086
+Episode finished after 96 time steps
+Episode: 57/1000 | score: -426
+Episode finished after 626 time steps
+Episode: 58/1000 | score: 1512
+Episode finished after 93 time steps
+Episode: 59/1000 | score: -424
+Episode finished after 619 time steps
+Episode: 60/1000 | score: 1517
+Epoch 2 completed
+Statistics for epoch 2 = {'avg': 800.05, 'std': 777.912107824528, 'min': -426.0, 'max': 1565.0}
+Episode finished after 625 time steps
+Episode: 61/1000 | score: 1526
+Episode finished after 622 time steps
+Episode: 62/1000 | score: 1564
+Episode finished after 90 time steps
+Episode: 63/1000 | score: -426
+Episode finished after 96 time steps
+Episode: 64/1000 | score: -422
+Episode finished after 154 time steps
+Episode: 65/1000 | score: -15
+Episode finished after 296 time steps
+Episode: 66/1000 | score: 471
+Episode finished after 96 time steps
+Episode: 67/1000 | score: -423
+Episode finished after 616 time steps
+Episode: 68/1000 | score: 1523
+Episode finished after 625 time steps
+Episode: 69/1000 | score: 1528
+Episode finished after 623 time steps
+Episode: 70/1000 | score: 1544
+Episode finished after 625 time steps
+Episode: 71/1000 | score: 1522
+Episode finished after 617 time steps
+Episode: 72/1000 | score: 1500
+Episode finished after 524 time steps
+Episode: 73/1000 | score: 1092
+Episode finished after 744 time steps
+Episode: 74/1000 | score: 1324
+Episode finished after 84 time steps
+Episode: 75/1000 | score: -344
+Episode finished after 401 time steps
+Episode: 76/1000 | score: 1091
+Episode finished after 595 time steps
+Episode: 77/1000 | score: 1056
+Episode finished after 454 time steps
+Episode: 78/1000 | score: 596
+Episode finished after 649 time steps
+Episode: 79/1000 | score: 1522
+Episode finished after 649 time steps
+Episode: 80/1000 | score: 1506
+Epoch 3 completed
+Statistics for epoch 3 = {'avg': 886.75, 'std': 765.5872827444301, 'min': -426.0, 'max': 1564.0}
+Episode finished after 650 time steps
+Episode: 81/1000 | score: 1425
+Episode finished after 154 time steps
+Episode: 82/1000 | score: -13
+Episode finished after 617 time steps
+Episode: 83/1000 | score: 1523
+Episode finished after 300 time steps
+Episode: 84/1000 | score: 486
+Episode finished after 621 time steps
+Episode: 85/1000 | score: 1571
+Episode finished after 96 time steps
+Episode: 86/1000 | score: -423
+Episode finished after 622 time steps
+Episode: 87/1000 | score: 1549
+Episode finished after 617 time steps
+Episode: 88/1000 | score: 1540
+Episode finished after 147 time steps
+Episode: 89/1000 | score: -35
+Episode finished after 170 time steps
+Episode: 90/1000 | score: 40
+Episode finished after 517 time steps
+Episode: 91/1000 | score: 1124
+Episode finished after 682 time steps
+Episode: 92/1000 | score: 1553
+Episode finished after 96 time steps
+Episode: 93/1000 | score: -426
+Episode finished after 533 time steps
+Episode: 94/1000 | score: 1154
+Episode finished after 625 time steps
+Episode: 95/1000 | score: 1552
+Episode finished after 617 time steps
+Episode: 96/1000 | score: 1500
+Episode finished after 616 time steps
+Episode: 97/1000 | score: 1528
+Episode finished after 579 time steps
+Episode: 98/1000 | score: 1295
+Episode finished after 155 time steps
+Episode: 99/1000 | score: -404
+Episode finished after 102 time steps
+Episode: 100/1000 | score: -289
+Epoch 4 completed
+Statistics for epoch 4 = {'avg': 812.5, 'std': 803.4244519555027, 'min': -426.0, 'max': 1571.0}
+Episode finished after 623 time steps
+Episode: 101/1000 | score: 1551
+Episode finished after 625 time steps
+Episode: 102/1000 | score: 1523
+Episode finished after 300 time steps
+Episode: 103/1000 | score: 496
+Episode finished after 162 time steps
+Episode: 104/1000 | score: 12
+Episode finished after 626 time steps
+Episode: 105/1000 | score: 1502
+Episode finished after 92 time steps
+Episode: 106/1000 | score: -423
+Episode finished after 626 time steps
+Episode: 107/1000 | score: 1509
+Episode finished after 625 time steps
+Episode: 108/1000 | score: 1526
+Episode finished after 623 time steps
+Episode: 109/1000 | score: 1527
+Episode finished after 624 time steps
+Episode: 110/1000 | score: 1535
+Episode finished after 535 time steps
+Episode: 111/1000 | score: 1158
+Episode finished after 426 time steps
+Episode: 112/1000 | score: 1179
+Episode finished after 89 time steps
+Episode: 113/1000 | score: -426
+Episode finished after 617 time steps
+Episode: 114/1000 | score: 1547
+Episode finished after 302 time steps
+Episode: 115/1000 | score: 505
+Episode finished after 626 time steps
+Episode: 116/1000 | score: 1542
+Episode finished after 96 time steps
+Episode: 117/1000 | score: -423
+Episode finished after 626 time steps
+Episode: 118/1000 | score: 1526
+Episode finished after 194 time steps
+Episode: 119/1000 | score: -85
+Episode finished after 104 time steps
+Episode: 120/1000 | score: -290
+Epoch 5 completed
+Statistics for epoch 5 = {'avg': 849.55, 'std': 800.082462937415, 'min': -426.0, 'max': 1551.0}
+Episode finished after 617 time steps
+Episode: 121/1000 | score: 1573
+Episode finished after 294 time steps
+Episode: 122/1000 | score: 488
+Episode finished after 621 time steps
+Episode: 123/1000 | score: 1542
+Episode finished after 631 time steps
+Episode: 124/1000 | score: 1490
+Episode finished after 153 time steps
+Episode: 125/1000 | score: -20
+Episode finished after 619 time steps
+Episode: 126/1000 | score: 1519
+Episode finished after 654 time steps
+Episode: 127/1000 | score: 1252
+Episode finished after 618 time steps
+Episode: 128/1000 | score: 1556
+Episode finished after 617 time steps
+Episode: 129/1000 | score: 1526
+Episode finished after 617 time steps
+Episode: 130/1000 | score: 1531
+Episode finished after 92 time steps
+Episode: 131/1000 | score: -423
+Episode finished after 513 time steps
+Episode: 132/1000 | score: 1204
+Episode finished after 624 time steps
+Episode: 133/1000 | score: 1528
+Episode finished after 297 time steps
+Episode: 134/1000 | score: 476
+Episode finished after 621 time steps
+Episode: 135/1000 | score: 1474
+Episode finished after 624 time steps
+Episode: 136/1000 | score: 1541
+Episode finished after 626 time steps
+Episode: 137/1000 | score: 1560
+Episode finished after 96 time steps
+Episode: 138/1000 | score: -426
+Episode finished after 615 time steps
+Episode: 139/1000 | score: 1530
+Episode finished after 624 time steps
+Episode: 140/1000 | score: 1556
+Epoch 6 completed
+Statistics for epoch 6 = {'avg': 1123.85, 'std': 675.7578171948882, 'min': -426.0, 'max': 1573.0}
+Episode finished after 626 time steps
+Episode: 141/1000 | score: 1533
+Episode finished after 650 time steps
+Episode: 142/1000 | score: 1461
+Episode finished after 648 time steps
+Episode: 143/1000 | score: 1577
+Episode finished after 658 time steps
+Episode: 144/1000 | score: 1194
+Episode finished after 569 time steps
+Episode: 145/1000 | score: 1275
+Episode finished after 625 time steps
+Episode: 146/1000 | score: 1528
+Episode finished after 615 time steps
+Episode: 147/1000 | score: 1592
+Episode finished after 622 time steps
+Episode: 148/1000 | score: 1532
+Episode finished after 616 time steps
+Episode: 149/1000 | score: 1557
+Episode finished after 146 time steps
+Episode: 150/1000 | score: -41
+Episode finished after 624 time steps
+Episode: 151/1000 | score: 1529
+Episode finished after 623 time steps
+Episode: 152/1000 | score: 1547
+Episode finished after 619 time steps
+Episode: 153/1000 | score: 1529
+Episode finished after 91 time steps
+Episode: 154/1000 | score: -421
+Episode finished after 615 time steps
+Episode: 155/1000 | score: 1549
+Episode finished after 627 time steps
+Episode: 156/1000 | score: 1534
+Episode finished after 292 time steps
+Episode: 157/1000 | score: 491
+Episode finished after 623 time steps
+Episode: 158/1000 | score: 1590
+Episode finished after 615 time steps
+Episode: 159/1000 | score: 1516
+Episode finished after 405 time steps
+Episode: 160/1000 | score: 760
+Epoch 7 completed
+Statistics for epoch 7 = {'avg': 1241.6, 'std': 569.0921190809095, 'min': -421.0, 'max': 1592.0}
+Episode finished after 626 time steps
+Episode: 161/1000 | score: 1554
+Episode finished after 624 time steps
+Episode: 162/1000 | score: 1545
+Episode finished after 654 time steps
+Episode: 163/1000 | score: 1238
+Episode finished after 620 time steps
+Episode: 164/1000 | score: 1614
+Episode finished after 622 time steps
+Episode: 165/1000 | score: 1581
+Episode finished after 650 time steps
+Episode: 166/1000 | score: 1499
+Episode finished after 619 time steps
+Episode: 167/1000 | score: 1552
+Episode finished after 164 time steps
+Episode: 168/1000 | score: 22
+Episode finished after 650 time steps
+Episode: 169/1000 | score: 1413
+Episode finished after 622 time steps
+Episode: 170/1000 | score: 1557
+Episode finished after 624 time steps
+Episode: 171/1000 | score: 1546
+Episode finished after 297 time steps
+Episode: 172/1000 | score: 506
+Episode finished after 623 time steps
+Episode: 173/1000 | score: 1523
+Episode finished after 628 time steps
+Episode: 174/1000 | score: 1542
+Episode finished after 627 time steps
+Episode: 175/1000 | score: 1520
+Episode finished after 619 time steps
+Episode: 176/1000 | score: 1550
+Episode finished after 624 time steps
+Episode: 177/1000 | score: 1579
+Episode finished after 92 time steps
+Episode: 178/1000 | score: -423
+Episode finished after 619 time steps
+Episode: 179/1000 | score: 1592
+Episode finished after 628 time steps
+Episode: 180/1000 | score: 1559
+Epoch 8 completed
+Statistics for epoch 8 = {'avg': 1303.45, 'std': 558.1205492543703, 'min': -423.0, 'max': 1614.0}
+Episode finished after 88 time steps
+Episode: 181/1000 | score: -425
+Episode finished after 654 time steps
+Episode: 182/1000 | score: 1236
+Episode finished after 88 time steps
+Episode: 183/1000 | score: -425
+Episode finished after 626 time steps
+Episode: 184/1000 | score: 1523
+Episode finished after 654 time steps
+Episode: 185/1000 | score: 1251
+Episode finished after 630 time steps
+Episode: 186/1000 | score: 1504
+Episode finished after 623 time steps
+Episode: 187/1000 | score: 1568
+Episode finished after 617 time steps
+Episode: 188/1000 | score: 1586
+Episode finished after 623 time steps
+Episode: 189/1000 | score: 1511
+Episode finished after 616 time steps
+Episode: 190/1000 | score: 1579
+Episode finished after 628 time steps
+Episode: 191/1000 | score: 1545
+Episode finished after 619 time steps
+Episode: 192/1000 | score: 1548
+Episode finished after 654 time steps
+Episode: 193/1000 | score: 1249
+Episode finished after 617 time steps
+Episode: 194/1000 | score: 1558
+Episode finished after 623 time steps
+Episode: 195/1000 | score: 1581
+Episode finished after 628 time steps
+Episode: 196/1000 | score: 1538
+Episode finished after 654 time steps
+Episode: 197/1000 | score: 1237
+Episode finished after 158 time steps
+Episode: 198/1000 | score: 0
+Episode finished after 623 time steps
+Episode: 199/1000 | score: 1571
+Episode finished after 623 time steps
+Episode: 200/1000 | score: 1551
+Epoch 9 completed
+Statistics for epoch 9 = {'avg': 1214.3, 'std': 645.557673643494, 'min': -425.0, 'max': 1586.0}
+Episode finished after 616 time steps
+Episode: 201/1000 | score: 1538
+Episode finished after 653 time steps
+Episode: 202/1000 | score: 1221
+Episode finished after 617 time steps
+Episode: 203/1000 | score: 1543
+Episode finished after 614 time steps
+Episode: 204/1000 | score: 1537
+Episode finished after 536 time steps
+Episode: 205/1000 | score: 1125
+Episode finished after 620 time steps
+Episode: 206/1000 | score: 1536
+Episode finished after 625 time steps
+Episode: 207/1000 | score: 1551
+Episode finished after 626 time steps
+Episode: 208/1000 | score: 1547
+Episode finished after 625 time steps
+Episode: 209/1000 | score: 1540
+Episode finished after 618 time steps
+Episode: 210/1000 | score: 1532
+Episode finished after 624 time steps
+Episode: 211/1000 | score: 1561
+Episode finished after 303 time steps
+Episode: 212/1000 | score: 516
+Episode finished after 155 time steps
+Episode: 213/1000 | score: -404
+Episode finished after 104 time steps
+Episode: 214/1000 | score: -288
+Episode finished after 618 time steps
+Episode: 215/1000 | score: 1585
+Episode finished after 155 time steps
+Episode: 216/1000 | score: -400
+Episode finished after 103 time steps
+Episode: 217/1000 | score: -290
+Episode finished after 661 time steps
+Episode: 218/1000 | score: 1237
+Episode finished after 616 time steps
+Episode: 219/1000 | score: 1554
+Episode finished after 611 time steps
+Episode: 220/1000 | score: 1506
+Epoch 10 completed
+Statistics for epoch 10 = {'avg': 1062.35, 'std': 744.6036042754561, 'min': -404.0, 'max': 1585.0}
+Episode finished after 620 time steps
+Episode: 221/1000 | score: 1604
+Episode finished after 150 time steps
+Episode: 222/1000 | score: -25
+Episode finished after 621 time steps
+Episode: 223/1000 | score: 1522
+Episode finished after 622 time steps
+Episode: 224/1000 | score: 1545
+Episode finished after 90 time steps
+Episode: 225/1000 | score: -426
+Episode finished after 94 time steps
+Episode: 226/1000 | score: -423
+Episode finished after 632 time steps
+Episode: 227/1000 | score: 1513
+Episode finished after 618 time steps
+Episode: 228/1000 | score: 1523
+Episode finished after 627 time steps
+Episode: 229/1000 | score: 1540
+Episode finished after 653 time steps
+Episode: 230/1000 | score: 1192
+Episode finished after 96 time steps
+Episode: 231/1000 | score: -426
+Episode finished after 613 time steps
+Episode: 232/1000 | score: 1528
+Episode finished after 621 time steps
+Episode: 233/1000 | score: 1541
+Episode finished after 666 time steps
+Episode: 234/1000 | score: 1472
+Episode finished after 663 time steps
+Episode: 235/1000 | score: 1168
+Episode finished after 618 time steps
+Episode: 236/1000 | score: 1589
+Episode finished after 624 time steps
+Episode: 237/1000 | score: 1558
+Episode finished after 583 time steps
+Episode: 238/1000 | score: 1264
+Episode finished after 622 time steps
+Episode: 239/1000 | score: 1544
+Episode finished after 155 time steps
+Episode: 240/1000 | score: -404
+Epoch 11 completed
+Statistics for epoch 11 = {'avg': 1019.95, 'std': 798.4872869996116, 'min': -426.0, 'max': 1604.0}
+Episode finished after 106 time steps
+Episode: 241/1000 | score: -291
+Episode finished after 93 time steps
+Episode: 242/1000 | score: -425
+Episode finished after 623 time steps
+Episode: 243/1000 | score: 1528
+Episode finished after 624 time steps
+Episode: 244/1000 | score: 1564
+Episode finished after 656 time steps
+Episode: 245/1000 | score: 1489
+Episode finished after 618 time steps
+Episode: 246/1000 | score: 1522
+Episode finished after 616 time steps
+Episode: 247/1000 | score: 1541
+Episode finished after 155 time steps
+Episode: 248/1000 | score: -406
+Episode finished after 102 time steps
+Episode: 249/1000 | score: -256
+Episode finished after 96 time steps
+Episode: 250/1000 | score: -426
+Episode finished after 158 time steps
+Episode: 251/1000 | score: -1
+Episode finished after 155 time steps
+Episode: 252/1000 | score: -407
+Episode finished after 94 time steps
+Episode: 253/1000 | score: -423
+Episode finished after 155 time steps
+Episode: 254/1000 | score: -404
+Episode finished after 104 time steps
+Episode: 255/1000 | score: -290
+Episode finished after 627 time steps
+Episode: 256/1000 | score: 1567
+Episode finished after 617 time steps
+Episode: 257/1000 | score: 1587
+Episode finished after 618 time steps
+Episode: 258/1000 | score: 1580
+Episode finished after 619 time steps
+Episode: 259/1000 | score: 1591
+Episode finished after 624 time steps
+Episode: 260/1000 | score: 1586
+Epoch 12 completed
+Statistics for epoch 12 = {'avg': 611.3, 'std': 948.7253606813723, 'min': -426.0, 'max': 1591.0}
+Episode finished after 92 time steps
+Episode: 261/1000 | score: -423
+Episode finished after 630 time steps
+Episode: 262/1000 | score: 1557
+Episode finished after 616 time steps
+Episode: 263/1000 | score: 1584
+Episode finished after 159 time steps
+Episode: 264/1000 | score: 7
+Episode finished after 623 time steps
+Episode: 265/1000 | score: 1553
+Episode finished after 293 time steps
+Episode: 266/1000 | score: 478
+Episode finished after 96 time steps
+Episode: 267/1000 | score: -426
+Episode finished after 616 time steps
+Episode: 268/1000 | score: 1598
+Episode finished after 96 time steps
+Episode: 269/1000 | score: -426
+Episode finished after 630 time steps
+Episode: 270/1000 | score: 1568
+Episode finished after 626 time steps
+Episode: 271/1000 | score: 1520
+Episode finished after 622 time steps
+Episode: 272/1000 | score: 1555
+Episode finished after 626 time steps
+Episode: 273/1000 | score: 1540
+Episode finished after 630 time steps
+Episode: 274/1000 | score: 1514
+Episode finished after 615 time steps
+Episode: 275/1000 | score: 1554
+Episode finished after 92 time steps
+Episode: 276/1000 | score: -425
+Episode finished after 617 time steps
+Episode: 277/1000 | score: 1596
+Episode finished after 619 time steps
+Episode: 278/1000 | score: 1596
+Episode finished after 616 time steps
+Episode: 279/1000 | score: 1589
+Episode finished after 668 time steps
+Episode: 280/1000 | score: 981
+Epoch 13 completed
+Statistics for epoch 13 = {'avg': 1004.5, 'std': 822.0957061072634, 'min': -426.0, 'max': 1598.0}
+Episode finished after 289 time steps
+Episode: 281/1000 | score: 467
+Episode finished after 99 time steps
+Episode: 282/1000 | score: -422
+Episode finished after 616 time steps
+Episode: 283/1000 | score: 1600
+Episode finished after 93 time steps
+Episode: 284/1000 | score: -426
+Episode finished after 90 time steps
+Episode: 285/1000 | score: -427
+Episode finished after 665 time steps
+Episode: 286/1000 | score: 1032
+Episode finished after 626 time steps
+Episode: 287/1000 | score: 1524
+Episode finished after 632 time steps
+Episode: 288/1000 | score: 1516
+Episode finished after 617 time steps
+Episode: 289/1000 | score: 1622
+Episode finished after 624 time steps
+Episode: 290/1000 | score: 1512
+Episode finished after 627 time steps
+Episode: 291/1000 | score: 1565
+Episode finished after 619 time steps
+Episode: 292/1000 | score: 1526
+Episode finished after 621 time steps
+Episode: 293/1000 | score: 1577
+Episode finished after 618 time steps
+Episode: 294/1000 | score: 1585
+Episode finished after 297 time steps
+Episode: 295/1000 | score: 488
+Episode finished after 628 time steps
+Episode: 296/1000 | score: 1534
+Episode finished after 617 time steps
+Episode: 297/1000 | score: 1618
+Episode finished after 616 time steps
+Episode: 298/1000 | score: 1566
+Episode finished after 623 time steps
+Episode: 299/1000 | score: 1550
+Episode finished after 627 time steps
+Episode: 300/1000 | score: 1571
+Epoch 14 completed
+Statistics for epoch 14 = {'avg': 1128.9, 'std': 732.9302081371732, 'min': -427.0, 'max': 1622.0}
+Episode finished after 288 time steps
+Episode: 301/1000 | score: 416
+Episode finished after 627 time steps
+Episode: 302/1000 | score: 1549
+Episode finished after 618 time steps
+Episode: 303/1000 | score: 1599
+Episode finished after 628 time steps
+Episode: 304/1000 | score: 1547
+Episode finished after 150 time steps
+Episode: 305/1000 | score: -27
+Episode finished after 155 time steps
+Episode: 306/1000 | score: -404
+Episode finished after 112 time steps
+Episode: 307/1000 | score: -206
+Episode finished after 619 time steps
+Episode: 308/1000 | score: 1602
+Episode finished after 96 time steps
+Episode: 309/1000 | score: -423
+Episode finished after 621 time steps
+Episode: 310/1000 | score: 1599
+Episode finished after 617 time steps
+Episode: 311/1000 | score: 1592
+Episode finished after 647 time steps
+Episode: 312/1000 | score: 1447
+Episode finished after 614 time steps
+Episode: 313/1000 | score: 1569
+Episode finished after 285 time steps
+Episode: 314/1000 | score: 450
+Episode finished after 619 time steps
+Episode: 315/1000 | score: 1514
+Episode finished after 627 time steps
+Episode: 316/1000 | score: 1533
+Episode finished after 625 time steps
+Episode: 317/1000 | score: 1552
+Episode finished after 616 time steps
+Episode: 318/1000 | score: 1561
+Episode finished after 617 time steps
+Episode: 319/1000 | score: 1603
+Episode finished after 621 time steps
+Episode: 320/1000 | score: 1578
+Epoch 15 completed
+Statistics for epoch 15 = {'avg': 1082.55, 'std': 756.0631240180942, 'min': -423.0, 'max': 1603.0}
+Episode finished after 629 time steps
+Episode: 321/1000 | score: 1579
+Episode finished after 625 time steps
+Episode: 322/1000 | score: 1582
+Episode finished after 625 time steps
+Episode: 323/1000 | score: 1500
+Episode finished after 618 time steps
+Episode: 324/1000 | score: 1518
+Episode finished after 523 time steps
+Episode: 325/1000 | score: 1153
+Episode finished after 666 time steps
+Episode: 326/1000 | score: 1001
+Episode finished after 155 time steps
+Episode: 327/1000 | score: -406
+Episode finished after 155 time steps
+Episode: 328/1000 | score: -401
+Episode finished after 105 time steps
+Episode: 329/1000 | score: -287
+Episode finished after 661 time steps
+Episode: 330/1000 | score: 1253
+Episode finished after 614 time steps
+Episode: 331/1000 | score: 1508
+Episode finished after 648 time steps
+Episode: 332/1000 | score: 1467
+Episode finished after 617 time steps
+Episode: 333/1000 | score: 1602
+Episode finished after 618 time steps
+Episode: 334/1000 | score: 1590
+Episode finished after 620 time steps
+Episode: 335/1000 | score: 1572
+Episode finished after 662 time steps
+Episode: 336/1000 | score: 1177
+Episode finished after 627 time steps
+Episode: 337/1000 | score: 1566
+Episode finished after 618 time steps
+Episode: 338/1000 | score: 1613
+Episode finished after 617 time steps
+Episode: 339/1000 | score: 1525
+Episode finished after 623 time steps
+Episode: 340/1000 | score: 1554
+Epoch 16 completed
+Statistics for epoch 16 = {'avg': 1183.3, 'std': 671.847162679132, 'min': -406.0, 'max': 1613.0}
+Episode finished after 633 time steps
+Episode: 341/1000 | score: 1512
+Episode finished after 617 time steps
+Episode: 342/1000 | score: 1561
+Episode finished after 617 time steps
+Episode: 343/1000 | score: 1617
+Episode finished after 608 time steps
+Episode: 344/1000 | score: 1446
+Episode finished after 617 time steps
+Episode: 345/1000 | score: 1611
+Episode finished after 96 time steps
+Episode: 346/1000 | score: -421
+Episode finished after 628 time steps
+Episode: 347/1000 | score: 1524
+Episode finished after 617 time steps
+Episode: 348/1000 | score: 1611
+Episode finished after 628 time steps
+Episode: 349/1000 | score: 1541
+Episode finished after 617 time steps
+Episode: 350/1000 | score: 1592
+Episode finished after 621 time steps
+Episode: 351/1000 | score: 1572
+Episode finished after 616 time steps
+Episode: 352/1000 | score: 1584
+Episode finished after 163 time steps
+Episode: 353/1000 | score: 15
+Episode finished after 621 time steps
+Episode: 354/1000 | score: 1606
+Episode finished after 296 time steps
+Episode: 355/1000 | score: 525
+Episode finished after 646 time steps
+Episode: 356/1000 | score: 1475
+Episode finished after 618 time steps
+Episode: 357/1000 | score: 1597
+Episode finished after 152 time steps
+Episode: 358/1000 | score: -18
+Episode finished after 96 time steps
+Episode: 359/1000 | score: -426
+Episode finished after 155 time steps
+Episode: 360/1000 | score: -401
+Epoch 17 completed
+Statistics for epoch 17 = {'avg': 1056.15, 'std': 794.4488199374457, 'min': -426.0, 'max': 1617.0}
+Episode finished after 104 time steps
+Episode: 361/1000 | score: -282
+Episode finished after 625 time steps
+Episode: 362/1000 | score: 1536
+Episode finished after 617 time steps
+Episode: 363/1000 | score: 1596
+Episode finished after 96 time steps
+Episode: 364/1000 | score: -423
+Episode finished after 297 time steps
+Episode: 365/1000 | score: 487
+Episode finished after 643 time steps
+Episode: 366/1000 | score: 1338
+Episode finished after 602 time steps
+Episode: 367/1000 | score: 1670
+Episode finished after 626 time steps
+Episode: 368/1000 | score: 1529
+Episode finished after 623 time steps
+Episode: 369/1000 | score: 1571
+Episode finished after 620 time steps
+Episode: 370/1000 | score: 1588
+Episode finished after 628 time steps
+Episode: 371/1000 | score: 1561
+Episode finished after 160 time steps
+Episode: 372/1000 | score: 3
+Episode finished after 95 time steps
+Episode: 373/1000 | score: -426
+Episode finished after 155 time steps
+Episode: 374/1000 | score: -407
+Episode finished after 101 time steps
+Episode: 375/1000 | score: -292
+Episode finished after 627 time steps
+Episode: 376/1000 | score: 1551
+Episode finished after 515 time steps
+Episode: 377/1000 | score: 1255
+Episode finished after 647 time steps
+Episode: 378/1000 | score: 1441
+Episode finished after 155 time steps
+Episode: 379/1000 | score: -404
+Episode finished after 105 time steps
+Episode: 380/1000 | score: -277
+Epoch 18 completed
+Statistics for epoch 18 = {'avg': 730.75, 'std': 888.683401161516, 'min': -426.0, 'max': 1670.0}
+Episode finished after 628 time steps
+Episode: 381/1000 | score: 1506
+Episode finished after 620 time steps
+Episode: 382/1000 | score: 1572
+Episode finished after 626 time steps
+Episode: 383/1000 | score: 1587
+Episode finished after 627 time steps
+Episode: 384/1000 | score: 1561
+Episode finished after 627 time steps
+Episode: 385/1000 | score: 1563
+Episode finished after 612 time steps
+Episode: 386/1000 | score: 1536
+Episode finished after 671 time steps
+Episode: 387/1000 | score: 1154
+Episode finished after 623 time steps
+Episode: 388/1000 | score: 1537
+Episode finished after 650 time steps
+Episode: 389/1000 | score: 1440
+Episode finished after 89 time steps
+Episode: 390/1000 | score: -426
+Episode finished after 425 time steps
+Episode: 391/1000 | score: 1096
+Episode finished after 423 time steps
+Episode: 392/1000 | score: 1037
+Episode finished after 621 time steps
+Episode: 393/1000 | score: 1599
+Episode finished after 626 time steps
+Episode: 394/1000 | score: 1544
+Episode finished after 627 time steps
+Episode: 395/1000 | score: 1517
+Episode finished after 150 time steps
+Episode: 396/1000 | score: -28
+Episode finished after 615 time steps
+Episode: 397/1000 | score: 1565
+Episode finished after 516 time steps
+Episode: 398/1000 | score: 1242
+Episode finished after 622 time steps
+Episode: 399/1000 | score: 1561
+Episode finished after 620 time steps
+Episode: 400/1000 | score: 1575
+Epoch 19 completed
+Statistics for epoch 19 = {'avg': 1286.9, 'std': 536.294406086806, 'min': -426.0, 'max': 1599.0}
+Episode finished after 618 time steps
+Episode: 401/1000 | score: 1569
+Episode finished after 158 time steps
+Episode: 402/1000 | score: -2
+Episode finished after 624 time steps
+Episode: 403/1000 | score: 1533
+Episode finished after 626 time steps
+Episode: 404/1000 | score: 1547
+Episode finished after 625 time steps
+Episode: 405/1000 | score: 1541
+Episode finished after 626 time steps
+Episode: 406/1000 | score: 1544
+Episode finished after 618 time steps
+Episode: 407/1000 | score: 1552
+Episode finished after 618 time steps
+Episode: 408/1000 | score: 1583
+Episode finished after 619 time steps
+Episode: 409/1000 | score: 1557
+Episode finished after 626 time steps
+Episode: 410/1000 | score: 1551
+Episode finished after 91 time steps
+Episode: 411/1000 | score: -421
+Episode finished after 632 time steps
+Episode: 412/1000 | score: 1524
+Episode finished after 618 time steps
+Episode: 413/1000 | score: 1577
+Episode finished after 619 time steps
+Episode: 414/1000 | score: 1581
+Episode finished after 415 time steps
+Episode: 415/1000 | score: 1123
+Episode finished after 621 time steps
+Episode: 416/1000 | score: 1506
+Episode finished after 616 time steps
+Episode: 417/1000 | score: 1570
+Episode finished after 609 time steps
+Episode: 418/1000 | score: 1447
+Episode finished after 526 time steps
+Episode: 419/1000 | score: 1141
+Episode finished after 626 time steps
+Episode: 420/1000 | score: 1546
+Epoch 20 completed
+Statistics for epoch 20 = {'avg': 1328.45, 'std': 532.8561227010534, 'min': -421.0, 'max': 1583.0}
+Episode finished after 628 time steps
+Episode: 421/1000 | score: 1563
+Episode finished after 618 time steps
+Episode: 422/1000 | score: 1583
+Episode finished after 617 time steps
+Episode: 423/1000 | score: 1562
+Episode finished after 620 time steps
+Episode: 424/1000 | score: 1598
+Episode finished after 620 time steps
+Episode: 425/1000 | score: 1523
+Episode finished after 613 time steps
+Episode: 426/1000 | score: 1552
+Episode finished after 96 time steps
+Episode: 427/1000 | score: -426
+Episode finished after 619 time steps
+Episode: 428/1000 | score: 1595
+Episode finished after 144 time steps
+Episode: 429/1000 | score: -45
+Episode finished after 650 time steps
+Episode: 430/1000 | score: 1440
+Episode finished after 295 time steps
+Episode: 431/1000 | score: 492
+Episode finished after 628 time steps
+Episode: 432/1000 | score: 1555
+Episode finished after 630 time steps
+Episode: 433/1000 | score: 1481
+Episode finished after 627 time steps
+Episode: 434/1000 | score: 1572
+Episode finished after 661 time steps
+Episode: 435/1000 | score: 1228
+Episode finished after 617 time steps
+Episode: 436/1000 | score: 1609
+Episode finished after 618 time steps
+Episode: 437/1000 | score: 1577
+Episode finished after 633 time steps
+Episode: 438/1000 | score: 1512
+Episode finished after 627 time steps
+Episode: 439/1000 | score: 1525
+Episode finished after 147 time steps
+Episode: 440/1000 | score: -36
+Epoch 21 completed
+Statistics for epoch 21 = {'avg': 1223.0, 'std': 635.5540102933818, 'min': -426.0, 'max': 1609.0}
+Episode finished after 151 time steps
+Episode: 441/1000 | score: -24
+Episode finished after 669 time steps
+Episode: 442/1000 | score: 1003
+Episode finished after 626 time steps
+Episode: 443/1000 | score: 1549
+Episode finished after 617 time steps
+Episode: 444/1000 | score: 1597
+Episode finished after 616 time steps
+Episode: 445/1000 | score: 1541
+Episode finished after 616 time steps
+Episode: 446/1000 | score: 1571
+Episode finished after 164 time steps
+Episode: 447/1000 | score: 28
+Episode finished after 627 time steps
+Episode: 448/1000 | score: 1553
+Episode finished after 628 time steps
+Episode: 449/1000 | score: 1536
+Episode finished after 619 time steps
+Episode: 450/1000 | score: 1590
+Episode finished after 625 time steps
+Episode: 451/1000 | score: 1530
+Episode finished after 619 time steps
+Episode: 452/1000 | score: 1585
+Episode finished after 625 time steps
+Episode: 453/1000 | score: 1548
+Episode finished after 150 time steps
+Episode: 454/1000 | score: -27
+Episode finished after 618 time steps
+Episode: 455/1000 | score: 1583
+Episode finished after 660 time steps
+Episode: 456/1000 | score: 1231
+Episode finished after 290 time steps
+Episode: 457/1000 | score: 472
+Episode finished after 618 time steps
+Episode: 458/1000 | score: 1582
+Episode finished after 92 time steps
+Episode: 459/1000 | score: -423
+Episode finished after 641 time steps
+Episode: 460/1000 | score: 1308
+Epoch 22 completed
+Statistics for epoch 22 = {'avg': 1116.65, 'std': 672.5946234545738, 'min': -423.0, 'max': 1597.0}
+Episode finished after 624 time steps
+Episode: 461/1000 | score: 1568
+Episode finished after 648 time steps
+Episode: 462/1000 | score: 1459
+Episode finished after 619 time steps
+Episode: 463/1000 | score: 1584
+Episode finished after 621 time steps
+Episode: 464/1000 | score: 1533
+Episode finished after 620 time steps
+Episode: 465/1000 | score: 1544
+Episode finished after 618 time steps
+Episode: 466/1000 | score: 1571
+Episode finished after 290 time steps
+Episode: 467/1000 | score: 424
+Episode finished after 657 time steps
+Episode: 468/1000 | score: 1446
+Episode finished after 618 time steps
+Episode: 469/1000 | score: 1585
+Episode finished after 619 time steps
+Episode: 470/1000 | score: 1578
+Episode finished after 669 time steps
+Episode: 471/1000 | score: 1510
+Episode finished after 92 time steps
+Episode: 472/1000 | score: -424
+Episode finished after 619 time steps
+Episode: 473/1000 | score: 1539
+Episode finished after 627 time steps
+Episode: 474/1000 | score: 1552
+Episode finished after 661 time steps
+Episode: 475/1000 | score: 1177
+Episode finished after 616 time steps
+Episode: 476/1000 | score: 1578
+Episode finished after 632 time steps
+Episode: 477/1000 | score: 1514
+Episode finished after 636 time steps
+Episode: 478/1000 | score: 1576
+Episode finished after 616 time steps
+Episode: 479/1000 | score: 1586
+Episode finished after 644 time steps
+Episode: 480/1000 | score: 1410
+Epoch 23 completed
+Statistics for epoch 23 = {'avg': 1365.5, 'std': 483.30140699153776, 'min': -424.0, 'max': 1586.0}
+Episode finished after 619 time steps
+Episode: 481/1000 | score: 1580
+Episode finished after 615 time steps
+Episode: 482/1000 | score: 1596
+Episode finished after 617 time steps
+Episode: 483/1000 | score: 1571
+Episode finished after 621 time steps
+Episode: 484/1000 | score: 1575
+Episode finished after 162 time steps
+Episode: 485/1000 | score: 12
+Episode finished after 617 time steps
+Episode: 486/1000 | score: 1571
+Episode finished after 620 time steps
+Episode: 487/1000 | score: 1578
+Episode finished after 619 time steps
+Episode: 488/1000 | score: 1587
+Episode finished after 96 time steps
+Episode: 489/1000 | score: -422
+Episode finished after 527 time steps
+Episode: 490/1000 | score: 1134
+Episode finished after 619 time steps
+Episode: 491/1000 | score: 1529
+Episode finished after 618 time steps
+Episode: 492/1000 | score: 1544
+Episode finished after 622 time steps
+Episode: 493/1000 | score: 1599
+Episode finished after 618 time steps
+Episode: 494/1000 | score: 1623
+Episode finished after 90 time steps
+Episode: 495/1000 | score: -426
+Episode finished after 618 time steps
+Episode: 496/1000 | score: 1586
+Episode finished after 627 time steps
+Episode: 497/1000 | score: 1482
+Episode finished after 620 time steps
+Episode: 498/1000 | score: 1569
+Episode finished after 618 time steps
+Episode: 499/1000 | score: 1591
+Episode finished after 619 time steps
+Episode: 500/1000 | score: 1580
+Epoch 24 completed
+Statistics for epoch 24 = {'avg': 1272.95, 'std': 664.0960378589832, 'min': -426.0, 'max': 1623.0}
+Episode finished after 622 time steps
+Episode: 501/1000 | score: 1564
+Episode finished after 619 time steps
+Episode: 502/1000 | score: 1607
+Episode finished after 630 time steps
+Episode: 503/1000 | score: 1552
+Episode finished after 625 time steps
+Episode: 504/1000 | score: 1571
+Episode finished after 617 time steps
+Episode: 505/1000 | score: 1579
+Episode finished after 665 time steps
+Episode: 506/1000 | score: 1055
+Episode finished after 617 time steps
+Episode: 507/1000 | score: 1577
+Episode finished after 602 time steps
+Episode: 508/1000 | score: 1652
+Episode finished after 620 time steps
+Episode: 509/1000 | score: 1595
+Episode finished after 618 time steps
+Episode: 510/1000 | score: 1569
+Episode finished after 150 time steps
+Episode: 511/1000 | score: -27
+Episode finished after 624 time steps
+Episode: 512/1000 | score: 1576
+Episode finished after 650 time steps
+Episode: 513/1000 | score: 1503
+Episode finished after 622 time steps
+Episode: 514/1000 | score: 1588
+Episode finished after 619 time steps
+Episode: 515/1000 | score: 1585
+Episode finished after 629 time steps
+Episode: 516/1000 | score: 1585
+Episode finished after 453 time steps
+Episode: 517/1000 | score: 611
+Episode finished after 621 time steps
+Episode: 518/1000 | score: 1582
+Episode finished after 89 time steps
+Episode: 519/1000 | score: -426
+Episode finished after 618 time steps
+Episode: 520/1000 | score: 1553
+Epoch 25 completed
+Statistics for epoch 25 = {'avg': 1322.55, 'std': 570.5104271615024, 'min': -426.0, 'max': 1652.0}
+Episode finished after 615 time steps
+Episode: 521/1000 | score: 1592
+Episode finished after 649 time steps
+Episode: 522/1000 | score: 1483
+Episode finished after 616 time steps
+Episode: 523/1000 | score: 1589
+Episode finished after 618 time steps
+Episode: 524/1000 | score: 1548
+Episode finished after 633 time steps
+Episode: 525/1000 | score: 1527
+Episode finished after 618 time steps
+Episode: 526/1000 | score: 1562
+Episode finished after 619 time steps
+Episode: 527/1000 | score: 1537
+Episode finished after 617 time steps
+Episode: 528/1000 | score: 1585
+Episode finished after 403 time steps
+Episode: 529/1000 | score: 772
+Episode finished after 619 time steps
+Episode: 530/1000 | score: 1584
+Episode finished after 619 time steps
+Episode: 531/1000 | score: 1594
+Episode finished after 668 time steps
+Episode: 532/1000 | score: 1004
+Episode finished after 667 time steps
+Episode: 533/1000 | score: 1046
+Episode finished after 286 time steps
+Episode: 534/1000 | score: 454
+Episode finished after 620 time steps
+Episode: 535/1000 | score: 1558
+Episode finished after 616 time steps
+Episode: 536/1000 | score: 1589
+Episode finished after 150 time steps
+Episode: 537/1000 | score: -27
+Episode finished after 617 time steps
+Episode: 538/1000 | score: 1561
+Episode finished after 628 time steps
+Episode: 539/1000 | score: 1528
+Episode finished after 621 time steps
+Episode: 540/1000 | score: 1587
+Epoch 26 completed
+Statistics for epoch 26 = {'avg': 1333.65, 'std': 443.05251099615725, 'min': -27.0, 'max': 1594.0}
+Episode finished after 617 time steps
+Episode: 541/1000 | score: 1576
+Episode finished after 155 time steps
+Episode: 542/1000 | score: -405
+Episode finished after 102 time steps
+Episode: 543/1000 | score: -277
+Episode finished after 627 time steps
+Episode: 544/1000 | score: 1561
+Episode finished after 607 time steps
+Episode: 545/1000 | score: 1438
+Episode finished after 282 time steps
+Episode: 546/1000 | score: 458
+Episode finished after 618 time steps
+Episode: 547/1000 | score: 1547
+Episode finished after 627 time steps
+Episode: 548/1000 | score: 1560
+Episode finished after 633 time steps
+Episode: 549/1000 | score: 1568
+Episode finished after 671 time steps
+Episode: 550/1000 | score: 1161
+Episode finished after 623 time steps
+Episode: 551/1000 | score: 1546
+Episode finished after 159 time steps
+Episode: 552/1000 | score: 1
+Episode finished after 533 time steps
+Episode: 553/1000 | score: 1136
+Episode finished after 614 time steps
+Episode: 554/1000 | score: 1588
+Episode finished after 624 time steps
+Episode: 555/1000 | score: 1519
+Episode finished after 661 time steps
+Episode: 556/1000 | score: 1143
+Episode finished after 617 time steps
+Episode: 557/1000 | score: 1558
+Episode finished after 615 time steps
+Episode: 558/1000 | score: 1619
+Episode finished after 617 time steps
+Episode: 559/1000 | score: 1628
+Episode finished after 619 time steps
+Episode: 560/1000 | score: 1577
+Epoch 27 completed
+Statistics for epoch 27 = {'avg': 1175.1, 'std': 650.2698593660942, 'min': -405.0, 'max': 1628.0}
+Episode finished after 627 time steps
+Episode: 561/1000 | score: 1522
+Episode finished after 620 time steps
+Episode: 562/1000 | score: 1564
+Episode finished after 98 time steps
+Episode: 563/1000 | score: -422
+Episode finished after 620 time steps
+Episode: 564/1000 | score: 1532
+Episode finished after 621 time steps
+Episode: 565/1000 | score: 1562
+Episode finished after 624 time steps
+Episode: 566/1000 | score: 1420
+Episode finished after 619 time steps
+Episode: 567/1000 | score: 1579
+Episode finished after 621 time steps
+Episode: 568/1000 | score: 1563
+Episode finished after 620 time steps
+Episode: 569/1000 | score: 1562
+Episode finished after 98 time steps
+Episode: 570/1000 | score: -422
+Episode finished after 620 time steps
+Episode: 571/1000 | score: 1571
+Episode finished after 528 time steps
+Episode: 572/1000 | score: 1152
+Episode finished after 623 time steps
+Episode: 573/1000 | score: 1575
+Episode finished after 615 time steps
+Episode: 574/1000 | score: 1549
+Episode finished after 622 time steps
+Episode: 575/1000 | score: 1601
+Episode finished after 623 time steps
+Episode: 576/1000 | score: 1541
+Episode finished after 619 time steps
+Episode: 577/1000 | score: 1602
+Episode finished after 618 time steps
+Episode: 578/1000 | score: 1582
+Episode finished after 619 time steps
+Episode: 579/1000 | score: 1562
+Episode finished after 624 time steps
+Episode: 580/1000 | score: 1535
+Epoch 28 completed
+Statistics for epoch 28 = {'avg': 1336.5, 'std': 593.7876303864875, 'min': -422.0, 'max': 1602.0}
+Episode finished after 624 time steps
+Episode: 581/1000 | score: 1531
+Episode finished after 617 time steps
+Episode: 582/1000 | score: 1583
+Episode finished after 622 time steps
+Episode: 583/1000 | score: 1510
+Episode finished after 616 time steps
+Episode: 584/1000 | score: 1565
+Episode finished after 627 time steps
+Episode: 585/1000 | score: 1513
+Episode finished after 617 time steps
+Episode: 586/1000 | score: 1575
+Episode finished after 632 time steps
+Episode: 587/1000 | score: 1525
+Episode finished after 627 time steps
+Episode: 588/1000 | score: 1521
+Episode finished after 616 time steps
+Episode: 589/1000 | score: 1607
+Episode finished after 667 time steps
+Episode: 590/1000 | score: 1472
+Episode finished after 635 time steps
+Episode: 591/1000 | score: 1572
+Episode finished after 617 time steps
+Episode: 592/1000 | score: 1594
+Episode finished after 630 time steps
+Episode: 593/1000 | score: 1500
+Episode finished after 618 time steps
+Episode: 594/1000 | score: 1579
+Episode finished after 619 time steps
+Episode: 595/1000 | score: 1582
+Episode finished after 671 time steps
+Episode: 596/1000 | score: 1136
+Episode finished after 623 time steps
+Episode: 597/1000 | score: 1563
+Episode finished after 616 time steps
+Episode: 598/1000 | score: 1597
+Episode finished after 617 time steps
+Episode: 599/1000 | score: 1588
+Episode finished after 617 time steps
+Episode: 600/1000 | score: 1547
+Epoch 29 completed
+Statistics for epoch 29 = {'avg': 1533.0, 'std': 98.05610638812863, 'min': 1136.0, 'max': 1607.0}
+Episode finished after 147 time steps
+Episode: 601/1000 | score: -36
+Episode finished after 621 time steps
+Episode: 602/1000 | score: 1585
+Episode finished after 667 time steps
+Episode: 603/1000 | score: 1501
+Episode finished after 617 time steps
+Episode: 604/1000 | score: 1599
+Episode finished after 618 time steps
+Episode: 605/1000 | score: 1582
+Episode finished after 295 time steps
+Episode: 606/1000 | score: 432
+Episode finished after 617 time steps
+Episode: 607/1000 | score: 1570
+Episode finished after 617 time steps
+Episode: 608/1000 | score: 1537
+Episode finished after 620 time steps
+Episode: 609/1000 | score: 1596
+Episode finished after 96 time steps
+Episode: 610/1000 | score: -423
+Episode finished after 660 time steps
+Episode: 611/1000 | score: 1201
+Episode finished after 661 time steps
+Episode: 612/1000 | score: 1176
+Episode finished after 619 time steps
+Episode: 613/1000 | score: 1569
+Episode finished after 297 time steps
+Episode: 614/1000 | score: 478
+Episode finished after 613 time steps
+Episode: 615/1000 | score: 1584
+Episode finished after 613 time steps
+Episode: 616/1000 | score: 1573
+Episode finished after 648 time steps
+Episode: 617/1000 | score: 1487
+Episode finished after 618 time steps
+Episode: 618/1000 | score: 1581
+Episode finished after 632 time steps
+Episode: 619/1000 | score: 1518
+Episode finished after 628 time steps
+Episode: 620/1000 | score: 1547
+Epoch 30 completed
+Statistics for epoch 30 = {'avg': 1232.85, 'std': 594.7677088578364, 'min': -423.0, 'max': 1599.0}
+Episode finished after 625 time steps
+Episode: 621/1000 | score: 1549
+Episode finished after 627 time steps
+Episode: 622/1000 | score: 1527
+Episode finished after 618 time steps
+Episode: 623/1000 | score: 1600
+Episode finished after 620 time steps
+Episode: 624/1000 | score: 1585
+Episode finished after 158 time steps
+Episode: 625/1000 | score: -4
+Episode finished after 640 time steps
+Episode: 626/1000 | score: 1238
+Episode finished after 624 time steps
+Episode: 627/1000 | score: 1526
+Episode finished after 617 time steps
+Episode: 628/1000 | score: 1565
+Episode finished after 94 time steps
+Episode: 629/1000 | score: -423
+Episode finished after 526 time steps
+Episode: 630/1000 | score: 1144
+Episode finished after 95 time steps
+Episode: 631/1000 | score: -423
+Episode finished after 629 time steps
+Episode: 632/1000 | score: 1482
+Episode finished after 626 time steps
+Episode: 633/1000 | score: 1552
+Episode finished after 618 time steps
+Episode: 634/1000 | score: 1593
+Episode finished after 615 time steps
+Episode: 635/1000 | score: 1547
+Episode finished after 620 time steps
+Episode: 636/1000 | score: 1570
+Episode finished after 620 time steps
+Episode: 637/1000 | score: 1585
+Episode finished after 617 time steps
+Episode: 638/1000 | score: 1577
+Episode finished after 652 time steps
+Episode: 639/1000 | score: 1220
+Episode finished after 617 time steps
+Episode: 640/1000 | score: 1597
+Epoch 31 completed
+Statistics for epoch 31 = {'avg': 1230.35, 'std': 653.606783548029, 'min': -423.0, 'max': 1600.0}
+Episode finished after 659 time steps
+Episode: 641/1000 | score: 1211
+Episode finished after 619 time steps
+Episode: 642/1000 | score: 1583
+Episode finished after 96 time steps
+Episode: 643/1000 | score: -422
+Episode finished after 627 time steps
+Episode: 644/1000 | score: 1532
+Episode finished after 623 time steps
+Episode: 645/1000 | score: 1547
+Episode finished after 156 time steps
+Episode: 646/1000 | score: -6
+Episode finished after 619 time steps
+Episode: 647/1000 | score: 1604
+Episode finished after 619 time steps
+Episode: 648/1000 | score: 1593
+Episode finished after 162 time steps
+Episode: 649/1000 | score: 12
+Episode finished after 626 time steps
+Episode: 650/1000 | score: 1536
+Episode finished after 627 time steps
+Episode: 651/1000 | score: 1536
+Episode finished after 145 time steps
+Episode: 652/1000 | score: -42
+Episode finished after 618 time steps
+Episode: 653/1000 | score: 1611
+Episode finished after 94 time steps
+Episode: 654/1000 | score: -423
+Episode finished after 627 time steps
+Episode: 655/1000 | score: 1580
+Episode finished after 625 time steps
+Episode: 656/1000 | score: 1539
+Episode finished after 629 time steps
+Episode: 657/1000 | score: 1501
+Episode finished after 155 time steps
+Episode: 658/1000 | score: -12
+Episode finished after 626 time steps
+Episode: 659/1000 | score: 1540
+Episode finished after 619 time steps
+Episode: 660/1000 | score: 1562
+Epoch 32 completed
+Statistics for epoch 32 = {'avg': 1029.1, 'std': 782.4497364048377, 'min': -423.0, 'max': 1611.0}
+Episode finished after 668 time steps
+Episode: 661/1000 | score: 977
+Episode finished after 618 time steps
+Episode: 662/1000 | score: 1547
+Episode finished after 668 time steps
+Episode: 663/1000 | score: 1004
+Episode finished after 628 time steps
+Episode: 664/1000 | score: 1551
+Episode finished after 669 time steps
+Episode: 665/1000 | score: 965
+Episode finished after 618 time steps
+Episode: 666/1000 | score: 1552
+Episode finished after 617 time steps
+Episode: 667/1000 | score: 1551
+Episode finished after 628 time steps
+Episode: 668/1000 | score: 1542
+Episode finished after 666 time steps
+Episode: 669/1000 | score: 989
+Episode finished after 428 time steps
+Episode: 670/1000 | score: 1193
+Episode finished after 619 time steps
+Episode: 671/1000 | score: 1542
+Episode finished after 622 time steps
+Episode: 672/1000 | score: 1514
+Episode finished after 622 time steps
+Episode: 673/1000 | score: 1545
+Episode finished after 619 time steps
+Episode: 674/1000 | score: 1528
+Episode finished after 631 time steps
+Episode: 675/1000 | score: 1486
+Episode finished after 614 time steps
+Episode: 676/1000 | score: 1436
+Episode finished after 626 time steps
+Episode: 677/1000 | score: 1527
+Episode finished after 649 time steps
+Episode: 678/1000 | score: 1429
+Episode finished after 162 time steps
+Episode: 679/1000 | score: 12
+Episode finished after 158 time steps
+Episode: 680/1000 | score: 0
+Epoch 33 completed
+Statistics for epoch 33 = {'avg': 1244.5, 'std': 466.17534254827336, 'min': 0.0, 'max': 1552.0}
+Episode finished after 437 time steps
+Episode: 681/1000 | score: 1219
+Episode finished after 618 time steps
+Episode: 682/1000 | score: 1578
+Episode finished after 293 time steps
+Episode: 683/1000 | score: 470
+Episode finished after 619 time steps
+Episode: 684/1000 | score: 1577
+Episode finished after 617 time steps
+Episode: 685/1000 | score: 1578
+Episode finished after 618 time steps
+Episode: 686/1000 | score: 1537
+Episode finished after 619 time steps
+Episode: 687/1000 | score: 1566
+Episode finished after 619 time steps
+Episode: 688/1000 | score: 1582
+Episode finished after 621 time steps
+Episode: 689/1000 | score: 1563
+Episode finished after 622 time steps
+Episode: 690/1000 | score: 1516
+Episode finished after 623 time steps
+Episode: 691/1000 | score: 1525
+Episode finished after 617 time steps
+Episode: 692/1000 | score: 1549
+Episode finished after 661 time steps
+Episode: 693/1000 | score: 1177
+Episode finished after 618 time steps
+Episode: 694/1000 | score: 1564
+Episode finished after 626 time steps
+Episode: 695/1000 | score: 1509
+Episode finished after 295 time steps
+Episode: 696/1000 | score: 504
+Episode finished after 158 time steps
+Episode: 697/1000 | score: -3
+Episode finished after 621 time steps
+Episode: 698/1000 | score: 1604
+Episode finished after 617 time steps
+Episode: 699/1000 | score: 1563
+Episode finished after 618 time steps
+Episode: 700/1000 | score: 1578
+Epoch 34 completed
+Statistics for epoch 34 = {'avg': 1337.8, 'std': 448.99227164841045, 'min': -3.0, 'max': 1604.0}
+Episode finished after 673 time steps
+Episode: 701/1000 | score: 1125
+Episode finished after 628 time steps
+Episode: 702/1000 | score: 1545
+Episode finished after 648 time steps
+Episode: 703/1000 | score: 1421
+Episode finished after 619 time steps
+Episode: 704/1000 | score: 1593
+Episode finished after 602 time steps
+Episode: 705/1000 | score: 1638
+Episode finished after 617 time steps
+Episode: 706/1000 | score: 1565
+Episode finished after 616 time steps
+Episode: 707/1000 | score: 1587
+Episode finished after 621 time steps
+Episode: 708/1000 | score: 1566
+Episode finished after 616 time steps
+Episode: 709/1000 | score: 1553
+Episode finished after 643 time steps
+Episode: 710/1000 | score: 1219
+Episode finished after 618 time steps
+Episode: 711/1000 | score: 1583
+Episode finished after 299 time steps
+Episode: 712/1000 | score: 495
+Episode finished after 616 time steps
+Episode: 713/1000 | score: 1527
+Episode finished after 96 time steps
+Episode: 714/1000 | score: -426
+Episode finished after 191 time steps
+Episode: 715/1000 | score: -98
+Episode finished after 103 time steps
+Episode: 716/1000 | score: -294
+Episode finished after 621 time steps
+Episode: 717/1000 | score: 1581
+Episode finished after 620 time steps
+Episode: 718/1000 | score: 1559
+Episode finished after 617 time steps
+Episode: 719/1000 | score: 1546
+Episode finished after 526 time steps
+Episode: 720/1000 | score: 1136
+Epoch 35 completed
+Statistics for epoch 35 = {'avg': 1171.05, 'std': 661.5948514763396, 'min': -426.0, 'max': 1638.0}
+Episode finished after 415 time steps
+Episode: 721/1000 | score: 1102
+Episode finished after 524 time steps
+Episode: 722/1000 | score: 1144
+Episode finished after 155 time steps
+Episode: 723/1000 | score: -402
+Episode finished after 104 time steps
+Episode: 724/1000 | score: -291
+Episode finished after 92 time steps
+Episode: 725/1000 | score: -422
+Episode finished after 620 time steps
+Episode: 726/1000 | score: 1594
+Episode finished after 93 time steps
+Episode: 727/1000 | score: -421
+Episode finished after 92 time steps
+Episode: 728/1000 | score: -423
+Episode finished after 649 time steps
+Episode: 729/1000 | score: 1459
+Episode finished after 155 time steps
+Episode: 730/1000 | score: -404
+Episode finished after 109 time steps
+Episode: 731/1000 | score: -292
+Episode finished after 617 time steps
+Episode: 732/1000 | score: 1564
+Episode finished after 618 time steps
+Episode: 733/1000 | score: 1606
+Episode finished after 620 time steps
+Episode: 734/1000 | score: 1609
+Episode finished after 619 time steps
+Episode: 735/1000 | score: 1573
+Episode finished after 618 time steps
+Episode: 736/1000 | score: 1544
+Episode finished after 617 time steps
+Episode: 737/1000 | score: 1574
+Episode finished after 527 time steps
+Episode: 738/1000 | score: 1145
+Episode finished after 601 time steps
+Episode: 739/1000 | score: 1642
+Episode finished after 150 time steps
+Episode: 740/1000 | score: -27
+Epoch 36 completed
+Statistics for epoch 36 = {'avg': 743.7, 'std': 897.7124873811214, 'min': -423.0, 'max': 1642.0}
+Episode finished after 619 time steps
+Episode: 741/1000 | score: 1545
+Episode finished after 600 time steps
+Episode: 742/1000 | score: 1650
+Episode finished after 619 time steps
+Episode: 743/1000 | score: 1531
+Episode finished after 667 time steps
+Episode: 744/1000 | score: 1014
+Episode finished after 619 time steps
+Episode: 745/1000 | score: 1586
+Episode finished after 618 time steps
+Episode: 746/1000 | score: 1582
+Episode finished after 96 time steps
+Episode: 747/1000 | score: -421
+Episode finished after 628 time steps
+Episode: 748/1000 | score: 1505
+Episode finished after 653 time steps
+Episode: 749/1000 | score: 1165
+Episode finished after 618 time steps
+Episode: 750/1000 | score: 1611
+Episode finished after 96 time steps
+Episode: 751/1000 | score: -421
+Episode finished after 628 time steps
+Episode: 752/1000 | score: 1520
+Episode finished after 668 time steps
+Episode: 753/1000 | score: 1002
+Episode finished after 620 time steps
+Episode: 754/1000 | score: 1564
+Episode finished after 622 time steps
+Episode: 755/1000 | score: 1582
+Episode finished after 621 time steps
+Episode: 756/1000 | score: 1554
+Episode finished after 621 time steps
+Episode: 757/1000 | score: 1598
+Episode finished after 671 time steps
+Episode: 758/1000 | score: 1108
+Episode finished after 626 time steps
+Episode: 759/1000 | score: 1575
+Episode finished after 642 time steps
+Episode: 760/1000 | score: 1543
+Epoch 37 completed
+Statistics for epoch 37 = {'avg': 1269.65, 'std': 598.0181665300812, 'min': -421.0, 'max': 1650.0}
+Episode finished after 622 time steps
+Episode: 761/1000 | score: 1587
+Episode finished after 620 time steps
+Episode: 762/1000 | score: 1590
+Episode finished after 619 time steps
+Episode: 763/1000 | score: 1552
+Episode finished after 625 time steps
+Episode: 764/1000 | score: 1582
+Episode finished after 619 time steps
+Episode: 765/1000 | score: 1599
+Episode finished after 531 time steps
+Episode: 766/1000 | score: 1144
+Episode finished after 620 time steps
+Episode: 767/1000 | score: 1595
+Episode finished after 617 time steps
+Episode: 768/1000 | score: 1556
+Episode finished after 623 time steps
+Episode: 769/1000 | score: 1542
+Episode finished after 626 time steps
+Episode: 770/1000 | score: 1547
+Episode finished after 620 time steps
+Episode: 771/1000 | score: 1565
+Episode finished after 619 time steps
+Episode: 772/1000 | score: 1560
+Episode finished after 91 time steps
+Episode: 773/1000 | score: -421
+Episode finished after 628 time steps
+Episode: 774/1000 | score: 1554
+Episode finished after 618 time steps
+Episode: 775/1000 | score: 1605
+Episode finished after 92 time steps
+Episode: 776/1000 | score: -422
+Episode finished after 619 time steps
+Episode: 777/1000 | score: 1532
+Episode finished after 619 time steps
+Episode: 778/1000 | score: 1588
+Episode finished after 621 time steps
+Episode: 779/1000 | score: 1591
+Episode finished after 631 time steps
+Episode: 780/1000 | score: 1508
+Epoch 38 completed
+Statistics for epoch 38 = {'avg': 1347.7, 'std': 597.3720030265898, 'min': -422.0, 'max': 1605.0}
+Episode finished after 648 time steps
+Episode: 781/1000 | score: 1475
+Episode finished after 618 time steps
+Episode: 782/1000 | score: 1570
+Episode finished after 92 time steps
+Episode: 783/1000 | score: -425
+Episode finished after 619 time steps
+Episode: 784/1000 | score: 1578
+Episode finished after 619 time steps
+Episode: 785/1000 | score: 1569
+Episode finished after 668 time steps
+Episode: 786/1000 | score: 999
+Episode finished after 615 time steps
+Episode: 787/1000 | score: 1576
+Episode finished after 618 time steps
+Episode: 788/1000 | score: 1580
+Episode finished after 619 time steps
+Episode: 789/1000 | score: 1586
+Episode finished after 668 time steps
+Episode: 790/1000 | score: 995
+Episode finished after 621 time steps
+Episode: 791/1000 | score: 1594
+Episode finished after 617 time steps
+Episode: 792/1000 | score: 1569
+Episode finished after 665 time steps
+Episode: 793/1000 | score: 1500
+Episode finished after 623 time steps
+Episode: 794/1000 | score: 1569
+Episode finished after 619 time steps
+Episode: 795/1000 | score: 1545
+Episode finished after 621 time steps
+Episode: 796/1000 | score: 1552
+Episode finished after 620 time steps
+Episode: 797/1000 | score: 1513
+Episode finished after 620 time steps
+Episode: 798/1000 | score: 1566
+Episode finished after 623 time steps
+Episode: 799/1000 | score: 1515
+Episode finished after 641 time steps
+Episode: 800/1000 | score: 1283
+Epoch 39 completed
+Statistics for epoch 39 = {'avg': 1385.45, 'std': 450.5599266468335, 'min': -425.0, 'max': 1594.0}
+Episode finished after 96 time steps
+Episode: 801/1000 | score: -421
+Episode finished after 669 time steps
+Episode: 802/1000 | score: 1000
+Episode finished after 621 time steps
+Episode: 803/1000 | score: 1563
+Episode finished after 621 time steps
+Episode: 804/1000 | score: 1580
+Episode finished after 89 time steps
+Episode: 805/1000 | score: -426
+Episode finished after 618 time steps
+Episode: 806/1000 | score: 1597
+Episode finished after 619 time steps
+Episode: 807/1000 | score: 1569
+Episode finished after 143 time steps
+Episode: 808/1000 | score: -48
+Episode finished after 618 time steps
+Episode: 809/1000 | score: 1570
+Episode finished after 619 time steps
+Episode: 810/1000 | score: 1574
+Episode finished after 626 time steps
+Episode: 811/1000 | score: 1513
+Episode finished after 620 time steps
+Episode: 812/1000 | score: 1549
+Episode finished after 141 time steps
+Episode: 813/1000 | score: -54
+Episode finished after 89 time steps
+Episode: 814/1000 | score: -426
+Episode finished after 619 time steps
+Episode: 815/1000 | score: 1568
+Episode finished after 96 time steps
+Episode: 816/1000 | score: -421
+Episode finished after 619 time steps
+Episode: 817/1000 | score: 1535
+Episode finished after 601 time steps
+Episode: 818/1000 | score: 1609
+Episode finished after 619 time steps
+Episode: 819/1000 | score: 1584
+Episode finished after 155 time steps
+Episode: 820/1000 | score: -406
+Epoch 40 completed
+Statistics for epoch 40 = {'avg': 880.45, 'std': 891.0363895487097, 'min': -426.0, 'max': 1609.0}
+Episode finished after 105 time steps
+Episode: 821/1000 | score: -293
+Episode finished after 298 time steps
+Episode: 822/1000 | score: 452
+Episode finished after 616 time steps
+Episode: 823/1000 | score: 1582
+Episode finished after 627 time steps
+Episode: 824/1000 | score: 1490
+Episode finished after 615 time steps
+Episode: 825/1000 | score: 1526
+Episode finished after 652 time steps
+Episode: 826/1000 | score: 1361
+Episode finished after 618 time steps
+Episode: 827/1000 | score: 1598
+Episode finished after 620 time steps
+Episode: 828/1000 | score: 1601
+Episode finished after 625 time steps
+Episode: 829/1000 | score: 1562
+Episode finished after 663 time steps
+Episode: 830/1000 | score: 1141
+Episode finished after 601 time steps
+Episode: 831/1000 | score: 1658
+Episode finished after 651 time steps
+Episode: 832/1000 | score: 1422
+Episode finished after 630 time steps
+Episode: 833/1000 | score: 1574
+Episode finished after 621 time steps
+Episode: 834/1000 | score: 1566
+Episode finished after 622 time steps
+Episode: 835/1000 | score: 1572
+Episode finished after 620 time steps
+Episode: 836/1000 | score: 1523
+Episode finished after 617 time steps
+Episode: 837/1000 | score: 1502
+Episode finished after 620 time steps
+Episode: 838/1000 | score: 1517
+Episode finished after 618 time steps
+Episode: 839/1000 | score: 1542
+Episode finished after 620 time steps
+Episode: 840/1000 | score: 1554
+Epoch 41 completed
+Statistics for epoch 41 = {'avg': 1372.5, 'std': 459.28994110474486, 'min': -293.0, 'max': 1658.0}
+Episode finished after 620 time steps
+Episode: 841/1000 | score: 1591
+Episode finished after 155 time steps
+Episode: 842/1000 | score: -407
+Episode finished after 104 time steps
+Episode: 843/1000 | score: -290
+Episode finished after 620 time steps
+Episode: 844/1000 | score: 1581
+Episode finished after 617 time steps
+Episode: 845/1000 | score: 1551
+Episode finished after 150 time steps
+Episode: 846/1000 | score: -25
+Episode finished after 617 time steps
+Episode: 847/1000 | score: 1524
+Episode finished after 618 time steps
+Episode: 848/1000 | score: 1587
+Episode finished after 616 time steps
+Episode: 849/1000 | score: 1552
+Episode finished after 624 time steps
+Episode: 850/1000 | score: 1546
+Episode finished after 620 time steps
+Episode: 851/1000 | score: 1534
+Episode finished after 628 time steps
+Episode: 852/1000 | score: 1582
+Episode finished after 618 time steps
+Episode: 853/1000 | score: 1572
+Episode finished after 621 time steps
+Episode: 854/1000 | score: 1569
+Episode finished after 618 time steps
+Episode: 855/1000 | score: 1555
+Episode finished after 619 time steps
+Episode: 856/1000 | score: 1582
+Episode finished after 618 time steps
+Episode: 857/1000 | score: 1591
+Episode finished after 620 time steps
+Episode: 858/1000 | score: 1535
+Episode finished after 96 time steps
+Episode: 859/1000 | score: -426
+Episode finished after 155 time steps
+Episode: 860/1000 | score: -404
+Epoch 42 completed
+Statistics for epoch 42 = {'avg': 1095.0, 'std': 815.1090111144644, 'min': -426.0, 'max': 1591.0}
+Episode finished after 107 time steps
+Episode: 861/1000 | score: -290
+Episode finished after 619 time steps
+Episode: 862/1000 | score: 1570
+Episode finished after 618 time steps
+Episode: 863/1000 | score: 1584
+Episode finished after 620 time steps
+Episode: 864/1000 | score: 1578
+Episode finished after 618 time steps
+Episode: 865/1000 | score: 1565
+Episode finished after 339 time steps
+Episode: 866/1000 | score: 786
+Episode finished after 621 time steps
+Episode: 867/1000 | score: 1579
+Episode finished after 619 time steps
+Episode: 868/1000 | score: 1546
+Episode finished after 622 time steps
+Episode: 869/1000 | score: 1576
+Episode finished after 601 time steps
+Episode: 870/1000 | score: 1628
+Episode finished after 153 time steps
+Episode: 871/1000 | score: -18
+Episode finished after 149 time steps
+Episode: 872/1000 | score: -30
+Episode finished after 618 time steps
+Episode: 873/1000 | score: 1587
+Episode finished after 619 time steps
+Episode: 874/1000 | score: 1537
+Episode finished after 666 time steps
+Episode: 875/1000 | score: 1495
+Episode finished after 619 time steps
+Episode: 876/1000 | score: 1567
+Episode finished after 602 time steps
+Episode: 877/1000 | score: 1636
+Episode finished after 526 time steps
+Episode: 878/1000 | score: 1096
+Episode finished after 617 time steps
+Episode: 879/1000 | score: 1548
+Episode finished after 620 time steps
+Episode: 880/1000 | score: 1592
+Epoch 43 completed
+Statistics for epoch 43 = {'avg': 1256.6, 'std': 609.6295104405626, 'min': -290.0, 'max': 1636.0}
+Episode finished after 622 time steps
+Episode: 881/1000 | score: 1495
+Episode finished after 621 time steps
+Episode: 882/1000 | score: 1577
+Episode finished after 601 time steps
+Episode: 883/1000 | score: 1674
+Episode finished after 93 time steps
+Episode: 884/1000 | score: -419
+Episode finished after 618 time steps
+Episode: 885/1000 | score: 1576
+Episode finished after 618 time steps
+Episode: 886/1000 | score: 1575
+Episode finished after 620 time steps
+Episode: 887/1000 | score: 1567
+Episode finished after 95 time steps
+Episode: 888/1000 | score: -423
+Episode finished after 620 time steps
+Episode: 889/1000 | score: 1565
+Episode finished after 618 time steps
+Episode: 890/1000 | score: 1599
+Episode finished after 622 time steps
+Episode: 891/1000 | score: 1528
+Episode finished after 619 time steps
+Episode: 892/1000 | score: 1571
+Episode finished after 620 time steps
+Episode: 893/1000 | score: 1583
+Episode finished after 620 time steps
+Episode: 894/1000 | score: 1569
+Episode finished after 621 time steps
+Episode: 895/1000 | score: 1572
+Episode finished after 94 time steps
+Episode: 896/1000 | score: -420
+Episode finished after 620 time steps
+Episode: 897/1000 | score: 1576
+Episode finished after 668 time steps
+Episode: 898/1000 | score: 982
+Episode finished after 529 time steps
+Episode: 899/1000 | score: 1269
+Episode finished after 618 time steps
+Episode: 900/1000 | score: 1574
+Epoch 44 completed
+Statistics for epoch 44 = {'avg': 1229.5, 'std': 707.9981285286, 'min': -423.0, 'max': 1674.0}
+Episode finished after 620 time steps
+Episode: 901/1000 | score: 1572
+Episode finished after 618 time steps
+Episode: 902/1000 | score: 1603
+Episode finished after 624 time steps
+Episode: 903/1000 | score: 1550
+Episode finished after 618 time steps
+Episode: 904/1000 | score: 1579
+Episode finished after 667 time steps
+Episode: 905/1000 | score: 1021
+Episode finished after 620 time steps
+Episode: 906/1000 | score: 1567
+Episode finished after 620 time steps
+Episode: 907/1000 | score: 1559
+Episode finished after 621 time steps
+Episode: 908/1000 | score: 1596
+Episode finished after 619 time steps
+Episode: 909/1000 | score: 1555
+Episode finished after 619 time steps
+Episode: 910/1000 | score: 1572
+Episode finished after 146 time steps
+Episode: 911/1000 | score: -38
+Episode finished after 620 time steps
+Episode: 912/1000 | score: 1595
+Episode finished after 600 time steps
+Episode: 913/1000 | score: 1643
+Episode finished after 618 time steps
+Episode: 914/1000 | score: 1604
+Episode finished after 618 time steps
+Episode: 915/1000 | score: 1565
+Episode finished after 621 time steps
+Episode: 916/1000 | score: 1593
+Episode finished after 88 time steps
+Episode: 917/1000 | score: -425
+Episode finished after 669 time steps
+Episode: 918/1000 | score: 998
+Episode finished after 618 time steps
+Episode: 919/1000 | score: 1569
+Episode finished after 88 time steps
+Episode: 920/1000 | score: -425
+Epoch 45 completed
+Statistics for epoch 45 = {'avg': 1242.65, 'std': 672.3619765423979, 'min': -425.0, 'max': 1643.0}
+Episode finished after 618 time steps
+Episode: 921/1000 | score: 1592
+Episode finished after 601 time steps
+Episode: 922/1000 | score: 1664
+Episode finished after 296 time steps
+Episode: 923/1000 | score: 475
+Episode finished after 90 time steps
+Episode: 924/1000 | score: -426
+Episode finished after 411 time steps
+Episode: 925/1000 | score: 952
+Episode finished after 620 time steps
+Episode: 926/1000 | score: 1553
+Episode finished after 621 time steps
+Episode: 927/1000 | score: 1584
+Episode finished after 289 time steps
+Episode: 928/1000 | score: 474
+Episode finished after 618 time steps
+Episode: 929/1000 | score: 1548
+Episode finished after 96 time steps
+Episode: 930/1000 | score: -421
+Episode finished after 617 time steps
+Episode: 931/1000 | score: 1590
+Episode finished after 618 time steps
+Episode: 932/1000 | score: 1513
+Episode finished after 92 time steps
+Episode: 933/1000 | score: -425
+Episode finished after 619 time steps
+Episode: 934/1000 | score: 1565
+Episode finished after 623 time steps
+Episode: 935/1000 | score: 1532
+Episode finished after 96 time steps
+Episode: 936/1000 | score: -419
+Episode finished after 618 time steps
+Episode: 937/1000 | score: 1595
+Episode finished after 300 time steps
+Episode: 938/1000 | score: 496
+Episode finished after 618 time steps
+Episode: 939/1000 | score: 1561
+Episode finished after 620 time steps
+Episode: 940/1000 | score: 1592
+Epoch 46 completed
+Statistics for epoch 46 = {'avg': 979.75, 'std': 802.1402542573213, 'min': -426.0, 'max': 1664.0}
+Episode finished after 620 time steps
+Episode: 941/1000 | score: 1576
+Episode finished after 619 time steps
+Episode: 942/1000 | score: 1566
+Episode finished after 621 time steps
+Episode: 943/1000 | score: 1561
+Episode finished after 619 time steps
+Episode: 944/1000 | score: 1575
+Episode finished after 601 time steps
+Episode: 945/1000 | score: 1633
+Episode finished after 620 time steps
+Episode: 946/1000 | score: 1557
+Episode finished after 672 time steps
+Episode: 947/1000 | score: 1034
+Episode finished after 291 time steps
+Episode: 948/1000 | score: 494
+Episode finished after 602 time steps
+Episode: 949/1000 | score: 1652
+Episode finished after 602 time steps
+Episode: 950/1000 | score: 1638
+Episode finished after 621 time steps
+Episode: 951/1000 | score: 1592
+Episode finished after 620 time steps
+Episode: 952/1000 | score: 1602
+Episode finished after 621 time steps
+Episode: 953/1000 | score: 1568
+Episode finished after 619 time steps
+Episode: 954/1000 | score: 1573
+Episode finished after 618 time steps
+Episode: 955/1000 | score: 1592
+Episode finished after 619 time steps
+Episode: 956/1000 | score: 1581
+Episode finished after 88 time steps
+Episode: 957/1000 | score: -425
+Episode finished after 650 time steps
+Episode: 958/1000 | score: 1495
+Episode finished after 620 time steps
+Episode: 959/1000 | score: 1545
+Episode finished after 601 time steps
+Episode: 960/1000 | score: 1617
+Epoch 47 completed
+Statistics for epoch 47 = {'avg': 1401.3, 'std': 494.0714624424285, 'min': -425.0, 'max': 1652.0}
+Episode finished after 152 time steps
+Episode: 961/1000 | score: -21
+Episode finished after 601 time steps
+Episode: 962/1000 | score: 1680
+Episode finished after 147 time steps
+Episode: 963/1000 | score: -36
+Episode finished after 618 time steps
+Episode: 964/1000 | score: 1577
+Episode finished after 620 time steps
+Episode: 965/1000 | score: 1578
+Episode finished after 96 time steps
+Episode: 966/1000 | score: -422
+Episode finished after 621 time steps
+Episode: 967/1000 | score: 1540
+Episode finished after 618 time steps
+Episode: 968/1000 | score: 1561
+Episode finished after 626 time steps
+Episode: 969/1000 | score: 1516
+Episode finished after 650 time steps
+Episode: 970/1000 | score: 1500
+Episode finished after 423 time steps
+Episode: 971/1000 | score: 1029
+Episode finished after 622 time steps
+Episode: 972/1000 | score: 1582
+Episode finished after 620 time steps
+Episode: 973/1000 | score: 1566
+Episode finished after 619 time steps
+Episode: 974/1000 | score: 1565
+Episode finished after 618 time steps
+Episode: 975/1000 | score: 1547
+Episode finished after 600 time steps
+Episode: 976/1000 | score: 1656
+Episode finished after 618 time steps
+Episode: 977/1000 | score: 1585
+Episode finished after 617 time steps
+Episode: 978/1000 | score: 1588
+Episode finished after 618 time steps
+Episode: 979/1000 | score: 1596
+Episode finished after 419 time steps
+Episode: 980/1000 | score: 1137
+Epoch 48 completed
+Statistics for epoch 48 = {'avg': 1266.2, 'std': 622.2221146825303, 'min': -422.0, 'max': 1680.0}
+Episode finished after 624 time steps
+Episode: 981/1000 | score: 1523
+Episode finished after 620 time steps
+Episode: 982/1000 | score: 1577
+Episode finished after 618 time steps
+Episode: 983/1000 | score: 1570
+Episode finished after 155 time steps
+Episode: 984/1000 | score: -12
+Episode finished after 594 time steps
+Episode: 985/1000 | score: 1264
+Episode finished after 618 time steps
+Episode: 986/1000 | score: 1559
+Episode finished after 97 time steps
+Episode: 987/1000 | score: -423
+Episode finished after 621 time steps
+Episode: 988/1000 | score: 1560
+Episode finished after 619 time steps
+Episode: 989/1000 | score: 1573
+Episode finished after 616 time steps
+Episode: 990/1000 | score: 1551
+Episode finished after 617 time steps
+Episode: 991/1000 | score: 1590
+Episode finished after 620 time steps
+Episode: 992/1000 | score: 1576
+Episode finished after 616 time steps
+Episode: 993/1000 | score: 1562
+Episode finished after 94 time steps
+Episode: 994/1000 | score: -420
+Episode finished after 526 time steps
+Episode: 995/1000 | score: 1153
+Episode finished after 617 time steps
+Episode: 996/1000 | score: 1554
+Episode finished after 618 time steps
+Episode: 997/1000 | score: 1562
+Episode finished after 292 time steps
+Episode: 998/1000 | score: 486
+Episode finished after 618 time steps
+Episode: 999/1000 | score: 1603
+Episode finished after 600 time steps
+Episode: 1000/1000 | score: 1662
+Epoch 49 completed
+Statistics for epoch 49 = {'avg': 1203.5, 'std': 678.3889371149857, 'min': -423.0, 'max': 1662.0}
+epoch	avg    	std    	min 	max 
+0    	769.2  	620.781	-527	1517
+1    	1168.25	352.885	386 	1558
+2    	800.05 	777.912	-426	1565
+3    	886.75 	765.587	-426	1564
+4    	812.5  	803.424	-426	1571
+5    	849.55 	800.082	-426	1551
+6    	1123.85	675.758	-426	1573
+7    	1241.6 	569.092	-421	1592
+8    	1303.45	558.121	-423	1614
+9    	1214.3 	645.558	-425	1586
+10   	1062.35	744.604	-404	1585
+11   	1019.95	798.487	-426	1604
+12   	611.3  	948.725	-426	1591
+13   	1004.5 	822.096	-426	1598
+14   	1128.9 	732.93 	-427	1622
+15   	1082.55	756.063	-423	1603
+16   	1183.3 	671.847	-406	1613
+17   	1056.15	794.449	-426	1617
+18   	730.75 	888.683	-426	1670
+19   	1286.9 	536.294	-426	1599
+20   	1328.45	532.856	-421	1583
+21   	1223   	635.554	-426	1609
+22   	1116.65	672.595	-423	1597
+23   	1365.5 	483.301	-424	1586
+24   	1272.95	664.096	-426	1623
+25   	1322.55	570.51 	-426	1652
+26   	1333.65	443.053	-27 	1594
+27   	1175.1 	650.27 	-405	1628
+28   	1336.5 	593.788	-422	1602
+29   	1533   	98.0561	1136	1607
+30   	1232.85	594.768	-423	1599
+31   	1230.35	653.607	-423	1600
+32   	1029.1 	782.45 	-423	1611
+33   	1244.5 	466.175	0   	1552
+34   	1337.8 	448.992	-3  	1604
+35   	1171.05	661.595	-426	1638
+36   	743.7  	897.712	-423	1642
+37   	1269.65	598.018	-421	1650
+38   	1347.7 	597.372	-422	1605
+39   	1385.45	450.56 	-425	1594
+40   	880.45 	891.036	-426	1609
+41   	1372.5 	459.29 	-293	1658
+42   	1095   	815.109	-426	1591
+43   	1256.6 	609.63 	-290	1636
+44   	1229.5 	707.998	-423	1674
+45   	1242.65	672.362	-425	1643
+46   	979.75 	802.14 	-426	1664
+47   	1401.3 	494.071	-425	1652
+48   	1266.2 	622.222	-422	1680
+49   	1203.5 	678.389	-423	1662
+
+Process finished with exit code 0
+

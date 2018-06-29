@@ -22,16 +22,16 @@ style.use("seaborn-paper")
 Constants.MF_TUNING_RANGE = [-0.1, 0.1]
 Constants.LEARN_RULE_OP = False
 
-NUM_OF_GENS = 50
+NUM_OF_GENS = 5
 NUM_EPISODES_PER_IND = 1
-MAX_TIME_STEPS = 500
+MAX_TIME_STEPS = 700
 POP_SIZE = 100
 LIN_VARS_FILE = "cartpole_linvars.xml"
 GFT_FILE = "cartpole_gft.xml"
-LOAD_INIT_POP = True
-APPLY_EVO = False
+LOAD_INIT_POP = False
+APPLY_EVO = True
 QLFD_IND_FILE = "qualified.txt"
-SAVE_BEST = False
+SAVE_BEST = True
 SCORE_THRESHOLD = 200
 
 
@@ -85,6 +85,9 @@ def main():
     # create an object for retrieving input values
     obs_cartpole = CartPoleObs()
 
+    # create agents list
+    agents = [("agentLabel", 0)]
+
     # perform the simulation for a specified number of generations
     while epoch < NUM_OF_GENS:
 
@@ -113,26 +116,25 @@ def main():
                 # show the environment
                 env.render()
 
-                # since only one agent applies to this case study set a dummy agent ID
+                # # since only one agent applies to this case study set a dummy agent ID
                 agent_id = 0
 
                 # get an action
-                code, action, input_vec_dict, probs_dict = alg.executegft(obs_cartpole, agent_id,
-                                                                          boltzmann=False,
-                                                                          tau=tau_sch.get_prob(epoch))
-
-                # apply the selected action to the environment and observe feedback
-                next_state, reward, done, _ = env.step(code)
+                code, action, input_vec_dict, probs_dict = alg.executegft(obs_cartpole, agent_id)
 
                 # mark the GFSs that executed for the agent in this time step
                 cache.mark(probs_dict_keys=probs_dict.keys())
+
+                # apply the selected action to the environment and observe feedback
+                next_state, reward, done, _ = env.step(int(code))  # cartpole's step func expects an integer type code
 
                 # decompose the received reward
                 reward_dict = cache.decomposeReward(reward)
 
                 # create experiences for the agent with respect to each GFSs that executed for the agent
                 exp_dict = cache.createExperiences(agent_id=agent_id, action_code=code, dec_reward_dict=reward_dict,
-                                                   input_vec_dict=input_vec_dict, probs_dict=probs_dict)
+                                                   input_vec_dict=input_vec_dict, probs_dict=probs_dict,
+                                                   next_state_dict=None)
 
                 # add the experiences of the agent to the cache
                 cache.addExperiences(time_step=t, exp_dict=exp_dict)
@@ -143,7 +145,7 @@ def main():
                 # accumulate the rewards of all time steps
                 total_reward += reward
 
-                # # if the episode is over end the current episode
+                # if the episode is over end the current episode
                 if done:
                     break
 

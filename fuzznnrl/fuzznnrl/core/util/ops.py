@@ -21,12 +21,9 @@ def softmax(x, axis=0):
 
 
 def boltzmanexp(probs, tau):
-    vals = []
-    exp_sum = np.sum(np.exp(probs[:] / tau))
-    for p in probs:
-        val = np.exp(p / tau) / exp_sum
-        vals.append(val)
-    return np.array(vals)
+    probs = np.exp(probs / tau)
+    probs = probs / np.sum(probs)
+    return probs
 
 
 def normalize(x, dl, dh, nl, nh):

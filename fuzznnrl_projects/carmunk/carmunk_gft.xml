@@ -3,7 +3,7 @@
 <fuzzyInferenceSystems xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                        xsi:noNamespaceSchemaLocation="../core/res/gftlv0.1.1.xsd" rootInfSystem="CarMovement">
     <fuzzyInferenceSystem name="CarMovement">
-        <outputGeneRange>-1 2</outputGeneRange>
+        <outputGeneRange>0 2</outputGeneRange>
         <rbSize>27</rbSize>
         <mfSize>18</mfSize>
         <position>0</position>
