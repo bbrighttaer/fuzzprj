@@ -18,7 +18,7 @@ from fuzznnrl.core.conf import Constants
 from fuzznnrl.core.conf.parser import *
 from fuzznnrl.core.ga.genalg import GeneticAlgorithm
 from fuzznnrl.core.ga.op import Operator
-from fuzznnrl.core.io.buffer import Cache
+from fuzznnrl.core.io.memory import Cache
 from fuzznnrl.core.io.simdata import Document, Text, Line
 from fuzznnrl.core.util.ops import normalize
 from matplotlib import style
@@ -35,10 +35,10 @@ NUM_OF_GENS = 100
 POP_SIZE = 20
 LIN_VARS_FILE = "carmunk_linvars.xml"
 GFT_FILE = "carmunk_gft.xml"
-LOAD_INIT_POP = False
-APPLY_EVO = True
+LOAD_INIT_POP = True
+APPLY_EVO = False
 QLFD_IND_FILE = "qualified.txt"
-SAVE_BEST = True
+SAVE_BEST = False
 SCORE_THRESHOLD = 15000
 
 

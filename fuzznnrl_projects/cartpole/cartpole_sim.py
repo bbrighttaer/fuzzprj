@@ -8,12 +8,13 @@ import fuzznnrl.core.plot.analysis as ana
 import gym
 import matplotlib.pyplot as plt
 import numpy as np
+from fuzznnrl.core.io.randomprocess import OrnsteinUhlenbeckProcess
 from fuzznnrl.core.algorithm.alg import Algorithm
 from fuzznnrl.core.conf import Constants
 from fuzznnrl.core.conf.parser import *
 from fuzznnrl.core.ga.genalg import GeneticAlgorithm
 from fuzznnrl.core.ga.op import Operator
-from fuzznnrl.core.io.buffer import Cache
+from fuzznnrl.core.io.memory import Cache
 from fuzznnrl.core.io.simdata import Document, Text, Line
 from matplotlib import style
 
@@ -64,7 +65,8 @@ def main():
     tau_sch = sch.ExponentialDecaySchedule(initial_prob=.5, decay_factor=1e-1)
 
     # create GFT algorithm object with the registry
-    alg = Algorithm(registry=reg)
+    rand_proc = OrnsteinUhlenbeckProcess(theta=0.01)
+    alg = Algorithm(registry=reg, random_process=rand_proc)
 
     # create a cache for managing simulation data
     cache = Cache(reg.gft_dict.keys())

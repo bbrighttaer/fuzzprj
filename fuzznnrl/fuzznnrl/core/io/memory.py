@@ -3,14 +3,14 @@
 # Author: bbrighttaer
 
 
+import numpy as np
 import random
 from collections import OrderedDict
-
 from fuzznnrl.core.io.simdata import *
 
 
 class Experience:
-    def __init__(self, agent_Id, state, action_probs, action, reward, next_state=None):
+    def __init__(self, agent_id, state, action_probs, action, reward, next_state=None):
         """
         Stores an experience of an agent in a single time step.
         In the case of the GFT execution, the next state may be None since it is not of any use.
@@ -18,27 +18,28 @@ class Experience:
 
         Parameters
         -----------
-        :param agent_Id: The ID of the agent
+        :param agent_id: The ID of the agent
         :param state: The state or observation leading to this experience
         :param action_probs: The action probabilities computed by the reasoner or model
         :param action: The eventually selected action.
         :param reward: The reward received for performing the selected action
         :param next_state: The next state or observation received after performing the selected action
         """
-        self.__agent_Id = agent_Id
+        self.__agent_id = agent_id
         self.__state = state
         self.__action_probs = action_probs
         self.__action = action
         self.__reward = reward
         self.__next_state = next_state
+        self.__state_value = None
 
     @property
     def agent_id(self):
-        return self.__agent_Id
+        return self.__agent_id
 
     @agent_id.setter
-    def agent_id(self, id):
-        self.__agent_Id = id
+    def agent_id(self, agent_id):
+        self.__agent_id = agent_id
 
     @property
     def state(self):
@@ -79,6 +80,14 @@ class Experience:
     @next_state.setter
     def next_state(self, s_prime):
         self.__next_state = s_prime
+
+    @property
+    def state_value(self):
+        return self.__state_value
+
+    @state_value.setter
+    def state_value(self, value):
+        self.__state_value = value
 
 
 class Cache:
@@ -154,7 +163,7 @@ class Cache:
         """
         exp_dict = OrderedDict()
         for key, input_vec, output_vec in zip(input_vec_dict.keys(), input_vec_dict.values(), probs_dict.values()):
-            exp = Experience(agent_Id=agent_id, state=input_vec, action_probs=output_vec,
+            exp = Experience(agent_id=agent_id, state=input_vec, action_probs=output_vec,
                              action=action_code, reward=dec_reward_dict.get(key, 0))
             if next_state_dict is not None:
                 exp.next_state = next_state_dict.get(key, None)
@@ -205,8 +214,39 @@ class Cache:
                 time_step_dict[time_step] = records
             records.append(exp)
 
+    def _compute_states_value(self):
+        """
+        Computes the state values of all experiences in the cache
+        """
+        for k, ts_dict in self.__node_time_steps_dict.items():
+            avg_dict = {}
+            # reverse the time step keys to facilitate computation
+            ts_keys_list = list(ts_dict.keys())
+            for t in reversed(ts_keys_list):
+                # Get the experiences of the current time step
+                ts_exp_list = ts_dict.get(t)
+                # for each experience calculate its state-value
+                for exp in ts_exp_list:
+                    # find the rewards tracking list of the agent with this experience
+                    if exp.agent_id in avg_dict:
+                        avg_reward = avg_dict.get(exp.agent_id)
+                    else:
+                        avg_reward = []
+                        avg_dict[exp.agent_id] = avg_reward
+
+                    # Get the corresponding experience in the time step ahead if not terminal ts
+                    next_ts_exp_list = ts_dict.get(t + 1, None)
+                    if next_ts_exp_list is not None:
+                        for next_exp in next_ts_exp_list:
+                            if next_exp.agent_id == exp.agent_id:
+                                avg_reward.append(next_exp.reward)
+                                break
+                        exp.state_value = np.mean(np.array(avg_reward + [exp.reward]))
+                    else:  # terminal time step
+                        exp.state_value = exp.reward
+
     def clear(self):
-        self.__cache_init()
+        self.__cache_init(self.__node_names)
 
     def save_csv(self, path='', clear_after_save=True):
         """
@@ -217,6 +257,7 @@ class Cache:
         :param path: The location/directory of the files
         :param clear_after_save: If true the cache is re-initialized if the save operation succeeds
         """
+        self._compute_states_value()
         for node, time_step_dict in self.__node_time_steps_dict.items():
             # container for experiences for this node
             exp_lines = []
@@ -233,6 +274,7 @@ class Cache:
                     # combine the data into a single list
                     merged_list = list(exp.state) + list(exp.action_probs)
                     merged_list.append(exp.reward)
+                    merged_list.append(exp.state_value)
 
                     # add the entries in the list to the line
                     for text in merged_list:
@@ -250,7 +292,8 @@ class Cache:
 
         # re-initialize the cache if specified
         if clear_after_save:
-            self.__cache_init(self.__node_names)
+            # self.__cache_init(self.__node_names)
+            self.clear()
 
     def __get_date_suffix(self):
         from fuzznnrl.core.util.ops import getdatetime

@@ -17,7 +17,7 @@ import rlmarsenvs
 from fuzznnrl.core.algorithm.alg import Algorithm
 from fuzznnrl.core.conf import Constants
 from fuzznnrl.core.conf.parser import *
-from fuzznnrl.core.io.buffer import Cache, ReplayBuffer
+from fuzznnrl.core.io.memory import Cache, ReplayBuffer
 from fuzznnrl.core.io.simdata import Document, Text, Line
 from matplotlib import style
 from fuzznnrl_projects.carmunk.carmunk_nn import neural_net, LossHistory

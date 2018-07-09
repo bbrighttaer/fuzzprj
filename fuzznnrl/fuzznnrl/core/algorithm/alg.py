@@ -2,7 +2,6 @@
 # Copyright (C) 6/6/18 - 9:03 AM
 # Author: bbrighttaer
 from collections import OrderedDict
-from math import floor
 
 import numpy as np
 from fuzznnrl.core.conf import Constants
@@ -16,10 +15,11 @@ class Algorithm(object):
     The configure algorithm is used in the case of fuzzy control where a chromosome has to be decomposed
     """
 
-    def __init__(self, registry):
+    def __init__(self, registry, random_process=None):
         """
         :param registry: The GFT registry
         """
+        self.__random_process = random_process
         self.__reg = registry
         # get the name of the root GFS of the GFT
         self.__root = self.__reg.gft_config.rootInfSystem
@@ -84,6 +84,8 @@ class Algorithm(object):
                 # set input value of variable
                 input_value = func(agent_id)
                 gfs.controlSystemSimulation.input[var.identity.name] = input_value
+                if self.__random_process is not None:
+                    input_value += self.__random_process.sample()[0]
                 input_vector.append(input_value)
 
             # record the current input vector in the dictionary
