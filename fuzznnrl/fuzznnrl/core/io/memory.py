@@ -159,7 +159,7 @@ class Cache:
 
         :param probs_dict: A dictionary containing the output probabilities of each node in the tree
 
-        :return: A dictionary of experiences corresponding to nodes in the GFT for the given agent
+        :return: A dictionary of experiences corresponding to nodes in the tree for the given agent
         """
         exp_dict = OrderedDict()
         for key, input_vec, output_vec in zip(input_vec_dict.keys(), input_vec_dict.values(), probs_dict.values()):
@@ -214,12 +214,12 @@ class Cache:
                 time_step_dict[time_step] = records
             records.append(exp)
 
-    def _compute_states_value(self):
+    def compute_states_value(self, gamma=1.0):
         """
         Computes the state values of all experiences in the cache
         """
         for k, ts_dict in self.__node_time_steps_dict.items():
-            avg_dict = {}
+            agent_avg_dict = {}
             # reverse the time step keys to facilitate computation
             ts_keys_list = list(ts_dict.keys())
             for t in reversed(ts_keys_list):
@@ -228,11 +228,11 @@ class Cache:
                 # for each experience calculate its state-value
                 for exp in ts_exp_list:
                     # find the rewards tracking list of the agent with this experience
-                    if exp.agent_id in avg_dict:
-                        avg_reward = avg_dict.get(exp.agent_id)
+                    if exp.agent_id in agent_avg_dict:
+                        avg_reward = agent_avg_dict.get(exp.agent_id)
                     else:
                         avg_reward = []
-                        avg_dict[exp.agent_id] = avg_reward
+                        agent_avg_dict[exp.agent_id] = avg_reward
 
                     # Get the corresponding experience in the time step ahead if not terminal ts
                     next_ts_exp_list = ts_dict.get(t + 1, None)
@@ -241,7 +241,10 @@ class Cache:
                             if next_exp.agent_id == exp.agent_id:
                                 avg_reward.append(next_exp.reward)
                                 break
-                        exp.state_value = np.mean(np.array(avg_reward + [exp.reward]))
+                        temp = avg_reward + [exp.reward]
+                        temp = temp[::-1]
+                        temp = [gamma**k * r for k, r in enumerate(temp)]
+                        exp.state_value = np.mean(temp)
                     else:  # terminal time step
                         exp.state_value = exp.reward
 
@@ -257,7 +260,6 @@ class Cache:
         :param path: The location/directory of the files
         :param clear_after_save: If true the cache is re-initialized if the save operation succeeds
         """
-        self._compute_states_value()
         for node, time_step_dict in self.__node_time_steps_dict.items():
             # container for experiences for this node
             exp_lines = []

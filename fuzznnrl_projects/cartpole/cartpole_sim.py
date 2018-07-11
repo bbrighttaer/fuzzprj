@@ -23,7 +23,7 @@ style.use("seaborn-paper")
 Constants.MF_TUNING_RANGE = [-0.1, 0.1]
 Constants.LEARN_RULE_OP = False
 
-NUM_OF_GENS = 5
+NUM_OF_GENS = 20
 NUM_EPISODES_PER_IND = 1
 MAX_TIME_STEPS = 700
 POP_SIZE = 100
@@ -33,7 +33,7 @@ LOAD_INIT_POP = False
 APPLY_EVO = True
 QLFD_IND_FILE = "qualified.txt"
 SAVE_BEST = True
-SCORE_THRESHOLD = 200
+SCORE_THRESHOLD = 300
 
 
 def main():
@@ -118,7 +118,7 @@ def main():
                 # show the environment
                 env.render()
 
-                # # since only one agent applies to this case study set a dummy agent ID
+                # since only one agent applies to this case study set a dummy agent ID
                 agent_id = 0
 
                 # get an action
@@ -152,6 +152,7 @@ def main():
                     break
 
             # save contents of the cache and clear it for the next episode
+            cache.compute_states_value(gamma=.9)
             cache.save_csv()
 
             # if total_reward < 50:
