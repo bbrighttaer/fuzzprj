@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- GFT for OpenAI Gym CartPole-v1 control -->
+<fuzzyInferenceSystems xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:noNamespaceSchemaLocation="../../../fuzzrl/fuzzrl/core/res/gftlv0.1.1.xsd"
+                       rootInfSystem="Pendulum">
+    <fuzzyInferenceSystem name="Pendulum">
+        <outputGeneRange>-2 2</outputGeneRange>
+        <rbSize>135</rbSize>
+        <mfSize>38</mfSize>
+        <position>0</position>
+        <rbOffset>0</rbOffset>
+        <mfOffset>135</mfOffset>
+        <description>Determines the force applied to the joint of the pendulum</description>
+        <inputVariables>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="cosTheta" type="cosTheta"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="sinTheta" type="sinTheta"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="thetaDot" type="thetaDot"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="internalStateInputVariable" type="internalStateInputVariable"/>
+            </inputVar>
+        </inputVariables>
+        <outputVariable type="JointEffort">
+            <term>
+                <successOpTitle>action</successOpTitle>
+            </term>
+        </outputVariable>
+    </fuzzyInferenceSystem>
+</fuzzyInferenceSystems>

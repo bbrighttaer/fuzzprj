@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!-- Linguistic variables for OpenAI Gym CartPole-v1 -->
 <linguisticVariables xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                     xsi:noNamespaceSchemaLocation="../core/res/linguisticVariables.xsd">
+                     xsi:noNamespaceSchemaLocation="../../fuzzrl/fuzzrl/core/res/linguisticVariables.xsd">
     <variable name="cartPosition" rangeMin="-4.8" rangeMax="4.8" type="input" procedure="getCartPosition">
         <terms>
             <term name="LOW">

@@ -228,3 +228,6 @@ class Algorithm(object):
             val = interp_membership(out_var.universe, term.mf, sim.output[out_var.label])
             out.append(val)
         return softmax(x=out)
+
+    def executebfc(self, obclassobj, agent_id, gfs_name=None, input_vec_dict=OrderedDict(), actions_dict=OrderedDict()):
+        pass

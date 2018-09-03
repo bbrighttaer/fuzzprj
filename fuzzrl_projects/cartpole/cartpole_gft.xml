@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- GFT for OpenAI Gym CartPole-v1 control -->
 <fuzzyInferenceSystems xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                       xsi:noNamespaceSchemaLocation="../core/res/gftlv0.1.1.xsd" rootInfSystem="CartPoleMovement">
+                       xsi:noNamespaceSchemaLocation="../../fuzzrl/fuzzrl/core/res/gftlv0.1.1.xsd" rootInfSystem="CartPoleMovement">
     <fuzzyInferenceSystem name="CartPoleMovement">
         <outputGeneRange>0 1</outputGeneRange>
         <rbSize>81</rbSize>

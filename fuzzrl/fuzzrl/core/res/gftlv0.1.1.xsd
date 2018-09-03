@@ -34,7 +34,7 @@
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
-                            <xs:element maxOccurs="1" minOccurs="1" name="outputVariable" type="OutputVariableTerm"/>
+                            <xs:element name="outputVariable" type="OutputVariableTerm"/>
                         </xs:sequence>
                         <xs:attribute name="name" use="required"/>
                     </xs:complexType>
@@ -52,14 +52,14 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element name="successOpTitle" type="xs:string"/>
-                        <xs:element name="target">
+                        <xs:element name="target" maxOccurs="1" minOccurs="0">
                             <xs:complexType>
-                                <xs:attribute name="targetType" type="outputTargetType" use="required"/>
+                                <xs:attribute name="targetType" type="outputTargetType"/>
                                 <xs:attribute name="name" type="xs:string" use="required"/>
                             </xs:complexType>
                         </xs:element>
                     </xs:sequence>
-                    <xs:attribute name="code" type="xs:integer" use="required"/>
+                    <xs:attribute name="code" type="xs:integer"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
