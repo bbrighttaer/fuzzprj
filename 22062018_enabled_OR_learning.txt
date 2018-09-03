@@ -1,4 +1,4 @@
-/home/bbrighttaer/anaconda3/bin/python /home/bbrighttaer/PycharmProjects/fuzzprj/fuzznnrl_projects/carmunk/carmunk_sim.py
+/home/bbrighttaer/anaconda3/bin/python /home/bbrighttaer/PycharmProjects/fuzzprj/fuzzrl_projects/carmunk/carmunk_sim.py
 Loading chipmunk for Linux (64bit) [/home/bbrighttaer/anaconda3/lib/python3.6/site-packages/pymunk/libchipmunk64.so]
 INFO: carmunk v2
 Initializing cpSpace - Chipmunk v6.2.0 (Debug Enabled)
