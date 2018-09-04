@@ -27,14 +27,14 @@ Constants.LEARN_RULE_OP = False
 NUM_OF_GENS = 100
 NUM_EPISODES_PER_IND = 1
 MAX_TIME_STEPS = 100
-POP_SIZE = 50
+POP_SIZE = 20
 LIN_VARS_FILE = "res/pendulum_linvars.xml"
 GFT_FILE = "res/pendulum.xml"
 LOAD_INIT_POP = False
 APPLY_EVO = True
 QLFD_IND_FILE = "data/qualified.txt"
-SAVE_BEST = False
-SCORE_THRESHOLD = 300
+SAVE_BEST = True
+SCORE_THRESHOLD = -300.0
 
 
 def main():
@@ -52,10 +52,10 @@ def main():
     reg = xmlToLinvars(open(LIN_VARS_FILE).read())
 
     # create GFT with linguistic variables in the registry
-    reg = xmlToGFT(open(GFT_FILE).read(), registry=reg, defuzz_method="centroid")
+    reg = xmlToGFT(open(GFT_FILE).read(), registry=reg, defuzz_method="mom")
 
     # create GA instance with the registry object
-    ga = GeneticAlgorithm(registry=reg, seed=1)
+    ga = GeneticAlgorithm(registry=reg, seed=3, action_space=GeneticAlgorithm.CONTINUOUS)
 
     # create a mutation probability schedule
     mut_sch = sch.ExponentialDecaySchedule(initial_prob=.2, decay_factor=1e-2)
@@ -108,7 +108,7 @@ def main():
             for t in range(MAX_TIME_STEPS):
 
                 # show the environment
-                env.render()
+                # env.render()
 
                 # since only one agent applies to this case study set a dummy agent ID
                 agent_id = 0
@@ -154,7 +154,7 @@ def main():
             ind.fitness.values = (total_reward,)
 
             # save qualified individual
-            if SAVE_BEST and total_reward > SCORE_THRESHOLD:
+            if SAVE_BEST and total_reward >= SCORE_THRESHOLD:
                 document = Document(name=QLFD_IND_FILE)
                 document.addline(line=Line().add(text=Text(str(ind))))
                 document.save(append=True)
@@ -253,7 +253,7 @@ def applyEvolution(population, ga_alg, mut_sch, epoch):
 
     # create mutation operator
     mutargs = {"mu": 0,
-               "sigma": 0.1,
+               "sigma": 1.0,
                "indpb": 0.1}
     mutop = Operator(tools.mutGaussian, **mutargs)
 

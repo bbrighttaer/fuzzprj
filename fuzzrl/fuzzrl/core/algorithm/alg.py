@@ -322,8 +322,8 @@ class Algorithm(object):
         for k, v in interm_actions_dict.items():
             # v contains (o_forward, o_backward)
             a = np.mean(v)
-            if self.__random_process is not None:
-                a += self.__random_process.sample()[0]
+            # if self.__random_process is not None:
+            #     a += self.__random_process.sample()[0]
             actions_dict[k] = a
 
         return input_vec_dict, actions_dict

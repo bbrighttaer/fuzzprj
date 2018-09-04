@@ -11,8 +11,10 @@ class GeneticAlgorithm(object):
     """
     Provides all GA operations
     """
+    DISCRETE = "discrete_action_space"
+    CONTINUOUS = "continuous_action_space"
 
-    def __init__(self, registry, weights=(1.0,), seed=None):
+    def __init__(self, registry, weights=(1.0,), seed=None, action_space=DISCRETE):
         """
         Creates a GA instance
         :type weights: Indicator whether the GA operation is for maximization or minimization problem.
@@ -35,9 +37,13 @@ class GeneticAlgorithm(object):
         self.__stats.register("std", np.std)
         self.__stats.register("min", np.min)
         self.__stats.register("max", np.max)
+        self.__action_space = action_space
 
         # logging
         self.__logbook = tools.Logbook()
+
+        # avoids mutating elite members
+        self.__mut_avoid = []
 
     @property
     def stats(self):
@@ -168,8 +174,11 @@ class GeneticAlgorithm(object):
 
         # apply elitism
         keep_num = len(offspring) - len(next_gen)
+        self.__mut_avoid.clear()
         for i in range(keep_num):
-            next_gen.append(offspring[i])
+            elit = offspring[i]
+            # self.__mut_avoid.append(elit)
+            next_gen.append(elit)
 
         # clear existing fitness values
         for child in next_gen:
@@ -188,30 +197,32 @@ class GeneticAlgorithm(object):
         :param kwargs: The arguments to the mutation operator
         """
         # Apply mutation on the offspring
-        for mutant in offspring:
+        for member in offspring:
+            # if member not in self.__mut_avoid and random.random() < mut_prob:
             if random.random() < mut_prob:
-                for part in mutant:
+                for part in member:
                     func(part, **kwargs)
-                del mutant.fitness.values
+            del member.fitness.values
 
         # check bounds of mutation of RB & MF parts
         num_gfts = len(self.__registry.gft_dict)
         for _, fis in self.__registry.gft_dict.items():
-            for mutant in offspring:
+            for member in offspring:
                 # RB segment
-                self.__checkbounds(mutant[fis.descriptor.position],
+                self.__checkbounds(member[fis.descriptor.position],
                                    fis.descriptor.outputGeneRange[0],
-                                   fis.descriptor.outputGeneRange[1])
+                                   fis.descriptor.outputGeneRange[1],
+                                   apply_round=True)
                 # MF segment
-                self.__checkbounds(mutant[fis.descriptor.position + num_gfts],
+                self.__checkbounds(member[fis.descriptor.position + num_gfts],
                                    const.MF_TUNING_RANGE[0],
                                    const.MF_TUNING_RANGE[1], apply_round=False)
 
                 # RB operator segment
                 if Constants.LEARN_RULE_OP:
-                    self.__checkbounds(mutant[fis.descriptor.position + (2 * num_gfts)], 0, 1)
+                    self.__checkbounds(member[fis.descriptor.position + (2 * num_gfts)], 0, 1, apply_round=True)
 
-    def __checkbounds(self, child, min, max, apply_round=True):
+    def __checkbounds(self, child, min, max, apply_round):
         """
         Ensures that all genes are within defined ranges.
 

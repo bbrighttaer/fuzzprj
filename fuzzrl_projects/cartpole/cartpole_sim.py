@@ -57,7 +57,7 @@ def main():
     reg = xmlToGFT(open(GFT_FILE).read(), registry=reg)
 
     # create GA instance with the registry object
-    ga = GeneticAlgorithm(registry=reg, seed=2)
+    ga = GeneticAlgorithm(registry=reg, seed=3)
 
     # create a mutation probability schedule
     mut_sch = sch.ExponentialDecaySchedule(initial_prob=.2, decay_factor=1e-2)
@@ -116,7 +116,7 @@ def main():
             for t in range(MAX_TIME_STEPS):
 
                 # show the environment
-                env.render()
+                # env.render()
 
                 # since only one agent applies to this case study set a dummy agent ID
                 agent_id = 0
