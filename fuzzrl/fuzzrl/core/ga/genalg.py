@@ -1,5 +1,5 @@
-
 import random
+
 import numpy as np
 from deap import base
 from deap import creator
@@ -27,6 +27,7 @@ class GeneticAlgorithm(object):
         self.__registry = registry
         self.__toolbox = base.Toolbox()
         self.__toolbox.register("partial_ind", tools.initRepeat, creator.Partial_Individual)
+        self.__toolbox.register("partial_ind_itr", tools.initIterate, creator.Partial_Individual)
 
         # statistics
         self.__stats = tools.Statistics(key=lambda ind: ind.fitness.values)
@@ -46,8 +47,11 @@ class GeneticAlgorithm(object):
     def logbook(self):
         return self.__logbook
 
+    # def __create_rb_partial_chrom(self, rbsize, generange):
+    #     return self.__toolbox.partial_ind(self.__rand_rb(generange[0], generange[1]), rbsize)
+
     def __create_rb_partial_chrom(self, rbsize, generange):
-        return self.__toolbox.partial_ind(self.__rand_rb(generange[0], generange[1]), rbsize)
+        return self.__toolbox.partial_ind_itr(lambda k=rbsize, p=generange: random.choices(population=p, k=k))
 
     def __create_mf_partial_chrom(self, mfsize):
         if random.random() < const.ZEROS_MF_SEGMENT:
@@ -79,6 +83,7 @@ class GeneticAlgorithm(object):
             for _, fis in self.__registry.gft_dict.items():
                 descriptor = fis.descriptor
                 rb_segment.append(self.__create_rb_partial_chrom(descriptor.rbSize, descriptor.outputGeneRange))
+                # rb_segment = rb_segment + random.choices(descriptor.outputGeneRange, k=descriptor.rbSize)
                 mf_segment.append(self.__create_mf_partial_chrom(descriptor.mfSize))
                 if const.LEARN_RULE_OP:
                     rbopsnum = getrbopsnum(descriptor)

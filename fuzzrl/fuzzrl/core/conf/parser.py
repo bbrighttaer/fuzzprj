@@ -23,9 +23,10 @@ def xmlToLinvars(xmlText, registry=Registry("default_reg")):
     return registry
 
 
-def xmlToGFT(xmlText, registry):
+def xmlToGFT(xmlText, registry, defuzz_method="lom"):
     """
     Reads the GFT configuration file and create the nodes of the tree
+    :param defuzz_method: Defuzzification method
     :param xmlText: The GFT configuration file content
     :param registry: The registry object which already has a configured set of linguistic variables
     :return The updated registry
@@ -47,6 +48,6 @@ def xmlToGFT(xmlText, registry):
             var_dict[v.identity.type] = copy.deepcopy(linvars[v.identity.type])
             # print((time.time() - tic)*1000)
         var_dict[fis.outputVariable.type] = linvars[fis.outputVariable.type]
-        gfs = GeneticFuzzySystem(fis, vars_config_dict=var_dict)
+        gfs = GeneticFuzzySystem(fis, vars_config_dict=var_dict, defuzz_method=defuzz_method)
         registry.gft_dict[gfs.name] = gfs
     return registry

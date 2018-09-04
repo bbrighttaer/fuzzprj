@@ -11,7 +11,7 @@
                         <xs:sequence>
                             <xs:element name="outputGeneRange">
                                 <xs:simpleType>
-                                    <xs:list itemType="xs:int"/>
+                                    <xs:list itemType="xs:float"/>
                                 </xs:simpleType>
                             </xs:element>
                             <xs:element name="rbSize" type="xs:int"/>
@@ -59,7 +59,7 @@
                             </xs:complexType>
                         </xs:element>
                     </xs:sequence>
-                    <xs:attribute name="code" type="xs:integer"/>
+                    <xs:attribute name="code" type="xs:float" use="required"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>

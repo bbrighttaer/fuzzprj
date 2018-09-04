@@ -3,9 +3,10 @@
 # Author: bbrighttaer
 
 
-import numpy as np
 import random
 from collections import OrderedDict
+
+import numpy as np
 from fuzzrl.core.io.simdata import *
 
 
@@ -27,7 +28,7 @@ class Experience:
         """
         self.__agent_id = agent_id
         self.__state = state
-        self.__action_probs = action_probs
+        self.__action_outputs = action_probs
         self.__action = action
         self.__reward = reward
         self.__next_state = next_state
@@ -50,12 +51,12 @@ class Experience:
         self.__state = s
 
     @property
-    def action_probs(self):
-        return self.__action_probs
+    def action_outputs(self):
+        return self.__action_outputs
 
-    @action_probs.setter
-    def action_probs(self, probs):
-        self.__action_probs = probs
+    @action_outputs.setter
+    def action_outputs(self, probs):
+        self.__action_outputs = probs
 
     @property
     def action(self):
@@ -117,7 +118,7 @@ class Cache:
             self.__count_dict[name] = 0
             self.__node_time_steps_dict[name] = OrderedDict()
 
-    def mark(self, probs_dict_keys):
+    def mark(self, output_dict_keys):
         """
         Marks that there has been a single execution of each node in the given list.
         This list is retrieved from the probs_dict that is returned after the execution of the GFT algorithm to
@@ -126,10 +127,10 @@ class Cache:
 
         Parameters
         ------------
-        :param probs_dict_keys: The list containing tree nodes or names of GFSs whose execution counts are to be
+        :param output_dict_keys: The list containing tree nodes or names of GFSs whose execution counts are to be
         incremented
         """
-        for name in probs_dict_keys:
+        for name in output_dict_keys:
             self.__count_dict[name] += 1
 
     # def resetCount(self):
@@ -139,7 +140,7 @@ class Cache:
     #     for k, _ in self.__count_dict.items():
     #         self.__count_dict[k] = 0
 
-    def createExperiences(self, agent_id, action_code, dec_reward_dict, input_vec_dict, probs_dict,
+    def createExperiences(self, agent_id, action, dec_reward_dict, input_vec_dict, output_dict,
                           next_state_dict=None):
         """
         Creates experiences for the given agent from GFT algorithm execution outputs.
@@ -150,21 +151,21 @@ class Cache:
 
         :param agent_id: The ID of the agent
 
-        :param action_code: The selected action (code) from the
+        :param action: The selected action (code) from the
 
         :param dec_reward_dict: A dictionary of decomposed rewards indicating the reward of each node in the tree
         with respect to the time step under consideration.
 
         :param input_vec_dict: A dictionary containing the corresponding input vectors of each node in the tree
 
-        :param probs_dict: A dictionary containing the output probabilities of each node in the tree
+        :param output_dict: A dictionary containing the output probabilities of each node in the tree
 
         :return: A dictionary of experiences corresponding to nodes in the tree for the given agent
         """
         exp_dict = OrderedDict()
-        for key, input_vec, output_vec in zip(input_vec_dict.keys(), input_vec_dict.values(), probs_dict.values()):
+        for key, input_vec, output_vec in zip(input_vec_dict.keys(), input_vec_dict.values(), output_dict.values()):
             exp = Experience(agent_id=agent_id, state=input_vec, action_probs=output_vec,
-                             action=action_code, reward=dec_reward_dict.get(key, 0))
+                             action=action, reward=dec_reward_dict.get(key, 0))
             if next_state_dict is not None:
                 exp.next_state = next_state_dict.get(key, None)
             exp_dict[key] = exp
@@ -243,7 +244,7 @@ class Cache:
                                 break
                         temp = avg_reward + [exp.reward]
                         temp = temp[::-1]
-                        temp = [gamma**k * r for k, r in enumerate(temp)]
+                        temp = [gamma ** k * r for k, r in enumerate(temp)]
                         exp.state_value = np.mean(temp)
                     else:  # terminal time step
                         exp.state_value = exp.reward
@@ -274,9 +275,16 @@ class Cache:
                     line = Line(delimiter=',')
 
                     # combine the data into a single list
-                    merged_list = list(exp.state) + list(exp.action_probs)
+                    if hasattr(exp.action_outputs, '__iter__'):
+                        if type(exp.action_outputs == np.ndarray):
+                            merged_list = exp.state + exp.action_outputs.tolist()
+                        else:
+                            merged_list = exp.state + exp.action_outputs
+                    else:
+                        merged_list = exp.state + [exp.action_outputs]
                     merged_list.append(exp.reward)
-                    merged_list.append(exp.state_value)
+                    if exp.state_value is not None:
+                        merged_list.append(exp.state_value)
 
                     # add the entries in the list to the line
                     for text in merged_list:

@@ -81,9 +81,17 @@
     <!-- output variable -->
     <variable name="JointEffort" rangeMin="-2.0" rangeMax="2.0" type="output">
         <terms>
-            <term name="action">
+            <term name="low">
                 <mf>Triangle</mf>
-                <params>-2 0 2</params>
+                <params>-2.5 -2.0 0.0</params>
+            </term>
+            <term name="medium">
+                <mf>Triangle</mf>
+                <params>-2.0 0.0 2.0</params>
+            </term>
+            <term name="high">
+                <mf>Triangle</mf>
+                <params>0.0 2.0 2.5</params>
             </term>
         </terms>
     </variable>

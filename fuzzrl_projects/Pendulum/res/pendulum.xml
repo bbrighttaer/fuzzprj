@@ -4,7 +4,7 @@
                        xsi:noNamespaceSchemaLocation="../../../fuzzrl/fuzzrl/core/res/gftlv0.1.1.xsd"
                        rootInfSystem="Pendulum">
     <fuzzyInferenceSystem name="Pendulum">
-        <outputGeneRange>-2 2</outputGeneRange>
+        <outputGeneRange>-2.0 0.0 2.0</outputGeneRange>
         <rbSize>135</rbSize>
         <mfSize>38</mfSize>
         <position>0</position>
@@ -30,8 +30,14 @@
             </inputVar>
         </inputVariables>
         <outputVariable type="JointEffort">
-            <term>
-                <successOpTitle>action</successOpTitle>
+            <term code="-2.0">
+                <successOpTitle>low</successOpTitle>
+            </term>
+            <term code="0.0">
+                <successOpTitle>medium</successOpTitle>
+            </term>
+            <term code="2.0">
+                <successOpTitle>high</successOpTitle>
             </term>
         </outputVariable>
     </fuzzyInferenceSystem>

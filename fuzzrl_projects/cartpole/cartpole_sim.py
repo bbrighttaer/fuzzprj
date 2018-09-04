@@ -27,11 +27,11 @@ NUM_OF_GENS = 20
 NUM_EPISODES_PER_IND = 1
 MAX_TIME_STEPS = 700
 POP_SIZE = 30
-LIN_VARS_FILE = "cartpole_linvars.xml"
-GFT_FILE = "cartpole_gft.xml"
+LIN_VARS_FILE = "data/cartpole_linvars.xml"
+GFT_FILE = "data/cartpole_gft.xml"
 LOAD_INIT_POP = False
 APPLY_EVO = True
-QLFD_IND_FILE = "qualified.txt"
+QLFD_IND_FILE = "data/qualified.txt"
 SAVE_BEST = False
 SCORE_THRESHOLD = 300
 
@@ -125,7 +125,7 @@ def main():
                 code, action, input_vec_dict, probs_dict = alg.executegft(obs_cartpole, agent_id)
 
                 # mark the GFSs that executed for the agent in this time step
-                cache.mark(probs_dict_keys=probs_dict.keys())
+                cache.mark(output_dict_keys=probs_dict.keys())
 
                 # apply the selected action to the environment and observe feedback
                 next_state, reward, done, _ = env.step(int(code))  # cartpole's step func expects an integer type code
@@ -134,8 +134,8 @@ def main():
                 reward_dict = cache.decomposeReward(reward)
 
                 # create experiences for the agent with respect to each GFSs that executed for the agent
-                exp_dict = cache.createExperiences(agent_id=agent_id, action_code=code, dec_reward_dict=reward_dict,
-                                                   input_vec_dict=input_vec_dict, probs_dict=probs_dict,
+                exp_dict = cache.createExperiences(agent_id=agent_id, action=code, dec_reward_dict=reward_dict,
+                                                   input_vec_dict=input_vec_dict, output_dict=probs_dict,
                                                    next_state_dict=None)
 
                 # add the experiences of the agent to the cache
@@ -153,7 +153,7 @@ def main():
 
             # save contents of the cache and clear it for the next episode
             cache.compute_states_value(gamma=.9)
-            cache.save_csv()
+            cache.save_csv(path="data/")
 
             # if total_reward < 50:
             #     total_reward = - 50

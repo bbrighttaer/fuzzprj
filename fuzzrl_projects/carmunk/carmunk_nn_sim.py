@@ -109,7 +109,7 @@ def main():
             obs_carmunk.current_observation = next_state
 
             # mark the models that executed for the agent in this time step
-            cache.mark(probs_dict_keys=probs_dict.keys())
+            cache.mark(output_dict_keys=probs_dict.keys())
 
             # decompose the received reward
             reward_dict = cache.decomposeReward(reward)
@@ -118,8 +118,8 @@ def main():
             state_dict = {"CarMovement": np.array([obs_carmunk.getleftsensors(agent_id),
                                                    obs_carmunk.getmidsensors(agent_id),
                                                    obs_carmunk.getrightsensors(agent_id)])}
-            exp_dict = cache.createExperiences(agent_id=agent_id, action_code=code, dec_reward_dict=reward_dict,
-                                               input_vec_dict=input_vec_dict, probs_dict=probs_dict,
+            exp_dict = cache.createExperiences(agent_id=agent_id, action=code, dec_reward_dict=reward_dict,
+                                               input_vec_dict=input_vec_dict, output_dict=probs_dict,
                                                next_state_dict=state_dict)
 
             # accumulate the rewards of all time steps

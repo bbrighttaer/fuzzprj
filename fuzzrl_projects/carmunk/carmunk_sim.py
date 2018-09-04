@@ -134,14 +134,14 @@ def main():
                 next_state, reward, done, _ = env.step(code)
 
                 # mark the GFSs that executed for the agent in this time step
-                cache.mark(probs_dict_keys=probs_dict.keys())
+                cache.mark(output_dict_keys=probs_dict.keys())
 
                 # decompose the received reward
                 reward_dict = cache.decomposeReward(reward)
 
                 # create experiences for the agent with respect to each GFSs that executed for the agent
-                exp_dict = cache.createExperiences(agent_id=agent_id, action_code=code, dec_reward_dict=reward_dict,
-                                                   input_vec_dict=input_vec_dict, probs_dict=probs_dict)
+                exp_dict = cache.createExperiences(agent_id=agent_id, action=code, dec_reward_dict=reward_dict,
+                                                   input_vec_dict=input_vec_dict, output_dict=probs_dict)
 
                 # add the experiences of the agent to the cache
                 cache.addExperiences(time_step=t, exp_dict=exp_dict)
