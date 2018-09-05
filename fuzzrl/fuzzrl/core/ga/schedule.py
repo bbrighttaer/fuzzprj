@@ -98,3 +98,16 @@ class TimeBasedSchedule(ProbabilitySchedule):
     def get_prob(self, epoch):
         self.prob = 1. / (1. + self.decay_factor * epoch)
         return self.prob
+
+
+class ConstantSchedule(ProbabilitySchedule):
+    """
+    Maintains a constant probability
+    """
+
+    def __init__(self, prob):
+        super().__init__(initial_prob=0, decay_factor=0)
+        self.__const_prob = prob
+
+    def get_prob(self, epoch):
+        return self.__const_prob

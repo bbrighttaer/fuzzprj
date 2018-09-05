@@ -4,7 +4,7 @@
 from collections import OrderedDict
 
 import numpy as np
-from fuzzrl.core.conf import Constants
+from fuzzrl.core.conf import Constants as const
 from fuzzrl.core.util.ops import softmax
 from skfuzzy import interp_membership
 
@@ -36,9 +36,21 @@ class Algorithm(object):
             rb_segment = chromosome[gfs.descriptor.position]
             mf_segment = chromosome[gfs.descriptor.position + num_gfs]
             rb_op_segment = None
-            if Constants.LEARN_RULE_OP:
-                rb_op_segment = chromosome[gfs.descriptor.position + (2 * num_gfs)]
-            gfs.buildControlSystemSim(rb_chrom=rb_segment, mf_chrom=mf_segment, rb_op_chrom=rb_op_segment)
+            out_mf_seg = None
+
+            seg_skip = 1
+            # check for rule operator learning
+            if const.LEARN_RULE_OP:
+                seg_skip += 1
+                rb_op_segment = chromosome[gfs.descriptor.position + (seg_skip * num_gfs)]
+
+            # check for output variable membership functions tuning (thus, continuous action space activated)
+            if const.ACTION_SPACE == const.CONTINUOUS:
+                seg_skip += 1
+                out_mf_seg = chromosome[gfs.descriptor.position + (seg_skip * num_gfs)]
+
+            gfs.buildControlSystemSim(rb_chrom=rb_segment, mf_chrom=mf_segment,
+                                      rb_op_chrom=rb_op_segment, out_mf_chrom=out_mf_seg)
 
     def executegft(self, obclassobj, agent_id, gfs_name=None, formatting_func=round):
         return self._executegft(obclassobj, agent_id, gfs_name, formatting_func, OrderedDict(), OrderedDict())
@@ -231,9 +243,10 @@ class Algorithm(object):
             out.append(val)
         return softmax(x=out)
 
-    def executebfc(self, obclassobj, agent_id):
+    def executebfc(self, obclassobj, agent_id, add_noise=True):
         """
         Executes a Bidirectional Fuzzy Chain (BFC) for continuous action(s)
+        :param add_noise:
         :param obclassobj:
         :param agent_id:
         :param gfs_name:
@@ -259,13 +272,15 @@ class Algorithm(object):
         # Forward pass
         next_cell_value = 0
 
+        inner_state_required = True if len(gfs_list) > 1 else False
+
         for gfs in gfs_list:
             # clear previous data
             gfs.reset()
 
             # set input values
             for var in gfs.descriptor.inputVariables.inputVar:
-                if var.identity.type == "internalStateInputVariable":
+                if var.identity.type == const.INNER_STATE_VAR:
                     continue
                 # get config details from registry
                 var_config = self.__reg.linvar_dict[var.identity.type]
@@ -278,9 +293,10 @@ class Algorithm(object):
                 #     input_value += self.__random_process.sample()[0]
                 input_vector.append(input_value)
 
-            # set internal state variable
-            gfs.controlSystemSimulation.input["internalStateInputVariable"] = next_cell_value
-            input_vector.append(next_cell_value)
+            if inner_state_required:
+                # set internal state variable
+                gfs.controlSystemSimulation.input["internalStateInputVariable"] = next_cell_value
+                input_vector.append(next_cell_value)
 
             # record the current input vector in the dictionary
             input_vec_dict[gfs.name] = input_vector
@@ -300,11 +316,12 @@ class Algorithm(object):
         # Backward pass
         next_cell_value = 0
         for gfs in reversed(gfs_list):
-            # set internal variable
-            gfs.controlSystemSimulation.input["internalStateInputVariable"] = next_cell_value
+            if inner_state_required:
+                # set internal variable
+                gfs.controlSystemSimulation.input["internalStateInputVariable"] = next_cell_value
 
-            # append current internal variable value to the input values list of the GFS
-            input_vec_dict[gfs.name] = input_vec_dict[gfs.name] + [next_cell_value]
+                # append current internal variable value to the input values list of the GFS
+                input_vec_dict[gfs.name] = input_vec_dict[gfs.name] + [next_cell_value]
 
             # execute the control system
             gfs.controlSystemSimulation.compute()
@@ -322,8 +339,8 @@ class Algorithm(object):
         for k, v in interm_actions_dict.items():
             # v contains (o_forward, o_backward)
             a = np.mean(v)
-            # if self.__random_process is not None:
-            #     a += self.__random_process.sample()[0]
+            if self.__random_process is not None and add_noise:
+                a += self.__random_process.sample()[0]
             actions_dict[k] = a
 
-        return input_vec_dict, actions_dict
+        return actions_dict, input_vec_dict

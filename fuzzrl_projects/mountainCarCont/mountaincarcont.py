@@ -1,49 +1,63 @@
-# project: fuzz_nn_rl
-# Copyright (C) 6/11/18 - 1:48 PM
-# Author: bbrighttaer
+#
+# Project: fuzzrl
+# Created by bbrighttaer on 9/5/18
+#
+
+
+#
+# Project: fuzzrl
+# Created by bbrighttaer on 9/3/18
+#
+
 
 import deap.tools as tools
 import fuzzrl.core.ga.schedule as sch
 import fuzzrl.core.plot.analysis as ana
 import gym
 import matplotlib.pyplot as plt
-import numpy as np
-from fuzzrl.core.io.randomprocess import OrnsteinUhlenbeckProcess
 from fuzzrl.core.algorithm.alg import Algorithm
 from fuzzrl.core.conf import Constants as const
 from fuzzrl.core.conf.parser import *
 from fuzzrl.core.ga.genalg import GeneticAlgorithm
 from fuzzrl.core.ga.op import Operator
 from fuzzrl.core.io.memory import Cache
+from fuzzrl.core.io.randomprocess import OrnsteinUhlenbeckProcess
 from fuzzrl.core.io.simdata import Document, Text, Line
 from matplotlib import style
 
 style.use("seaborn-paper")
 
-const.MF_TUNING_RANGE = [-0.1, 0.1]
+const.MF_TUNING_RANGE = [-0.001, 0.001]
 const.LEARN_RULE_OP = False
-const.ACTION_SPACE = const.DISCRETE
+const.ACTION_SPACE = const.CONTINUOUS
 
-NUM_OF_GENS = 20
+NUM_OF_GENS = 100
 NUM_EPISODES_PER_IND = 1
-MAX_TIME_STEPS = 700
-POP_SIZE = 30
-LIN_VARS_FILE = "res/cartpole_linvars.xml"
-GFT_FILE = "res/cartpole_gft.xml"
+MAX_TIME_STEPS = 500
+POP_SIZE = 20
+LIN_VARS_FILE = "res/mountain_car_linvars.xml"
+GFT_FILE = "res/mountain_car.xml"
 LOAD_INIT_POP = False
 APPLY_EVO = True
 QLFD_IND_FILE = "data/qualified.txt"
-SAVE_BEST = False
-SCORE_THRESHOLD = 300
+SAVE_BEST = True
+SCORE_THRESHOLD = 90.0
+
+
+def reward_shaping(pos, r):
+    # Adjust reward based on car position
+    reward = pos + 0.5
+
+    # Adjust reward for task completion
+    if pos >= 0.5:
+        reward = r + 1
+    return reward
 
 
 def main():
     # creates an environment
-    env = gym.make("CartPole-v1")
+    env = gym.make("MountainCarContinuous-v0")
 
-    # print observation space ranges
-    print("observation space ranges\nhigh = {}\nlow = {}\n".format(str(env.observation_space.high),
-                                                                   str(env.observation_space.low)))
     # chart series
     weighted_avg = ana.WeightedAvg(beta=0.9)
     all_ind_series = ana.Series(name="Individuals Performance")
@@ -55,16 +69,13 @@ def main():
     reg = xmlToLinvars(open(LIN_VARS_FILE).read())
 
     # create GFT with linguistic variables in the registry
-    reg = xmlToGFT(open(GFT_FILE).read(), registry=reg)
+    reg = xmlToGFT(open(GFT_FILE).read(), registry=reg, defuzz_method="mom")
 
     # create GA instance with the registry object
-    # good seeds so far: 2, 4,
-    ga = GeneticAlgorithm(registry=reg, seed=4)
+    ga = GeneticAlgorithm(registry=reg, seed=5)
 
     # create a mutation probability schedule
-    mut_sch = sch.ExponentialDecaySchedule(initial_prob=.2, decay_factor=1e-2)
-
-    tau_sch = sch.ExponentialDecaySchedule(initial_prob=.5, decay_factor=1e-1)
+    mut_sch = sch.ExponentialDecaySchedule(initial_prob=.1, decay_factor=1e-2)
 
     # create GFT algorithm object with the registry
     rand_proc = OrnsteinUhlenbeckProcess(theta=0.01)
@@ -77,6 +88,7 @@ def main():
     if LOAD_INIT_POP:
         pop = ga.load_initial_population(QLFD_IND_FILE, POP_SIZE)
         pop = pop[::-1]
+        print("Num. of loaded individuals =", len(pop))
     else:
         pop = ga.generate_initial_population(POP_SIZE)
 
@@ -87,10 +99,7 @@ def main():
     ind_count = 0
 
     # create an object for retrieving input values
-    obs_cartpole = CartPoleObs()
-
-    # create agents list
-    agents = [("agentLabel", 0)]
+    obs_accessor = MountainCarObs()
 
     # perform the simulation for a specified number of generations
     while epoch < NUM_OF_GENS:
@@ -106,45 +115,46 @@ def main():
             alg.configuregft(chromosome=ind)
 
             # control the environment with the configured GFT
-            # for i_episode in range(NUM_EPISODES_PER_IND):
 
             # reset the environment
             observation = env.reset()
 
             # set the received observation as the current array for retrieving input values
-            obs_cartpole.current_observation = observation
+            obs_accessor.current_observation = observation
 
             # run through the time steps of the simulation
             for t in range(MAX_TIME_STEPS):
 
                 # show the environment
-                # env.render()
+                env.render()
 
                 # since only one agent applies to this case study set a dummy agent ID
                 agent_id = 0
 
                 # get an action
-                code, action, input_vec_dict, probs_dict = alg.executegft(obs_cartpole, agent_id)
+                actions_dict, input_vec_dict = alg.executebfc(obs_accessor, agent_id, add_noise=True)
 
                 # mark the GFSs that executed for the agent in this time step
-                cache.mark(output_dict_keys=probs_dict.keys())
+                cache.mark(output_dict_keys=actions_dict.keys())
 
                 # apply the selected action to the environment and observe feedback
-                next_state, reward, done, _ = env.step(int(code))  # cartpole's step func expects an integer type code
+                next_state, reward, done, _ = env.step(list(actions_dict.values()))
+                reward = reward_shaping(pos=next_state[0], r=reward)
 
                 # decompose the received reward
                 reward_dict = cache.decomposeReward(reward)
 
                 # create experiences for the agent with respect to each GFSs that executed for the agent
-                exp_dict = cache.createExperiences(agent_id=agent_id, action=code, dec_reward_dict=reward_dict,
-                                                   input_vec_dict=input_vec_dict, output_dict=probs_dict,
+                exp_dict = cache.createExperiences(agent_id=agent_id, action=list(actions_dict.values()),
+                                                   dec_reward_dict=reward_dict,
+                                                   input_vec_dict=input_vec_dict, output_dict=actions_dict,
                                                    next_state_dict=None)
 
                 # add the experiences of the agent to the cache
                 cache.addExperiences(time_step=t, exp_dict=exp_dict)
 
                 # set the received observation as the current array for retrieving input values
-                obs_cartpole.current_observation = next_state
+                obs_accessor.current_observation = next_state
 
                 # accumulate the rewards of all time steps
                 total_reward += reward
@@ -154,19 +164,17 @@ def main():
                     break
 
             # save contents of the cache and clear it for the next episode
-            cache.compute_states_value(gamma=.9)
+            # cache.compute_states_value(gamma=.9)
             cache.save_csv(path="data/")
-
-            # if total_reward < 50:
-            #     total_reward = - 50
-            # print("Episode finished after {} time steps".format(t + 1))
-            print("Episode: {}/{} | score: {}".format(ind_count, (NUM_OF_GENS * POP_SIZE), total_reward))
+            print(
+                "Episode: {t}/{T} | score: {r}".format(t=ind_count, T=(NUM_OF_GENS * POP_SIZE),
+                                                       r=total_reward))
 
             # set the return from the environment as the fitness value of the current individual
             ind.fitness.values = (total_reward,)
 
             # save qualified individual
-            if SAVE_BEST and total_reward > SCORE_THRESHOLD:
+            if SAVE_BEST and total_reward >= SCORE_THRESHOLD:
                 document = Document(name=QLFD_IND_FILE)
                 document.addline(line=Line().add(text=Text(str(ind))))
                 document.save(append=True)
@@ -277,31 +285,17 @@ def applyEvolution(population, ga_alg, mut_sch, epoch):
     return offspring
 
 
-class CartPoleObs(object):
+class MountainCarObs(object):
     def __init__(self):
         self.current_observation = None
 
-    def getCartPosition(self, agentId):
+    def getCarPosition(self, agentId):
         assert self.current_observation is not None
         return self.current_observation[0]
 
-    def getCartVelocity(self, agentId):
+    def getCarVelocity(self, agentId):
         assert self.current_observation is not None
-        # return  normalize(self.current_observation[1], -3.4028235e+38, 3.4028235e+38, -10, 10)
-        return sigmoid(self.current_observation[1])
-
-    def getPoleAngle(self, agentId):
-        assert self.current_observation is not None
-        return self.current_observation[2]
-
-    def getPoleVelocity(self, agentId):
-        assert self.current_observation is not None
-        # return normalize(self.current_observation[3], 3.4028235e+38, 3.4028235e+38, -10, 10)
-        return sigmoid(self.current_observation[3])
-
-
-def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
+        return self.current_observation[1]
 
 
 if __name__ == "__main__":

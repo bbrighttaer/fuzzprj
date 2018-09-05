@@ -76,7 +76,7 @@ class GeneticFuzzySystem(object):
     def controlSystemSimulation(self):
         return self.__controlSystemSimulation
 
-    def buildControlSystemSim(self, rb_chrom, mf_chrom, rb_op_chrom=None):
+    def buildControlSystemSim(self, rb_chrom, mf_chrom, rb_op_chrom=None, out_mf_chrom=None):
         """
         Creates the control system for simulation if no control system has been created or
         reuse created properties by re-configuring them with the submitted rb_chrom and mf_chrom
@@ -95,7 +95,7 @@ class GeneticFuzzySystem(object):
 
         # step 1. create rule antecedents and consequent
         self.__createAntecedents(mf_chrom=mf_chrom)
-        self.__createConsequent()
+        self.__createConsequent(mf_chrom=out_mf_chrom)
 
         # step 2. create rules
         self.__createFuzzyRules(rb_chrom=rb_chrom, rb_op_chrom=rb_op_chrom, depth=len(self.__antecedents))
@@ -155,15 +155,25 @@ class GeneticFuzzySystem(object):
         # else:
         #     print("All antecedents for {} GFS created successfully".format(self.name))
 
-    def __createConsequent(self):
+    def __createConsequent(self, mf_chrom):
         var = self.__descriptor.outputVariable
         var_config = self.__vars_config_dict[var.type]
         self.__consequent = ctrl.Consequent(np.linspace(var_config.rangeMin, var_config.rangeMax),
                                             var_config.name)
         self.__consequent.defuzzify_method = self.__defuzz_method
 
+        pointer = 0
         for term in var_config.terms.term:
-            self.__consequent[term.name] = self.__createMF(term.mf, term.params, self.__consequent.universe)
+            # if the problem domain is continuous control tune the output membership functions
+            if mf_chrom is not None:
+                p_size = gettuningparamsize(term.mf)
+                t_params = mf_chrom[pointer: pointer + p_size]
+                args = term.params + t_params
+                params = tunemf(term.mf, *args)
+                pointer += p_size
+            else:
+                params = term.params
+            self.__consequent[term.name] = self.__createMF(term.mf, params, self.__consequent.universe)
 
     def __createMF(self, mf_type, params, universe):
         """
@@ -178,7 +188,7 @@ class GeneticFuzzySystem(object):
         :return: a membership function
         """
         return {TRAPEZOID_MF: lambda *args: fuzz.trapmf(*args),
-                GAUSSIAN_MF: lambda *args: fuzz.gaussmf(*args),
+                GAUSSIAN_MF: lambda *args: fuzz.gaussmf(args[0], *args[1]),
                 SIGMOID_MF: lambda *args: fuzz.sigmf(*args)
                 }.get(mf_type.lower(), lambda *args: fuzz.trimf(*args))(universe, params)
 

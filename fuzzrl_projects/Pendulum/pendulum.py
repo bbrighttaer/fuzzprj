@@ -10,7 +10,7 @@ import fuzzrl.core.plot.analysis as ana
 import gym
 import matplotlib.pyplot as plt
 from fuzzrl.core.algorithm.alg import Algorithm
-from fuzzrl.core.conf import Constants
+from fuzzrl.core.conf import Constants as const
 from fuzzrl.core.conf.parser import *
 from fuzzrl.core.ga.genalg import GeneticAlgorithm
 from fuzzrl.core.ga.op import Operator
@@ -21,8 +21,9 @@ from matplotlib import style
 
 style.use("seaborn-paper")
 
-Constants.MF_TUNING_RANGE = [-0.1, 0.1]
-Constants.LEARN_RULE_OP = False
+const.MF_TUNING_RANGE = [-0.1, 0.1]
+const.LEARN_RULE_OP = False
+const.ACTION_SPACE = const.CONTINUOUS
 
 NUM_OF_GENS = 100
 NUM_EPISODES_PER_IND = 1
@@ -34,7 +35,7 @@ LOAD_INIT_POP = False
 APPLY_EVO = True
 QLFD_IND_FILE = "data/qualified.txt"
 SAVE_BEST = True
-SCORE_THRESHOLD = -300.0
+SCORE_THRESHOLD = -250.0
 
 
 def main():
@@ -52,16 +53,17 @@ def main():
     reg = xmlToLinvars(open(LIN_VARS_FILE).read())
 
     # create GFT with linguistic variables in the registry
-    reg = xmlToGFT(open(GFT_FILE).read(), registry=reg, defuzz_method="mom")
+    reg = xmlToGFT(open(GFT_FILE).read(), registry=reg, defuzz_method="centroid")
 
     # create GA instance with the registry object
-    ga = GeneticAlgorithm(registry=reg, seed=3, action_space=GeneticAlgorithm.CONTINUOUS)
+    # good seeds so far: 2, 5
+    ga = GeneticAlgorithm(registry=reg, seed=2)
 
     # create a mutation probability schedule
     mut_sch = sch.ExponentialDecaySchedule(initial_prob=.2, decay_factor=1e-2)
 
     # create GFT algorithm object with the registry
-    rand_proc = OrnsteinUhlenbeckProcess(theta=0.01)
+    rand_proc = OrnsteinUhlenbeckProcess(theta=0.001)
     alg = Algorithm(registry=reg, random_process=rand_proc)
 
     # create a cache for managing simulation data
@@ -71,6 +73,7 @@ def main():
     if LOAD_INIT_POP:
         pop = ga.load_initial_population(QLFD_IND_FILE, POP_SIZE)
         pop = pop[::-1]
+        print("Num. of loaded individuals =", len(pop))
     else:
         pop = ga.generate_initial_population(POP_SIZE)
 
@@ -108,13 +111,13 @@ def main():
             for t in range(MAX_TIME_STEPS):
 
                 # show the environment
-                # env.render()
+                env.render()
 
                 # since only one agent applies to this case study set a dummy agent ID
                 agent_id = 0
 
                 # get an action
-                input_vec_dict, actions_dict = alg.executebfc(obs_pendulum, agent_id)
+                input_vec_dict, actions_dict = alg.executebfc(obs_pendulum, agent_id, add_noise=False)
 
                 # mark the GFSs that executed for the agent in this time step
                 cache.mark(output_dict_keys=actions_dict.keys())
@@ -253,7 +256,7 @@ def applyEvolution(population, ga_alg, mut_sch, epoch):
 
     # create mutation operator
     mutargs = {"mu": 0,
-               "sigma": 1.0,
+               "sigma": 0.1,
                "indpb": 0.1}
     mutop = Operator(tools.mutGaussian, **mutargs)
 

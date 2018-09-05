@@ -2,10 +2,13 @@ class Constants:
     """
     Maintains all operating constants of core modules
     """
-    # RAND_SEED = 1
+    INNER_STATE_VAR = "internalStateInputVariable"
     MF_TUNING_RANGE = [-0.2, 0.2]
-    LEARN_RULE_OP = True
+    LEARN_RULE_OP = False
     ZEROS_MF_SEGMENT = 0.01
+    DISCRETE = "discrete_action_space"
+    CONTINUOUS = "continuous_action_space"
+    ACTION_SPACE = DISCRETE
 
 
 def setconstants(**kwargs):

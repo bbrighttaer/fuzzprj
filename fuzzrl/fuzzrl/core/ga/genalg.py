@@ -4,17 +4,16 @@ import numpy as np
 from deap import base
 from deap import creator
 from deap import tools
-from fuzzrl.core.conf import Constants as const, Constants
+from fuzzrl.core.conf import Constants as const
+from fuzzrl.core.fuzzy.tunemf import gettuningparamsize
 
 
 class GeneticAlgorithm(object):
     """
     Provides all GA operations
     """
-    DISCRETE = "discrete_action_space"
-    CONTINUOUS = "continuous_action_space"
 
-    def __init__(self, registry, weights=(1.0,), seed=None, action_space=DISCRETE):
+    def __init__(self, registry, weights=(1.0,), seed=None):
         """
         Creates a GA instance
         :type weights: Indicator whether the GA operation is for maximization or minimization problem.
@@ -37,7 +36,6 @@ class GeneticAlgorithm(object):
         self.__stats.register("std", np.std)
         self.__stats.register("min", np.min)
         self.__stats.register("max", np.max)
-        self.__action_space = action_space
 
         # logging
         self.__logbook = tools.Logbook()
@@ -53,11 +51,11 @@ class GeneticAlgorithm(object):
     def logbook(self):
         return self.__logbook
 
-    # def __create_rb_partial_chrom(self, rbsize, generange):
-    #     return self.__toolbox.partial_ind(self.__rand_rb(generange[0], generange[1]), rbsize)
-
     def __create_rb_partial_chrom(self, rbsize, generange):
-        return self.__toolbox.partial_ind_itr(lambda k=rbsize, p=generange: random.choices(population=p, k=k))
+        return self.__toolbox.partial_ind(self.__rand_rb(generange[0], generange[1]), rbsize)
+
+    # def __create_rb_partial_chrom(self, rbsize, generange):
+    #     return self.__toolbox.partial_ind_itr(lambda k=rbsize, p=generange: random.choices(population=p, k=k))
 
     def __create_mf_partial_chrom(self, mfsize):
         if random.random() < const.ZEROS_MF_SEGMENT:
@@ -85,17 +83,25 @@ class GeneticAlgorithm(object):
         population = []
         for _ in range(pop_size):
             # construct the individual
-            rb_segment, mf_segment, rb_operator_seg = [], [], []
+            rb_segment, mf_segment, rb_operator_seg, out_mf_seg = [], [], [], []
             for _, fis in self.__registry.gft_dict.items():
                 descriptor = fis.descriptor
                 rb_segment.append(self.__create_rb_partial_chrom(descriptor.rbSize, descriptor.outputGeneRange))
-                # rb_segment = rb_segment + random.choices(descriptor.outputGeneRange, k=descriptor.rbSize)
                 mf_segment.append(self.__create_mf_partial_chrom(descriptor.mfSize))
+
                 if const.LEARN_RULE_OP:
                     rbopsnum = getrbopsnum(descriptor)
                     rb_operator_seg.append(self.__create_rb_operators_chrom(rbopsnum))
 
-            individual = rb_segment + mf_segment + rb_operator_seg
+                if const.ACTION_SPACE == const.CONTINUOUS:
+                    p_size = 0
+                    output_var = descriptor.outputVariable
+                    var_config = self.__registry.linvar_dict[output_var.type]
+                    for term in var_config.terms.term:
+                        p_size += gettuningparamsize(term.mf)
+                    out_mf_seg.append(self.__create_mf_partial_chrom(p_size))
+
+            individual = rb_segment + mf_segment + rb_operator_seg + out_mf_seg
 
             # convert the individual to DEAP individual and add it to the population (wrapping)
             individual = creator.Individual(individual)
@@ -211,18 +217,25 @@ class GeneticAlgorithm(object):
                 # RB segment
                 self.__checkbounds(member[fis.descriptor.position],
                                    fis.descriptor.outputGeneRange[0],
-                                   fis.descriptor.outputGeneRange[1],
-                                   apply_round=True)
+                                   fis.descriptor.outputGeneRange[1])
                 # MF segment
                 self.__checkbounds(member[fis.descriptor.position + num_gfts],
                                    const.MF_TUNING_RANGE[0],
                                    const.MF_TUNING_RANGE[1], apply_round=False)
-
+                seg_skip = 1
                 # RB operator segment
-                if Constants.LEARN_RULE_OP:
-                    self.__checkbounds(member[fis.descriptor.position + (2 * num_gfts)], 0, 1, apply_round=True)
+                if const.LEARN_RULE_OP:
+                    seg_skip += 1
+                    self.__checkbounds(member[fis.descriptor.position + (seg_skip * num_gfts)], 0, 1)
 
-    def __checkbounds(self, child, min, max, apply_round):
+                if const.ACTION_SPACE == const.CONTINUOUS:
+                    seg_skip += 1
+                    # Output MF tuning segment
+                    self.__checkbounds(member[fis.descriptor.position + (seg_skip * num_gfts)],
+                                       const.MF_TUNING_RANGE[0],
+                                       const.MF_TUNING_RANGE[1], apply_round=False)
+
+    def __checkbounds(self, child, min, max, apply_round=True):
         """
         Ensures that all genes are within defined ranges.
 

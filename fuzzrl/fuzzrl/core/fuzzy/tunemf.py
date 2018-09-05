@@ -29,8 +29,20 @@ def tunetrimf(a, b, c, delta, eta):
     return a, b, c
 
 
-def tunegaussmf():
-    pass
+def tunegaussmf(mean, sigma, param1, param2):
+    """
+    Tunes the mean and standard deviation of a Gaussian MF
+    ----------------------
+
+    :param mean: The mean of the MF
+    :param sigma: The S.D. of the MF
+    :param param1: parameter 1 for tuning mean
+    :param param2: parameter 2 for tuning sigma
+    :return: a tuple: (mean_prime, sigma_prime)
+    """
+    mean += param1
+    sigma += param2
+    return mean, abs(sigma)
 
 
 def tunetrapmf():
@@ -48,7 +60,7 @@ def tunemf(mftype, *args):
     :param args: terms of the tuning function
     :return: tuned membership function parameters
     """
-    return {GAUSSIAN_MF: lambda *x: tunegaussmf(),
+    return {GAUSSIAN_MF: lambda *x: tunegaussmf(*x),
             TRAPEZOID_MF: lambda *x: tunetrapmf()}.get(mftype.lower(),
                                                        lambda *x: tunetrimf(*x))(*args)
 
