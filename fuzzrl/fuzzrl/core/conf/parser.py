@@ -23,7 +23,7 @@ def xmlToLinvars(xmlText, registry=Registry("default_reg")):
     return registry
 
 
-def xmlToGFT(xmlText, registry, defuzz_method="lom"):
+def xmlToGFT(xmlText, registry, defuzz_method):
     """
     Reads the GFT configuration file and create the nodes of the tree
     :param defuzz_method: Defuzzification method

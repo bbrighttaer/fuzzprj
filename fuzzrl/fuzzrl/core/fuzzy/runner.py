@@ -149,7 +149,7 @@ class Runner(object):
     """
 
     def __init__(self, ga_config, sim_config, r_shaping_callback=None, time_step_finished_callback=None,
-                 episode_finished_callback=None, gen_finished_callback=None, sim_finished_callback=None,
+                 episode_finished_callback=None, epoch_finished_callback=None, sim_finished_callback=None,
                  evolution_finished_callback=None, seed=5):
         self.seed = seed
         self.r_shaping_callback = r_shaping_callback
@@ -157,7 +157,7 @@ class Runner(object):
         self.sim_config = sim_config
         self.time_step_finished_callback = time_step_finished_callback
         self.episode_finished_callback = episode_finished_callback
-        self.gen_finished_callback = gen_finished_callback
+        self.epoch_finished_callback = epoch_finished_callback
         self.sim_finished_callback = sim_finished_callback
         self.evolution_finished_callback = evolution_finished_callback
 
@@ -213,86 +213,95 @@ class Runner(object):
                 for i, agent in enumerate(agents):
                     agent.obs_accessor.current_observation = obs if len(agents) == 1 else obs[i]
 
-                # run through the time steps of the simulation
-                for t in range(self.sim_config.max_time_steps):
+                for i_ep in range(self.sim_config.episodes_per_ind):
+                    # run through the time steps of the simulation
+                    for t in range(self.sim_config.max_time_steps):
 
-                    if self.sim_config.render:
-                        # show the environment
-                        env.render()
+                        if self.sim_config.render:
+                            # show the environment
+                            env.render()
 
-                    a = None
-                    for agent in agents:
+                        a = None
+                        for agent in agents:
+                            if self.sim_config.action_space_type == Const.DISCRETE:
+                                # get an action
+                                code, action, input_vec_dict, probs_dict = alg.executegft(agent.obs_accessor,
+                                                                                          agent_id=agent.id)
+
+                                # mark the GFSs that executed for the agent in this time step
+                                cache.mark(output_dict_keys=probs_dict.keys())
+
+                                # store intermediate values
+                                agent.temp_values = (code, action, input_vec_dict, probs_dict)
+                            else:
+                                # get an action
+                                actions_dict, input_vec_dict = alg.executebfc(agent.obs_accessor, agent_id=agent.id,
+                                                                              add_noise=True)
+                                agent.temp_values = (actions_dict, input_vec_dict)
+                                cache.mark(output_dict_keys=actions_dict.keys())
+
+                        # apply the selected action to the environment and observe feedback
+                        a = agents[0].temp_values[0] if len(agents) == 1 else [a.temp_values[0] for a in agents]
                         if self.sim_config.action_space_type == Const.DISCRETE:
-                            # get an action
-                            code, action, input_vec_dict, probs_dict = alg.executegft(agent.obs_accessor,
-                                                                                      agent_id=agent.id)
-
-                            # mark the GFSs that executed for the agent in this time step
-                            cache.mark(output_dict_keys=probs_dict.keys())
-
-                            # store intermediate values
-                            agent.temp_values = (code, action, input_vec_dict, probs_dict)
+                            a = np.array(a).astype('int').tolist() if hasattr(a, "__iter__") else int(a)
                         else:
-                            # get an action
-                            actions_dict, input_vec_dict = alg.executebfc(agent.obs_accessor, agent_id=agent.id,
-                                                                          add_noise=True)
-                            agent.temp_values = (actions_dict, input_vec_dict)
-                            cache.mark(output_dict_keys=actions_dict.keys())
+                            a = list(a.values())
+                        next_state, reward, done, _ = env.step(a)
 
-                    # apply the selected action to the environment and observe feedback
-                    a = agents[0].temp_values[0] if len(agents) == 1 else [a.temp_values[0] for a in agents]
-                    if self.sim_config.action_space_type == Const.DISCRETE:
-                        a = np.array(a).astype('int').tolist() if hasattr(a, "__iter__") else int(a)
-                    next_state, reward, done, _ = env.step(a)
+                        if self.r_shaping_callback is not None and callable(self.r_shaping_callback):
+                            reward = self.r_shaping_callback(next_state, reward, done)
 
-                    if self.r_shaping_callback is not None and callable(self.r_shaping_callback):
-                        reward = self.r_shaping_callback(next_state, reward, done)
+                        if self.time_step_finished_callback is not None and callable(self.time_step_finished_callback):
+                            self.time_step_finished_callback(next_state, reward)
 
-                    if self.time_step_finished_callback is not None and callable(self.time_step_finished_callback):
-                        self.time_step_finished_callback(next_state, reward)
+                        if hasattr(reward, "__iter__"):
+                            acc_reward = 0
+                            for r in reward:
+                                acc_reward += r
+                            reward = acc_reward
 
-                    if hasattr(reward, "__iter__"):
-                        acc_reward = 0
-                        for r in reward:
-                            acc_reward += r
-                        reward = acc_reward
+                        # decompose the received reward
+                        reward_dict = cache.decomposeReward(reward)
 
-                    # decompose the received reward
-                    reward_dict = cache.decomposeReward(reward)
+                        for i, agent in enumerate(agents):
+                            if self.sim_config.action_space_type == Const.DISCRETE:
+                                code, action, input_vec_dict, probs_dict = agent.temp_values
+                                # create experiences for the agent with respect to each GFSs that executed for the agent
+                                exp_dict = cache.createExperiences(agent_id=agent.id, action=code,
+                                                                   dec_reward_dict=reward_dict,
+                                                                   input_vec_dict=input_vec_dict,
+                                                                   output_dict=probs_dict,
+                                                                   next_state_dict=None)
+                            else:
+                                actions_dict, input_vec_dict = agent.temp_values
+                                exp_dict = cache.createExperiences(agent_id=agent.id,
+                                                                   action=list(actions_dict.values()),
+                                                                   dec_reward_dict=reward_dict,
+                                                                   input_vec_dict=input_vec_dict,
+                                                                   output_dict=actions_dict,
+                                                                   next_state_dict=None)
 
-                    for i, agent in enumerate(agents):
-                        if self.sim_config.action_space_type == Const.DISCRETE:
-                            code, action, input_vec_dict, probs_dict = agent.temp_values
-                            # create experiences for the agent with respect to each GFSs that executed for the agent
-                            exp_dict = cache.createExperiences(agent_id=agent.id, action=code,
-                                                               dec_reward_dict=reward_dict,
-                                                               input_vec_dict=input_vec_dict, output_dict=probs_dict,
-                                                               next_state_dict=None)
-                        else:
-                            actions_dict, input_vec_dict = agent.temp_values
-                            exp_dict = cache.createExperiences(agent_id=agent.id, action=list(actions_dict.values()),
-                                                               dec_reward_dict=reward_dict,
-                                                               input_vec_dict=input_vec_dict, output_dict=actions_dict,
-                                                               next_state_dict=None)
+                            # add the experiences of the agent to the cache
+                            cache.addExperiences(time_step=t, exp_dict=exp_dict)
 
-                        # add the experiences of the agent to the cache
-                        cache.addExperiences(time_step=t, exp_dict=exp_dict)
+                            # set the received observation as the current array for retrieving input values
+                            agent.obs_accessor.current_observation = next_state if len(agents) == 1 else next_state[i]
 
-                        # set the received observation as the current array for retrieving input values
-                        agent.obs_accessor.current_observation = next_state if len(agents) == 1 else next_state[i]
+                        # accumulate the rewards of all time steps
+                        total_reward += reward
 
-                    # accumulate the rewards of all time steps
-                    total_reward += reward
+                        # if the episode is over end the current episode
+                        if done:
+                            break
 
-                    # if the episode is over end the current episode
-                    if done:
-                        break
                 # set the return from the environment as the fitness value of the current individual
+                total_reward /= float(self.sim_config.episodes_per_ind)
                 ind.fitness.values = (total_reward,)
 
                 # save contents of the cache and clear it for the next episode
                 # cache.compute_states_value(gamma=.9)
-                cache.save_csv(path="data/")
+                if self.sim_config.persist_cached_data:
+                    cache.save_csv(path="data/")
                 if self.episode_finished_callback is not None and callable(self.episode_finished_callback):
                     self.episode_finished_callback(ind, ind_count, self.ga_config.num_gens * self.ga_config.pop_size,
                                                    total_reward)
@@ -300,9 +309,8 @@ class Runner(object):
             record = ga.stats.compile(pop)
             ga.logbook.record(epoch=epoch, **record)
 
-            if self.gen_finished_callback is not None and callable(self.gen_finished_callback):
-                self.gen_finished_callback(epoch, pop, record)
-
+            if self.epoch_finished_callback is not None and callable(self.epoch_finished_callback):
+                self.epoch_finished_callback(epoch, pop, record)
             # perform evolution
             if self.ga_config.apply_evolution:
                 m_prob = self.ga_config.mutation_prob_schdl.get_prob(epoch)
@@ -312,6 +320,8 @@ class Runner(object):
                                 mut_prob=m_prob, cross_prob=c_prob)
                 if self.evolution_finished_callback is not None and callable(self.evolution_finished_callback):
                     self.evolution_finished_callback(pop, m_prob, c_prob, epoch)
+
+            epoch += 1
 
         if self.sim_finished_callback is not None and callable(self.sim_finished_callback):
             self.sim_finished_callback(ga, pop)

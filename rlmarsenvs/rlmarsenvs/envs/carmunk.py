@@ -14,12 +14,7 @@ from pymunk.vec2d import Vec2d
 width = 1000
 height = 700
 pygame.init()
-screen = pygame.display.set_mode((width, height))
 clock = pygame.time.Clock()
-
-# Turn off alpha since we don't use it.
-screen.set_alpha(None)
-
 # Showing sensors and redrawing slows things down.
 show_sensors = True
 
@@ -36,8 +31,12 @@ class Carmunk(gym.Env):
         logger.set_level(logger.INFO)
         logger.info("carmunk {}".format(self.__version__))
 
+        screen = pygame.display.set_mode((width, height))
+        # Turn off alpha since we don't use it.
+        screen.set_alpha(None)
+
         # Carmunk game object
-        self.__game = _GameState()
+        self.__game = _GameState(screen)
 
         # Define the action space: move left or right
         self.action_space = spaces.Discrete(2)
@@ -56,12 +55,13 @@ class Carmunk(gym.Env):
 
 
 class _GameState:
-    def __init__(self):
+    def __init__(self, screen):
         self.__crashed = False
         self.__car_init_x = 100
         self.__car_init_y = 100
         self.__car_init_angle = 0.5
         self.__entities_init()
+        self.screen = screen
 
         # check spinning
         self.__last_action = None
@@ -116,8 +116,8 @@ class _GameState:
         return ob
 
     def render(self):
-        screen.fill(THECOLORS["black"])
-        draw(screen, self.space)
+        self.screen.fill(THECOLORS["black"])
+        draw(self.screen, self.space)
         pygame.display.flip()
         clock.tick()
 
@@ -274,12 +274,12 @@ class _GameState:
                     or rotated_p[0] >= width or rotated_p[1] >= height:
                 return i  # Sensor is off the screen.
             else:
-                obs = screen.get_at(rotated_p)
+                obs = self.screen.get_at(rotated_p)
                 if self.get_track_or_not(obs) != 0:
                     return i
 
             if show_sensors:
-                pygame.draw.circle(screen, (255, 255, 255), (rotated_p), 2)
+                pygame.draw.circle(self.screen, (255, 255, 255), (rotated_p), 2)
 
         # Return the distance for the arm.
         return i

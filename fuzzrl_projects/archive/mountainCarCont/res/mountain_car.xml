@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- GFT for OpenAI Gym CartPole-v1 control -->
+<fuzzyInferenceSystems xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:noNamespaceSchemaLocation="../../../fuzzrl/fuzzrl/core/res/gftlv0.1.1.xsd"
+                       rootInfSystem="mountainCar">
+    <fuzzyInferenceSystem name="mountainCar">
+        <outputGeneRange>0 2</outputGeneRange>
+        <rbSize>9</rbSize>
+        <mfSize>12</mfSize>
+        <position>0</position>
+        <rbOffset>0</rbOffset>
+        <mfOffset>9</mfOffset>
+        <description>Determines the force applied to the joint of the car</description>
+        <inputVariables>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="position" type="carPosition"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="velocity" type="carVel"/>
+            </inputVar>
+        </inputVariables>
+        <outputVariable type="appliedForce">
+            <term code="0">
+                <successOpTitle>low</successOpTitle>
+            </term>
+            <term code="1">
+                <successOpTitle>medium</successOpTitle>
+            </term>
+            <term code="2">
+                <successOpTitle>high</successOpTitle>
+            </term>
+        </outputVariable>
+    </fuzzyInferenceSystem>
+</fuzzyInferenceSystems>

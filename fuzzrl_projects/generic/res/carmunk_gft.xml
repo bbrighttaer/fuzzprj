@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- GFT for OpenAI Gym CartPole-v1 control -->
+<fuzzyInferenceSystems xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:noNamespaceSchemaLocation="../core/res/gftlv0.1.1.xsd" rootInfSystem="CarMovement">
+    <fuzzyInferenceSystem name="CarMovement">
+        <outputGeneRange>0 2</outputGeneRange>
+        <rbSize>27</rbSize>
+        <mfSize>18</mfSize>
+        <position>0</position>
+        <rbOffset>0</rbOffset>
+        <mfOffset>27</mfOffset>
+        <description>Determines the direction of the car</description>
+        <inputVariables>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="leftSensors" type="leftSensors"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="midSensors" type="midSensors"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="rightSensors" type="rightSensors"/>
+            </inputVar>
+        </inputVariables>
+        <outputVariable type="Movement">
+            <term code="0">
+                <successOpTitle>LEFT</successOpTitle>
+                <target targetType="action" name="left"/>
+            </term>
+            <term code="1">
+                <successOpTitle>RIGHT</successOpTitle>
+                <target targetType="action" name="right"/>
+            </term>
+            <term code="2">
+                <successOpTitle>NOOP</successOpTitle>
+                <target targetType="action" name="noop"/>
+            </term>
+        </outputVariable>
+    </fuzzyInferenceSystem>
+</fuzzyInferenceSystems>

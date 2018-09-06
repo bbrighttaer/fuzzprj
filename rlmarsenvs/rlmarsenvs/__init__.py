@@ -10,5 +10,6 @@ from gym.envs.registration import register
 from .envs.carmunk import ENV_NAME, VERSION
 
 # from https://github.com/harvitronix/reinforcement-learning-car
-register(id="{}-{}".format(ENV_NAME, VERSION),
+carmunk_id = "{}-{}".format(ENV_NAME, VERSION)
+register(id=carmunk_id,
          entry_point="rlmarsenvs.envs:Carmunk", )

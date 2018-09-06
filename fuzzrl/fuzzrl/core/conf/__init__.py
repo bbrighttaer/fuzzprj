@@ -11,6 +11,14 @@ class Constants:
     ACTION_SPACE = DISCRETE
 
 
+class Defuzz:
+    centroid = "centroid"
+    bisector = "bisector"
+    mean_of_maximum = "mom"
+    min_of_maximum = "som"
+    max_of_maximum = "lom"
+
+
 def setconstants(**kwargs):
     """
     Helper function to enable setting initial values

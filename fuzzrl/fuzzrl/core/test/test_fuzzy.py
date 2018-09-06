@@ -1,5 +1,6 @@
 from fuzzrl.core.test import *
 
+from fuzzrl.core.conf import Defuzz as dfz
 LIN_VARS_FILE = "../../res/linvarsGFT7.xml"
 GFT_FILE = "../../res/gft9.xml"
 
@@ -16,6 +17,6 @@ class TestFuzzyModule(unittest.TestCase):
 def getpopulation(pop_size):
     reg = Registry("test_reg")
     xmlToLinvars(open(LIN_VARS_FILE).read(), registry=reg)
-    xmlToGFT(open(GFT_FILE).read(), registry=reg)
+    xmlToGFT(open(GFT_FILE).read(), registry=reg, defuzz_method=dfz.max_of_maximum)
     ga = GeneticAlgorithm(registry=reg)
     return reg, ga.generate_initial_population(pop_size)

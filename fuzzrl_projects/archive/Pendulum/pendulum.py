@@ -1,11 +1,5 @@
 #
 # Project: fuzzrl
-# Created by bbrighttaer on 9/5/18
-#
-
-
-#
-# Project: fuzzrl
 # Created by bbrighttaer on 9/3/18
 #
 
@@ -24,39 +18,30 @@ from fuzzrl.core.io.memory import Cache
 from fuzzrl.core.io.randomprocess import OrnsteinUhlenbeckProcess
 from fuzzrl.core.io.simdata import Document, Text, Line
 from matplotlib import style
+from fuzzrl.core.conf import Defuzz as dfz
 
 style.use("seaborn-paper")
 
-const.MF_TUNING_RANGE = [-0.001, 0.001]
+const.MF_TUNING_RANGE = [-0.1, 0.1]
 const.LEARN_RULE_OP = False
 const.ACTION_SPACE = const.CONTINUOUS
 
 NUM_OF_GENS = 100
 NUM_EPISODES_PER_IND = 1
-MAX_TIME_STEPS = 500
+MAX_TIME_STEPS = 100
 POP_SIZE = 20
-LIN_VARS_FILE = "res/mountain_car_linvars.xml"
-GFT_FILE = "res/mountain_car.xml"
+LIN_VARS_FILE = "res/pendulum_linvars.xml"
+GFT_FILE = "res/pendulum.xml"
 LOAD_INIT_POP = False
 APPLY_EVO = True
 QLFD_IND_FILE = "data/qualified.txt"
 SAVE_BEST = True
-SCORE_THRESHOLD = 90.0
-
-
-def reward_shaping(pos, r):
-    # Adjust reward based on car position
-    reward = pos + 0.5
-
-    # Adjust reward for task completion
-    if pos >= 0.5:
-        reward = r + 1
-    return reward
+SCORE_THRESHOLD = -250.0
 
 
 def main():
     # creates an environment
-    env = gym.make("MountainCarContinuous-v0")
+    env = gym.make("Pendulum-v0")
 
     # chart series
     weighted_avg = ana.WeightedAvg(beta=0.9)
@@ -69,16 +54,17 @@ def main():
     reg = xmlToLinvars(open(LIN_VARS_FILE).read())
 
     # create GFT with linguistic variables in the registry
-    reg = xmlToGFT(open(GFT_FILE).read(), registry=reg, defuzz_method="mom")
+    reg = xmlToGFT(open(GFT_FILE).read(), registry=reg, defuzz_method=dfz.centroid)
 
     # create GA instance with the registry object
-    ga = GeneticAlgorithm(registry=reg, seed=5)
+    # good seeds so far: 2, 5
+    ga = GeneticAlgorithm(registry=reg, seed=2)
 
     # create a mutation probability schedule
-    mut_sch = sch.ExponentialDecaySchedule(initial_prob=.1, decay_factor=1e-2)
+    mut_sch = sch.ExponentialDecaySchedule(initial_prob=.2, decay_factor=1e-2)
 
     # create GFT algorithm object with the registry
-    rand_proc = OrnsteinUhlenbeckProcess(theta=0.01)
+    rand_proc = OrnsteinUhlenbeckProcess(theta=0.001)
     alg = Algorithm(registry=reg, random_process=rand_proc)
 
     # create a cache for managing simulation data
@@ -99,7 +85,7 @@ def main():
     ind_count = 0
 
     # create an object for retrieving input values
-    obs_accessor = MountainCarObs()
+    obs_pendulum = PendulumObs()
 
     # perform the simulation for a specified number of generations
     while epoch < NUM_OF_GENS:
@@ -120,7 +106,7 @@ def main():
             observation = env.reset()
 
             # set the received observation as the current array for retrieving input values
-            obs_accessor.current_observation = observation
+            obs_pendulum.current_observation = observation
 
             # run through the time steps of the simulation
             for t in range(MAX_TIME_STEPS):
@@ -132,14 +118,13 @@ def main():
                 agent_id = 0
 
                 # get an action
-                actions_dict, input_vec_dict = alg.executebfc(obs_accessor, agent_id, add_noise=True)
+                input_vec_dict, actions_dict = alg.executebfc(obs_pendulum, agent_id, add_noise=False)
 
                 # mark the GFSs that executed for the agent in this time step
                 cache.mark(output_dict_keys=actions_dict.keys())
 
                 # apply the selected action to the environment and observe feedback
                 next_state, reward, done, _ = env.step(list(actions_dict.values()))
-                reward = reward_shaping(pos=next_state[0], r=reward)
 
                 # decompose the received reward
                 reward_dict = cache.decomposeReward(reward)
@@ -154,7 +139,7 @@ def main():
                 cache.addExperiences(time_step=t, exp_dict=exp_dict)
 
                 # set the received observation as the current array for retrieving input values
-                obs_accessor.current_observation = next_state
+                obs_pendulum.current_observation = next_state
 
                 # accumulate the rewards of all time steps
                 total_reward += reward
@@ -166,9 +151,8 @@ def main():
             # save contents of the cache and clear it for the next episode
             # cache.compute_states_value(gamma=.9)
             cache.save_csv(path="data/")
-            print(
-                "Episode: {t}/{T} | score: {r}".format(t=ind_count, T=(NUM_OF_GENS * POP_SIZE),
-                                                       r=total_reward))
+
+            print("Episode: {}/{} | score: {}".format(ind_count, (NUM_OF_GENS * POP_SIZE), total_reward))
 
             # set the return from the environment as the fitness value of the current individual
             ind.fitness.values = (total_reward,)
@@ -285,18 +269,42 @@ def applyEvolution(population, ga_alg, mut_sch, epoch):
     return offspring
 
 
-class MountainCarObs(object):
+class PendulumObs(object):
     def __init__(self):
         self.current_observation = None
 
-    def getCarPosition(self, agentId):
+    def getCosTheta(self, agentId):
         assert self.current_observation is not None
         return self.current_observation[0]
 
-    def getCarVelocity(self, agentId):
+    def getSinTheta(self, agentId):
         assert self.current_observation is not None
         return self.current_observation[1]
+
+    def getThetaDot(self, agentId):
+        assert self.current_observation is not None
+        return self.current_observation[2]
 
 
 if __name__ == "__main__":
     main()
+
+# import random
+#
+# import gym
+#
+# env = gym.make("Pendulum-v0")
+#
+# env.reset()
+#
+# print("action: low = {l}, high = {h}".format(l=env.action_space.low, h=env.action_space.high))
+#
+# for i_episode in range(1000):
+#     env.render()
+#     a = random.uniform(env.action_space.low, env.action_space.high)
+#     print("action =", str(a))
+#     s, r, done, _ = env.step([a])
+#     # if done:
+#     #     print("episode ended after {t} time steps".format(t=i_episode + 1))
+#
+# env.close()

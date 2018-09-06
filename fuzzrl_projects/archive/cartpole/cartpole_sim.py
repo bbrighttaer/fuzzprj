@@ -8,31 +8,34 @@ import fuzzrl.core.plot.analysis as ana
 import gym
 import matplotlib.pyplot as plt
 import numpy as np
+from fuzzrl.core.io.randomprocess import OrnsteinUhlenbeckProcess
 from fuzzrl.core.algorithm.alg import Algorithm
-from fuzzrl.core.conf import Constants
+from fuzzrl.core.conf import Constants as const
 from fuzzrl.core.conf.parser import *
 from fuzzrl.core.ga.genalg import GeneticAlgorithm
 from fuzzrl.core.ga.op import Operator
-from fuzzrl.core.io.buffer import Cache
+from fuzzrl.core.io.memory import Cache
 from fuzzrl.core.io.simdata import Document, Text, Line
 from matplotlib import style
+from fuzzrl.core.conf import Defuzz as dfz
 
 style.use("seaborn-paper")
 
-Constants.MF_TUNING_RANGE = [-0.1, 0.1]
-Constants.LEARN_RULE_OP = False
+const.MF_TUNING_RANGE = [-0.1, 0.1]
+const.LEARN_RULE_OP = False
+const.ACTION_SPACE = const.DISCRETE
 
-NUM_OF_GENS = 50
+NUM_OF_GENS = 20
 NUM_EPISODES_PER_IND = 1
 MAX_TIME_STEPS = 700
-POP_SIZE = 100
-LIN_VARS_FILE = "cartpole_linvars.xml"
-GFT_FILE = "cartpole_gft.xml"
+POP_SIZE = 30
+LIN_VARS_FILE = "res/cartpole_linvars.xml"
+GFT_FILE = "res/cartpole_gft.xml"
 LOAD_INIT_POP = False
 APPLY_EVO = True
-QLFD_IND_FILE = "qualified.txt"
-SAVE_BEST = True
-SCORE_THRESHOLD = 200
+QLFD_IND_FILE = "data/qualified.txt"
+SAVE_BEST = False
+SCORE_THRESHOLD = 300
 
 
 def main():
@@ -53,10 +56,11 @@ def main():
     reg = xmlToLinvars(open(LIN_VARS_FILE).read())
 
     # create GFT with linguistic variables in the registry
-    reg = xmlToGFT(open(GFT_FILE).read(), registry=reg)
+    reg = xmlToGFT(open(GFT_FILE).read(), registry=reg, defuzz_method=dfz.max_of_maximum)
 
     # create GA instance with the registry object
-    ga = GeneticAlgorithm(registry=reg, seed=2)
+    # good seeds so far: 2, 4,
+    ga = GeneticAlgorithm(registry=reg, seed=4)
 
     # create a mutation probability schedule
     mut_sch = sch.ExponentialDecaySchedule(initial_prob=.2, decay_factor=1e-2)
@@ -64,7 +68,8 @@ def main():
     tau_sch = sch.ExponentialDecaySchedule(initial_prob=.5, decay_factor=1e-1)
 
     # create GFT algorithm object with the registry
-    alg = Algorithm(registry=reg)
+    rand_proc = OrnsteinUhlenbeckProcess(theta=0.01)
+    alg = Algorithm(registry=reg, random_process=rand_proc)
 
     # create a cache for managing simulation data
     cache = Cache(reg.gft_dict.keys())
@@ -114,44 +119,30 @@ def main():
             for t in range(MAX_TIME_STEPS):
 
                 # show the environment
-                env.render()
+                # env.render()
 
-                actions = []
-                exec_history = []
+                # since only one agent applies to this case study set a dummy agent ID
+                agent_id = 0
 
-                for label, agent_id in agents:
-                    # # since only one agent applies to this case study set a dummy agent ID
-                    # agent_id = 0
+                # get an action
+                code, action, input_vec_dict, probs_dict = alg.executegft(obs_cartpole, agent_id)
 
-                    # get an action
-                    code, action, input_vec_dict, probs_dict = alg.executegft(obs_cartpole, agent_id)
+                # mark the GFSs that executed for the agent in this time step
+                cache.mark(output_dict_keys=probs_dict.keys())
 
-                    # mark the GFSs that executed for the agent in this time step
-                    cache.mark(probs_dict_keys=probs_dict.keys())
-
-                    # add to the selected actions list (useful for multi-agent case)
-                    actions.append(code)
-
-                    # store execution outputs for this agent
-                    hist = (agent_id, code, action, input_vec_dict, probs_dict)
-                    exec_history.append(hist)
-                    
                 # apply the selected action to the environment and observe feedback
-                # cartpole's step func expects an integer type action code
-                # only one action is selected since the cartpole problem has a single agent
-                next_state, reward, done, _ = env.step(int(actions[0]))
+                next_state, reward, done, _ = env.step(int(code))  # cartpole's step func expects an integer type code
 
-                # decompose the received (team) reward
+                # decompose the received reward
                 reward_dict = cache.decomposeReward(reward)
-                
-                for agent_id, code, action, input_vec_dict, probs_dict in exec_history:
-                    # create experiences for the agent with respect to each GFSs that executed for the agent
-                    exp_dict = cache.createExperiences(agent_id=agent_id, action_code=code, dec_reward_dict=reward_dict,
-                                                       input_vec_dict=input_vec_dict, probs_dict=probs_dict,
-                                                       next_state_dict=None)
-    
-                    # add the experiences of the agent to the cache
-                    cache.addExperiences(time_step=t, exp_dict=exp_dict)
+
+                # create experiences for the agent with respect to each GFSs that executed for the agent
+                exp_dict = cache.createExperiences(agent_id=agent_id, action=code, dec_reward_dict=reward_dict,
+                                                   input_vec_dict=input_vec_dict, output_dict=probs_dict,
+                                                   next_state_dict=None)
+
+                # add the experiences of the agent to the cache
+                cache.addExperiences(time_step=t, exp_dict=exp_dict)
 
                 # set the received observation as the current array for retrieving input values
                 obs_cartpole.current_observation = next_state
@@ -164,7 +155,8 @@ def main():
                     break
 
             # save contents of the cache and clear it for the next episode
-            cache.save_csv()
+            cache.compute_states_value(gamma=.9)
+            cache.save_csv(path="data/")
 
             # if total_reward < 50:
             #     total_reward = - 50
@@ -315,4 +307,3 @@ def sigmoid(x):
 
 if __name__ == "__main__":
     main()
-

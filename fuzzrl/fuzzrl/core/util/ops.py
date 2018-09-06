@@ -96,6 +96,10 @@ def getdatetime(timedateformat='complete'):
         return ((str(datetime.now())).split('.')[0]).split(' ')[1] + ' ' + \
                ((str(datetime.now())).split('.')[0]).split(' ')[0]
 
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
 # x = -0.027984769861725347 # np.array([10, 20, 30, 40, 50])
 # norm = normalize(x, -3.4028235e+38, 3.4028235e+38, -10, 10)
 # print("norm =", norm, "\ndenorm =", denormalize(norm, 0, 100, 0, 5))

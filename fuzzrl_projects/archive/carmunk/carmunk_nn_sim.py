@@ -23,6 +23,7 @@ from matplotlib import style
 from fuzzrl_projects.carmunk.carmunk_nn import neural_net, LossHistory
 from fuzzrl.core.util.ops import boltzmanexp
 from fuzzrl.core.util.ops import normalize
+from fuzzrl.core.conf import Defuzz as dfz
 
 style.use("seaborn-paper")
 
@@ -58,7 +59,7 @@ def main():
     reg = xmlToLinvars(open(LIN_VARS_FILE).read())
 
     # create GFT with linguistic variables in the registry
-    reg = xmlToGFT(open(GFT_FILE).read(), registry=reg)
+    reg = xmlToGFT(open(GFT_FILE).read(), registry=reg, defuzz_method=dfz.max_of_maximum)
 
     # Load pretrained NN model weights
     params = [32, 512, 512, 254, 64, 3]

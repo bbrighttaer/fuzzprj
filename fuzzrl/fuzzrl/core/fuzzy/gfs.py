@@ -17,7 +17,7 @@ class GeneticFuzzySystem(object):
     The structure of Genetic Fuzzy Systems in a GFT
     """
 
-    def __init__(self, descriptor, vars_config_dict, defuzz_method="lom"):
+    def __init__(self, descriptor, vars_config_dict, defuzz_method):
         """
         Creates an GFS
         ---------------

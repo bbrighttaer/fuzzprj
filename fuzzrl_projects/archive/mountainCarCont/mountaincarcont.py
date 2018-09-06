@@ -1,11 +1,13 @@
-# project: fuzzprj
-# Copyright (C) 6/15/18 - 5:28 PM
-# Author: bbrighttaer
+#
+# Project: fuzzrl
+# Created by bbrighttaer on 9/5/18
+#
 
 
-# project: fuzz_nn_rl
-# Copyright (C) 6/11/18 - 1:48 PM
-# Author: bbrighttaer
+#
+# Project: fuzzrl
+# Created by bbrighttaer on 9/3/18
+#
 
 
 import deap.tools as tools
@@ -14,41 +16,49 @@ import fuzzrl.core.plot.analysis as ana
 import gym
 import matplotlib.pyplot as plt
 from fuzzrl.core.algorithm.alg import Algorithm
-from fuzzrl.core.conf import Constants
+from fuzzrl.core.conf import Constants as const
 from fuzzrl.core.conf.parser import *
 from fuzzrl.core.ga.genalg import GeneticAlgorithm
 from fuzzrl.core.ga.op import Operator
 from fuzzrl.core.io.memory import Cache
+from fuzzrl.core.io.randomprocess import OrnsteinUhlenbeckProcess
 from fuzzrl.core.io.simdata import Document, Text, Line
-from fuzzrl.core.util.ops import normalize
 from matplotlib import style
-
-# registers the environment to use the gym interface
-import rlmarsenvs
+from fuzzrl.core.conf import Defuzz as dfz
 
 style.use("seaborn-paper")
 
-Constants.MF_TUNING_RANGE = [-0.15, 0.15]
-Constants.LEARN_RULE_OP = False
+const.MF_TUNING_RANGE = [-0.001, 0.001]
+const.LEARN_RULE_OP = False
+const.ACTION_SPACE = const.CONTINUOUS
 
 NUM_OF_GENS = 100
+NUM_EPISODES_PER_IND = 1
+MAX_TIME_STEPS = 500
 POP_SIZE = 20
-LIN_VARS_FILE = "carmunk_linvars.xml"
-GFT_FILE = "carmunk_gft.xml"
-LOAD_INIT_POP = True
-APPLY_EVO = False
-QLFD_IND_FILE = "qualified.txt"
-SAVE_BEST = False
-SCORE_THRESHOLD = 15000
+LIN_VARS_FILE = "res/mountain_car_linvars.xml"
+GFT_FILE = "res/mountain_car.xml"
+LOAD_INIT_POP = False
+APPLY_EVO = True
+QLFD_IND_FILE = "data/qualified.txt"
+SAVE_BEST = True
+SCORE_THRESHOLD = 90.0
+
+
+def reward_shaping(pos, r):
+    # Adjust reward based on car position
+    reward = pos + 0.5
+
+    # Adjust reward for task completion
+    if pos >= 0.5:
+        reward = r + 1
+    return reward
 
 
 def main():
     # creates an environment
-    env = gym.make("carmunk-v2")
+    env = gym.make("MountainCarContinuous-v0")
 
-    # print observation space ranges
-    print("observation space ranges\nhigh = {}\nlow = {}\n".format(str(env.observation_space.high),
-                                                                   str(env.observation_space.low)))
     # chart series
     weighted_avg = ana.WeightedAvg(beta=0.9)
     all_ind_series = ana.Series(name="Individuals Performance")
@@ -60,17 +70,17 @@ def main():
     reg = xmlToLinvars(open(LIN_VARS_FILE).read())
 
     # create GFT with linguistic variables in the registry
-    reg = xmlToGFT(open(GFT_FILE).read(), registry=reg)
+    reg = xmlToGFT(open(GFT_FILE).read(), registry=reg, defuzz_method=dfz.centroid)
 
     # create GA instance with the registry object
-    ga = GeneticAlgorithm(registry=reg, seed=123)
+    ga = GeneticAlgorithm(registry=reg, seed=5)
 
     # create a mutation probability schedule
-    # mut_sch = sch.TimeBasedSchedule(decay_factor=1e-4)
-    mut_sch = sch.LinearDecaySchedule(initial_prob=1.025, decay_factor=1e-2)
+    mut_sch = sch.ExponentialDecaySchedule(initial_prob=.1, decay_factor=1e-2)
 
     # create GFT algorithm object with the registry
-    alg = Algorithm(registry=reg)
+    rand_proc = OrnsteinUhlenbeckProcess(theta=0.01)
+    alg = Algorithm(registry=reg, random_process=rand_proc)
 
     # create a cache for managing simulation data
     cache = Cache(reg.gft_dict.keys())
@@ -79,6 +89,7 @@ def main():
     if LOAD_INIT_POP:
         pop = ga.load_initial_population(QLFD_IND_FILE, POP_SIZE)
         pop = pop[::-1]
+        print("Num. of loaded individuals =", len(pop))
     else:
         pop = ga.generate_initial_population(POP_SIZE)
 
@@ -89,10 +100,7 @@ def main():
     ind_count = 0
 
     # create an object for retrieving input values
-    obs_carmunk = CarmunkObs()
-
-    # Tau for Boltzmann exploration strategy
-    tau_sch = sch.LinearDecaySchedule(initial_prob=20, decay_factor=0.02)
+    obs_accessor = MountainCarObs()
 
     # perform the simulation for a specified number of generations
     while epoch < NUM_OF_GENS:
@@ -108,18 +116,15 @@ def main():
             alg.configuregft(chromosome=ind)
 
             # control the environment with the configured GFT
-            # for i_episode in range(NUM_EPISODES_PER_IND):
 
             # reset the environment
             observation = env.reset()
 
             # set the received observation as the current array for retrieving input values
-            obs_carmunk.current_observation = observation
+            obs_accessor.current_observation = observation
 
             # run through the time steps of the simulation
-            t = 0
-            while True:
-                t += 1
+            for t in range(MAX_TIME_STEPS):
 
                 # show the environment
                 env.render()
@@ -128,26 +133,29 @@ def main():
                 agent_id = 0
 
                 # get an action
-                code, action, input_vec_dict, probs_dict = alg.executegft(obs_carmunk, agent_id)
-
-                # apply the selected action to the environment and observe feedback
-                next_state, reward, done, _ = env.step(code)
+                actions_dict, input_vec_dict = alg.executebfc(obs_accessor, agent_id, add_noise=True)
 
                 # mark the GFSs that executed for the agent in this time step
-                cache.mark(output_dict_keys=probs_dict.keys())
+                cache.mark(output_dict_keys=actions_dict.keys())
+
+                # apply the selected action to the environment and observe feedback
+                next_state, reward, done, _ = env.step(list(actions_dict.values()))
+                reward = reward_shaping(pos=next_state[0], r=reward)
 
                 # decompose the received reward
                 reward_dict = cache.decomposeReward(reward)
 
                 # create experiences for the agent with respect to each GFSs that executed for the agent
-                exp_dict = cache.createExperiences(agent_id=agent_id, action=code, dec_reward_dict=reward_dict,
-                                                   input_vec_dict=input_vec_dict, output_dict=probs_dict)
+                exp_dict = cache.createExperiences(agent_id=agent_id, action=list(actions_dict.values()),
+                                                   dec_reward_dict=reward_dict,
+                                                   input_vec_dict=input_vec_dict, output_dict=actions_dict,
+                                                   next_state_dict=None)
 
                 # add the experiences of the agent to the cache
                 cache.addExperiences(time_step=t, exp_dict=exp_dict)
 
                 # set the received observation as the current array for retrieving input values
-                obs_carmunk.current_observation = next_state
+                obs_accessor.current_observation = next_state
 
                 # accumulate the rewards of all time steps
                 total_reward += reward
@@ -157,18 +165,17 @@ def main():
                     break
 
             # save contents of the cache and clear it for the next episode
-            cache.save_csv()
-
-            # if total_reward < 50:
-            #     total_reward = - 50
-            print("Episode finished after {} time steps".format(t + 1))
-            print("Episode: {}/{} | score: {}".format(ind_count, (NUM_OF_GENS * POP_SIZE), total_reward))
+            # cache.compute_states_value(gamma=.9)
+            cache.save_csv(path="data/")
+            print(
+                "Episode: {t}/{T} | score: {r}".format(t=ind_count, T=(NUM_OF_GENS * POP_SIZE),
+                                                       r=total_reward))
 
             # set the return from the environment as the fitness value of the current individual
             ind.fitness.values = (total_reward,)
 
             # save qualified individual
-            if SAVE_BEST and total_reward > SCORE_THRESHOLD:
+            if SAVE_BEST and total_reward >= SCORE_THRESHOLD:
                 document = Document(name=QLFD_IND_FILE)
                 document.addline(line=Line().add(text=Text(str(ind))))
                 document.save(append=True)
@@ -239,7 +246,7 @@ def plot_charts(avg_series, mut_prob_series):
              linestyle=mut_prob_series.linestyle)
     # ax2.legend(fancybox=True, shadow=True, fontsize='small')  # loc="upper right"
     plt.grid(True)
-    fig.suptitle("carmunk simulation")
+    fig.suptitle("cartpole simulation")
     plt.subplots_adjust(left=0.2, wspace=0.8, top=0.8)
     plt.show()
 
@@ -268,7 +275,7 @@ def applyEvolution(population, ga_alg, mut_sch, epoch):
     # create mutation operator
     mutargs = {"mu": 0,
                "sigma": 0.1,
-               "indpb": 0.2}
+               "indpb": 0.1}
     mutop = Operator(tools.mutGaussian, **mutargs)
 
     # Perform one step of evolution
@@ -279,21 +286,17 @@ def applyEvolution(population, ga_alg, mut_sch, epoch):
     return offspring
 
 
-class CarmunkObs(object):
+class MountainCarObs(object):
     def __init__(self):
         self.current_observation = None
 
-    def getleftsensors(self, agentId):
+    def getCarPosition(self, agentId):
         assert self.current_observation is not None
-        return normalize(self.current_observation[0], 0, 39, 0, 5)
+        return self.current_observation[0]
 
-    def getmidsensors(self, agentId):
+    def getCarVelocity(self, agentId):
         assert self.current_observation is not None
-        return normalize(self.current_observation[1], 0, 39, 0, 5)
-
-    def getrightsensors(self, agentId):
-        assert self.current_observation is not None
-        return normalize(self.current_observation[2], 0, 39, 0, 5)
+        return self.current_observation[1]
 
 
 if __name__ == "__main__":

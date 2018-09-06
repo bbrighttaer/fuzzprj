@@ -3,8 +3,8 @@ import time
 
 import deap.tools as tools
 import numpy as np
-
 from fuzzrl.core.algorithm.alg import Algorithm
+from fuzzrl.core.conf import Defuzz as dfz
 from fuzzrl.core.conf import setconstants
 from fuzzrl.core.conf.parser import *
 from fuzzrl.core.ga.genalg import GeneticAlgorithm
@@ -17,7 +17,8 @@ GFT_FILE = "../res/gft9.xml"
 
 def startsim():
     # sets up the registry
-    reg = xmlToGFT(open(GFT_FILE).read(), registry=xmlToLinvars(open(LIN_VARS_FILE).read()))
+    reg = xmlToGFT(open(GFT_FILE).read(), registry=xmlToLinvars(open(LIN_VARS_FILE).read()),
+                   defuzz_method=dfz.max_of_maximum)
 
     # create the GA object for accessing GA operations
     ga = GeneticAlgorithm(registry=reg)
