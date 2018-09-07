@@ -133,14 +133,14 @@ class SimExecutionConfiguration(object):
         for _, gfs in reg.gft_dict.items():
             for var in gfs.descriptor.inputVariables.inputVar:
                 var_config = reg.linvar_dict[var.identity.type]
-                if var_config.procedure == Const.INNER_STATE_VAR:
+                if var_config.name == Const.INNER_STATE_VAR:
                     continue
                 try:
                     assert hasattr(self.agents[0].obs_accessor, var_config.procedure)
-                except AssertionError as e:
-                    log.error("Observation method \"{m}\" is missing in {c}.\n{e}"
+                except Exception as e:
+                    log.error("Observation method \"{m}\" is missing in {c}. {e}. var: {var}"
                               .format(m=var_config.procedure, c=type(self.agents[0].obs_accessor),
-                                      e=str(e)))
+                                      e=str(e), var=var_config.name))
 
 
 class Runner(object):

@@ -8,8 +8,6 @@
         <rbSize>45</rbSize>
         <mfSize>22</mfSize>
         <position>0</position>
-        <rbOffset>0</rbOffset>
-        <mfOffset>45</mfOffset>
         <description>Determines the force applied to the joint of the pendulum</description>
         <inputVariables>
             <inputVar>

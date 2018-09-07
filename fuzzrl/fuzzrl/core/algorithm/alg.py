@@ -295,7 +295,7 @@ class Algorithm(object):
 
             if inner_state_required:
                 # set internal state variable
-                gfs.controlSystemSimulation.input["internalStateInputVariable"] = next_cell_value
+                gfs.controlSystemSimulation.input[const.INNER_STATE_VAR] = next_cell_value
                 input_vector.append(next_cell_value)
 
             # record the current input vector in the dictionary
@@ -318,7 +318,7 @@ class Algorithm(object):
         for gfs in reversed(gfs_list):
             if inner_state_required:
                 # set internal variable
-                gfs.controlSystemSimulation.input["internalStateInputVariable"] = next_cell_value
+                gfs.controlSystemSimulation.input[const.INNER_STATE_VAR] = next_cell_value
 
                 # append current internal variable value to the input values list of the GFS
                 input_vec_dict[gfs.name] = input_vec_dict[gfs.name] + [next_cell_value]

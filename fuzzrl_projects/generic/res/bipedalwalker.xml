@@ -1,0 +1,233 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- GFT for OpenAI Gym CartPole-v1 control -->
+<fuzzyInferenceSystems xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:noNamespaceSchemaLocation="../../../fuzzrl/fuzzrl/core/res/gftlv0.1.1.xsd"
+                       rootInfSystem="">
+    <fuzzyInferenceSystem name="Hip1">
+        <outputGeneRange>0 2</outputGeneRange>
+        <rbSize>19683</rbSize>
+        <mfSize>54</mfSize>
+        <position>0</position>
+        <description>bidpedal walker control system</description>
+        <inputVariables>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="hip_joint_1_angle" type="hip_joint_1_angle"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="hip_joint_1_speed" type="hip_joint_1_speed"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="leg_1_ground_contact_flag" type="leg_1_ground_contact_flag"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="hull_angle" type="hull_angle"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="hull_angularVelocity" type="hull_angularVelocity"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="vel_x" type="vel_x"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="vel_y" type="vel_y"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="lidar_readings" type="lidar_readings"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="internalStateInputVariable" type="internalStateInputVariable"/>
+            </inputVar>
+        </inputVariables>
+        <outputVariable type="Hip_1">
+            <term code="0">
+                <successOpTitle>low</successOpTitle>
+            </term>
+            <term code="1">
+                <successOpTitle>medium</successOpTitle>
+            </term>
+            <term code="2">
+                <successOpTitle>high</successOpTitle>
+            </term>
+        </outputVariable>
+    </fuzzyInferenceSystem>
+
+    <fuzzyInferenceSystem name="Knee1">
+        <outputGeneRange>0 2</outputGeneRange>
+        <rbSize>19683</rbSize>
+        <mfSize>54</mfSize>
+        <position>1</position>
+        <description>bidpedal walker control system</description>
+        <inputVariables>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="knee_joint_1_angle" type="knee_joint_1_angle"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="knee_joint_1_speed" type="knee_joint_1_speed"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="leg_1_ground_contact_flag" type="leg_1_ground_contact_flag"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="hull_angle" type="hull_angle"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="hull_angularVelocity" type="hull_angularVelocity"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="vel_x" type="vel_x"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="vel_y" type="vel_y"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="lidar_readings" type="lidar_readings"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="internalStateInputVariable" type="internalStateInputVariable"/>
+            </inputVar>
+        </inputVariables>
+        <outputVariable type="Knee_1">
+            <term code="0">
+                <successOpTitle>low</successOpTitle>
+            </term>
+            <term code="1">
+                <successOpTitle>medium</successOpTitle>
+            </term>
+            <term code="2">
+                <successOpTitle>high</successOpTitle>
+            </term>
+        </outputVariable>
+    </fuzzyInferenceSystem>
+
+    <fuzzyInferenceSystem name="Hip2">
+        <outputGeneRange>0 2</outputGeneRange>
+        <rbSize>19683</rbSize>
+        <mfSize>54</mfSize>
+        <position>2</position>
+        <description>bidpedal walker control system</description>
+        <inputVariables>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="hip_joint_2_angle" type="hip_joint_2_angle"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="hip_joint_2_speed" type="hip_joint_2_speed"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="leg_2_ground_contact_flag" type="leg_2_ground_contact_flag"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="hull_angle" type="hull_angle"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="hull_angularVelocity" type="hull_angularVelocity"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="vel_x" type="vel_x"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="vel_y" type="vel_y"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="lidar_readings" type="lidar_readings"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="internalStateInputVariable" type="internalStateInputVariable"/>
+            </inputVar>
+        </inputVariables>
+        <outputVariable type="Hip_2">
+            <term code="0">
+                <successOpTitle>low</successOpTitle>
+            </term>
+            <term code="1">
+                <successOpTitle>medium</successOpTitle>
+            </term>
+            <term code="2">
+                <successOpTitle>high</successOpTitle>
+            </term>
+        </outputVariable>
+    </fuzzyInferenceSystem>
+
+    <fuzzyInferenceSystem name="Knee2">
+        <outputGeneRange>0 2</outputGeneRange>
+        <rbSize>19683</rbSize>
+        <mfSize>54</mfSize>
+        <position>3</position>
+        <description>bidpedal walker control system</description>
+        <inputVariables>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="knee_joint_2_angle" type="knee_joint_2_angle"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="knee_joint_2_speed" type="knee_joint_2_speed"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="leg_2_ground_contact_flag" type="leg_2_ground_contact_flag"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="hull_angle" type="hull_angle"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="hull_angularVelocity" type="hull_angularVelocity"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="vel_x" type="vel_x"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="vel_y" type="vel_y"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="lidar_readings" type="lidar_readings"/>
+            </inputVar>
+            <inputVar>
+                <tune>true</tune>
+                <identity name="internalStateInputVariable" type="internalStateInputVariable"/>
+            </inputVar>
+        </inputVariables>
+        <outputVariable type="Knee_2">
+            <term code="0">
+                <successOpTitle>low</successOpTitle>
+            </term>
+            <term code="1">
+                <successOpTitle>medium</successOpTitle>
+            </term>
+            <term code="2">
+                <successOpTitle>high</successOpTitle>
+            </term>
+        </outputVariable>
+    </fuzzyInferenceSystem>
+</fuzzyInferenceSystems>

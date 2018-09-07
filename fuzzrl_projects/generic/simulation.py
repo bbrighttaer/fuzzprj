@@ -9,6 +9,7 @@ import fuzzrl.core.plot.analysis as ana
 import gym
 import matplotlib.pyplot as plt
 import seaborn as sb
+import rlmarsenvs
 from fuzzrl.core.conf import Defuzz as dfz
 from fuzzrl.core.fuzzy.runner import *
 from fuzzrl.core.io.randomprocess import OrnsteinUhlenbeckProcess
@@ -18,7 +19,7 @@ from fuzzrl_projects.generic import *
 
 sb.set()
 
-SAVE_BEST = True
+SAVE_BEST = False
 ep_calbk = True
 
 # chart series
@@ -81,29 +82,29 @@ class Simulation(object):
 
 def main(sim):
     # create a mutation probability schedule
-    mut_sch = sch.ExponentialDecaySchedule(initial_prob=.5, decay_factor=1e-2)
+    mut_sch = sch.ExponentialDecaySchedule(initial_prob=.1, decay_factor=1e-2)
 
     # cross over probability schedule
-    cross_sch = sch.ConstantSchedule(0.7)
+    cross_sch = sch.ConstantSchedule(0.8)
 
     pop_size = 50
 
     # Evolution operators information
-    ev_conf = EvolutionConfig(sel_args={"k": pop_size, "tournsize": 3},
+    ev_conf = EvolutionConfig(sel_args={"k": pop_size, "tournsize": 5},
                               sel_func=tools.selTournament,
-                              cross_args={"indpb": 0.2},
+                              cross_args={"indpb": 0.4},
                               cross_func=tools.cxUniform,
-                              mut_args={"mu": 0, "sigma": 1.0, "indpb": 0.1},
+                              mut_args={"mu": 0, "sigma": 0.1, "indpb": 0.1},
                               mut_func=tools.mutGaussian)
 
     # GA configuration
     ga_conf = GeneticAlgConfiguration(evol_config=ev_conf,
                                       pop_size=pop_size,
-                                      num_gens=100,
+                                      num_gens=1000,
                                       mf_tuning_range=sim.tuning,
                                       lin_vars_file=sim.lin_vars_file,
                                       gft_file=sim.gft_file,
-                                      load_init_pop_file=None,
+                                      load_init_pop_file=sim.qlfd_ind_file,
                                       apply_evolution=True,
                                       defuzz_method=sim.defuzz_method,
                                       mutation_prob_schdl=mut_sch,
@@ -119,7 +120,7 @@ def main(sim):
                                          noise_process=sim.rand_proc,
                                          action_space=sim.action_space_type,
                                          persist_cache_per_ind=False,
-                                         visualize_env=False)
+                                         visualize_env=True)
     runner = Runner(ga_config=ga_conf,
                     sim_config=sim_conf,
                     seed=5,
@@ -186,25 +187,28 @@ if __name__ == "__main__":
                       tuning=[-0.1, 0.1]),
 
         # carmunk
-        # 1: Simulation(env_id=rlmarsenvs.carmunk_id,
-        #               lin_vars_file="res/carmunk_linvars.xml",
-        #               gft_file="res/carmunk_gft.xml",
-        #               action_space_type=Const.DISCRETE,
-        #               defuzz_method=dfz.max_of_maximum,
-        #               obs_class=CarmunkObs,
-        #               qlfd_ind_file="data/carmunk_qlfd.txt",
-        #               score_threshold=5000),
+        1: Simulation(env_id=rlmarsenvs.carmunk_id,
+                      lin_vars_file="res/carmunk_linvars.xml",
+                      gft_file="res/carmunk_gft.xml",
+                      action_space_type=Const.DISCRETE,
+                      defuzz_method=dfz.max_of_maximum,
+                      obs_class=CarmunkObs,
+                      qlfd_ind_file="data/carmunk_qlfd.txt",
+                      score_threshold=5000,
+                      rand_proc= None,
+                      tuning=[-1.0, 1.0],
+                      reward_shaping_callback=None),
         # pendulum
         2: Simulation(env_id="Pendulum-v0",
                       lin_vars_file="res/pendulum_linvars.xml",
                       gft_file="res/pendulum.xml",
                       action_space_type=Const.CONTINUOUS,
-                      defuzz_method=dfz.bisector,
+                      defuzz_method=dfz.centroid,
                       obs_class=PendulumObs,
                       qlfd_ind_file="data/pendulum_qlfd.txt",
                       score_threshold=-200,
-                      rand_proc=OrnsteinUhlenbeckProcess(theta=0.2),
-                      tuning=[-0.2, 0.2]),
+                      rand_proc=OrnsteinUhlenbeckProcess(theta=0.1),
+                      tuning=[-0.01, 0.01]),
 
         # mountain car continuous
         3: Simulation(env_id="MountainCarContinuous-v0",
@@ -217,6 +221,19 @@ if __name__ == "__main__":
                       score_threshold=90,
                       rand_proc=OrnsteinUhlenbeckProcess(theta=0.1),
                       tuning=[-0.01, 0.01],
+                      reward_shaping_callback=None),
+
+        # bipedal walker v2
+        4: Simulation(env_id="BipedalWalker-v2",
+                      lin_vars_file="res/bipedalwalker_linvars.xml",
+                      gft_file="res/bipedalwalker.xml",
+                      action_space_type=Const.CONTINUOUS,
+                      defuzz_method=dfz.centroid,
+                      obs_class=BipedalWalkerObs,
+                      qlfd_ind_file="data/bipedalwalker_qlfd.txt",
+                      score_threshold=300,
+                      rand_proc=OrnsteinUhlenbeckProcess(theta=0.1),
+                      tuning=[-0.01, 0.01],
                       reward_shaping_callback=None)}
 
-    main(sims[2])
+    main(sims[3])

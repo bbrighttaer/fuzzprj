@@ -8,8 +8,8 @@
         <rbSize>9</rbSize>
         <mfSize>12</mfSize>
         <position>0</position>
-        <rbOffset>0</rbOffset>
-        <mfOffset>9</mfOffset>
+        <!--<rbOffset>0</rbOffset>-->
+        <!--<mfOffset>9</mfOffset>-->
         <description>Determines the force applied to the joint of the car</description>
         <inputVariables>
             <inputVar>
