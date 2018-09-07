@@ -6,10 +6,9 @@
 import deap.tools as tools
 import fuzzrl.core.ga.schedule as sch
 import fuzzrl.core.plot.analysis as ana
-import matplotlib.pyplot as plt
-import rlmarsenvs
-import seaborn as sb
 import gym
+import matplotlib.pyplot as plt
+import seaborn as sb
 from fuzzrl.core.conf import Defuzz as dfz
 from fuzzrl.core.fuzzy.runner import *
 from fuzzrl.core.io.randomprocess import OrnsteinUhlenbeckProcess
@@ -20,6 +19,7 @@ from fuzzrl_projects.generic import *
 sb.set()
 
 SAVE_BEST = True
+ep_calbk = True
 
 # chart series
 weighted_avg = ana.WeightedAvg(beta=0.9)
@@ -64,7 +64,7 @@ def sim_finished(ga, pop):
 class Simulation(object):
 
     def __init__(self, env_id, lin_vars_file, gft_file, action_space_type, defuzz_method, obs_class,
-                 qlfd_ind_file, score_threshold):
+                 qlfd_ind_file, score_threshold, rand_proc, tuning, reward_shaping_callback=None):
         self.env_id = env_id
         self.lin_vars_file = lin_vars_file
         self.gft_file = gft_file
@@ -72,33 +72,35 @@ class Simulation(object):
         self.defuzz_method = defuzz_method
         self.qlfd_ind_file = qlfd_ind_file
         self.score_threshold = score_threshold
+        self.tuning = tuning
+        self.rand_proc = rand_proc
+        self.reward_shaping = reward_shaping_callback
         assert type(obs_class) == type
         self.obs_class = obs_class
 
 
 def main(sim):
     # create a mutation probability schedule
-    mut_sch = sch.ExponentialDecaySchedule(initial_prob=.2, decay_factor=1e-2)
+    mut_sch = sch.ExponentialDecaySchedule(initial_prob=.5, decay_factor=1e-2)
 
     # cross over probability schedule
     cross_sch = sch.ConstantSchedule(0.7)
 
-    # random process for introducing noise
-    rand_proc = OrnsteinUhlenbeckProcess(theta=0.01)
+    pop_size = 50
 
     # Evolution operators information
-    ev_conf = EvolutionConfig(sel_args={"k": 30, "tournsize": 3},
+    ev_conf = EvolutionConfig(sel_args={"k": pop_size, "tournsize": 3},
                               sel_func=tools.selTournament,
                               cross_args={"indpb": 0.2},
                               cross_func=tools.cxUniform,
-                              mut_args={"mu": 0, "sigma": 0.1, "indpb": 0.1},
+                              mut_args={"mu": 0, "sigma": 1.0, "indpb": 0.1},
                               mut_func=tools.mutGaussian)
 
     # GA configuration
     ga_conf = GeneticAlgConfiguration(evol_config=ev_conf,
-                                      pop_size=30,
-                                      num_gens=10,
-                                      mf_tuning_range=[-0.1, 0.1],
+                                      pop_size=pop_size,
+                                      num_gens=100,
+                                      mf_tuning_range=sim.tuning,
                                       lin_vars_file=sim.lin_vars_file,
                                       gft_file=sim.gft_file,
                                       load_init_pop_file=None,
@@ -112,22 +114,23 @@ def main(sim):
     # Sim execution configuration
     sim_conf = SimExecutionConfiguration(env=gym.make(sim.env_id),
                                          agents=[Agent(0, sim.obs_class)],
-                                         max_time_steps=600,
+                                         max_time_steps=500,
                                          episodes_per_ind=1,
-                                         noise_process=rand_proc,
+                                         noise_process=sim.rand_proc,
                                          action_space=sim.action_space_type,
                                          persist_cache_per_ind=False,
-                                         visualize_env=True)
+                                         visualize_env=False)
     runner = Runner(ga_config=ga_conf,
                     sim_config=sim_conf,
                     seed=5,
                     episode_finished_callback=
                     create_episode_finished_callback(score_threshold=sim.score_threshold,
-                                                     qlfd_ind_file=sim.qlfd_ind_file) if SAVE_BEST else None,
+                                                     qlfd_ind_file=sim.qlfd_ind_file) if ep_calbk else None,
                     epoch_finished_callback=epoch_finished,
                     sim_finished_callback=sim_finished,
                     evolution_finished_callback=
-                    lambda pop, m_prob, c_prob, epoch: mut_prob_series.addrecord(epoch, mut_sch.prob))
+                    lambda pop, m_prob, c_prob, epoch: mut_prob_series.addrecord(epoch, mut_sch.prob),
+                    r_shaping_callback=sim.reward_shaping)
 
     runner.run()
 
@@ -157,6 +160,17 @@ def plot_charts():
     plt.show()
 
 
+def mountain_car_reshape(state, reward, done):
+    reward = state[0] + .5
+    if state[0] >= 0.5:
+        reward += 1
+
+    if -0.6 < state[0] < -0.4:
+        reward -= 1
+
+    return reward
+
+
 if __name__ == "__main__":
     sims = {
         # cart pole
@@ -167,26 +181,30 @@ if __name__ == "__main__":
                       defuzz_method=dfz.max_of_maximum,
                       obs_class=CartPoleObs,
                       qlfd_ind_file="data/cart_pole_qlfd.txt",
-                      score_threshold=400),
+                      score_threshold=400,
+                      rand_proc=None,
+                      tuning=[-0.1, 0.1]),
 
         # carmunk
-        1: Simulation(env_id=rlmarsenvs.carmunk_id,
-                      lin_vars_file="res/carmunk_linvars.xml",
-                      gft_file="res/carmunk_gft.xml",
-                      action_space_type=Const.DISCRETE,
-                      defuzz_method=dfz.max_of_maximum,
-                      obs_class=CarmunkObs,
-                      qlfd_ind_file="data/carmunk_qlfd.txt",
-                      score_threshold=5000),
+        # 1: Simulation(env_id=rlmarsenvs.carmunk_id,
+        #               lin_vars_file="res/carmunk_linvars.xml",
+        #               gft_file="res/carmunk_gft.xml",
+        #               action_space_type=Const.DISCRETE,
+        #               defuzz_method=dfz.max_of_maximum,
+        #               obs_class=CarmunkObs,
+        #               qlfd_ind_file="data/carmunk_qlfd.txt",
+        #               score_threshold=5000),
         # pendulum
         2: Simulation(env_id="Pendulum-v0",
                       lin_vars_file="res/pendulum_linvars.xml",
                       gft_file="res/pendulum.xml",
                       action_space_type=Const.CONTINUOUS,
-                      defuzz_method=dfz.centroid,
+                      defuzz_method=dfz.bisector,
                       obs_class=PendulumObs,
                       qlfd_ind_file="data/pendulum_qlfd.txt",
-                      score_threshold=-200),
+                      score_threshold=-200,
+                      rand_proc=OrnsteinUhlenbeckProcess(theta=0.2),
+                      tuning=[-0.2, 0.2]),
 
         # mountain car continuous
         3: Simulation(env_id="MountainCarContinuous-v0",
@@ -196,6 +214,9 @@ if __name__ == "__main__":
                       defuzz_method=dfz.centroid,
                       obs_class=MountainCarObs,
                       qlfd_ind_file="data/mountain_car_cont_qlfd.txt",
-                      score_threshold=90)}
+                      score_threshold=90,
+                      rand_proc=OrnsteinUhlenbeckProcess(theta=0.1),
+                      tuning=[-0.01, 0.01],
+                      reward_shaping_callback=None)}
 
     main(sims[2])

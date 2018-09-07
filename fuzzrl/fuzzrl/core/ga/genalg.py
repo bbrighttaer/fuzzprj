@@ -130,12 +130,12 @@ class GeneticAlgorithm(object):
                         eval_data.append(eval(d))
                     data = eval_data
                     i = 0
-                    while len(data) > 0 and len(population) < size:
+                    while len(data) > 0 and len(population) < 500:
                         ind = data[i % len(data)]
                         if len(ind) > 0:
                             population.append(creator.Individual(ind))
                         i += 1
-        return population
+        return random.sample(population, k=size)
 
     def selection(self, individuals, func, **kwargs):
         """
@@ -183,8 +183,8 @@ class GeneticAlgorithm(object):
         self.__mut_avoid.clear()
         for i in range(keep_num):
             elit = offspring[i]
-            # self.__mut_avoid.append(elit)
             next_gen.append(elit)
+            self.__mut_avoid.append(elit)
 
         # clear existing fitness values
         for child in next_gen:
@@ -204,8 +204,8 @@ class GeneticAlgorithm(object):
         """
         # Apply mutation on the offspring
         for member in offspring:
-            # if member not in self.__mut_avoid and random.random() < mut_prob:
-            if random.random() < mut_prob:
+            if member not in self.__mut_avoid and random.random() < mut_prob:
+            # if random.random() < mut_prob:
                 for part in member:
                     func(part, **kwargs)
             del member.fitness.values
@@ -226,7 +226,7 @@ class GeneticAlgorithm(object):
                 # RB operator segment
                 if const.LEARN_RULE_OP:
                     seg_skip += 1
-                    self.__checkbounds(member[fis.descriptor.position + (seg_skip * num_gfts)], 0, 1)
+                    self.__checkbounds(member[fis.descriptor.position + (seg_skip * n0jium_gfts)], 0, 1)
 
                 if const.ACTION_SPACE == const.CONTINUOUS:
                     seg_skip += 1

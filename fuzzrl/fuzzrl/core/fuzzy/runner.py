@@ -179,7 +179,7 @@ class Runner(object):
         # get initial population
         if self.ga_config.load_init_pop_file is not None:
             pop = ga.load_initial_population(self.ga_config.load_init_pop_file, self.ga_config.pop_size)
-            pop = pop[::-1]
+            # pop = pop[::-1]
             print("Num. of loaded individuals =", len(pop))
         else:
             pop = ga.generate_initial_population(self.ga_config.pop_size)
