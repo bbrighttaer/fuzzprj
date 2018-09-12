@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<fuzzynet xsi:noNamespaceSchemaLocation="../../../fuzzrl_pkg/fuzzrl/core/res/gftlv1.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<fuzzynet xsi:noNamespaceSchemaLocation="../../../fuzzrl/fuzzrl/core/res/gftlv1.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<input>
 		<fis name="CartPoleMovement" defuzz="centroid">
 			<outputGeneRange>0 1</outputGeneRange>
