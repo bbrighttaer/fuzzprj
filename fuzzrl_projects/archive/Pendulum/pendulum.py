@@ -118,7 +118,7 @@ def main():
                 agent_id = 0
 
                 # get an action
-                input_vec_dict, actions_dict = alg.executebfc(obs_pendulum, agent_id, add_noise=False)
+                input_vec_dict, actions_dict = alg.execute_fuzzy_net(obs_pendulum, agent_id, add_noise=False)
 
                 # mark the GFSs that executed for the agent in this time step
                 cache.mark(output_dict_keys=actions_dict.keys())

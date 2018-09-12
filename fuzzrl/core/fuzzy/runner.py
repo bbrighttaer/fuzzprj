@@ -49,7 +49,7 @@ class GeneticAlgConfiguration(object):
     """
 
     def __init__(self, evol_config, pop_size, num_gens, mf_tuning_range, lin_vars_file, gft_file, load_init_pop_file,
-                 apply_evolution, defuzz_method, mutation_prob_schdl, cross_prob_schdl, learn_rb_ops=False):
+                 apply_evolution, mutation_prob_schdl, cross_prob_schdl, learn_rb_ops=False):
         self.pop_size = pop_size
         self.num_gens = num_gens
         self.mf_tuning_range = mf_tuning_range
@@ -57,7 +57,6 @@ class GeneticAlgConfiguration(object):
         self.gft_file = gft_file
         self.load_init_pop_file = load_init_pop_file
         self.apply_evolution = apply_evolution
-        self.defuzz_method = defuzz_method
         self.mutation_prob_schdl = mutation_prob_schdl
         self.learn_rb_ops = learn_rb_ops
         self.evol_config = evol_config
@@ -133,7 +132,7 @@ class SimExecutionConfiguration(object):
         for _, gfs in reg.gft_dict.items():
             for var in gfs.descriptor.inputVariables.inputVar:
                 var_config = reg.linvar_dict[var.identity.type]
-                if var_config.name == Const.INNER_STATE_VAR:
+                if var_config.name == Const.INNER_STATE_VAR or var_config.type == "output":
                     continue
                 try:
                     assert hasattr(self.agents[0].obs_accessor, var_config.procedure)
@@ -225,18 +224,21 @@ class Runner(object):
                         for agent in agents:
                             if self.sim_config.action_space_type == Const.DISCRETE:
                                 # get an action
-                                code, action, input_vec_dict, probs_dict = alg.executegft(agent.obs_accessor,
-                                                                                          agent_id=agent.id)
+                                actions_dict, input_vec_dict, action, probs_dict = alg.execute_fuzzy_net(
+                                    agent.obs_accessor, agent_id=agent.id)
 
                                 # mark the GFSs that executed for the agent in this time step
                                 cache.mark(output_dict_keys=probs_dict.keys())
 
                                 # store intermediate values
-                                agent.temp_values = (code, action, input_vec_dict, probs_dict)
+                                last_node = list(actions_dict.keys())[-1]
+                                action_code = actions_dict[last_node]
+                                agent.temp_values = (action_code, action, input_vec_dict, probs_dict)
                             else:
                                 # get an action
-                                actions_dict, input_vec_dict = alg.executebfc(agent.obs_accessor, agent_id=agent.id,
-                                                                              add_noise=True)
+                                actions_dict, input_vec_dict = alg.execute_fuzzy_net(agent.obs_accessor,
+                                                                                     agent_id=agent.id,
+                                                                                     add_noise=True)
                                 agent.temp_values = (actions_dict, input_vec_dict)
                                 cache.mark(output_dict_keys=actions_dict.keys())
 

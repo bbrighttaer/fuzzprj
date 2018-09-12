@@ -1,3 +1,6 @@
+from collections import OrderedDict
+
+
 class Registry(object):
     """
      ## Serves as the main registry for:
@@ -16,7 +19,7 @@ class Registry(object):
         self.__linvar_dict = {}
 
         # a dictionary of all fuzzy inference systems in the GFT configuration file
-        self.__gft_dict = {}
+        self.__gft_dict = OrderedDict()
 
         # an object representing the parsed details of the linguistic variables configuration file.
         self.__linvar_config = None
@@ -26,6 +29,9 @@ class Registry(object):
 
         # dictionary of NN models corresponding to the nodes in the GFT.
         self.__nn_models_dict = {}
+
+        # convenience prop: layer descriptions grouped into input, hidden, and output segments
+        self.__layers_config = OrderedDict()
 
     @property
     def label(self):
@@ -74,3 +80,11 @@ class Registry(object):
     @nn_models_dict.setter
     def nn_models_dict(self, models_dict):
         self.__nn_models_dict = models_dict
+
+    @property
+    def layers_config(self):
+        return self.__layers_config
+
+    @layers_config.setter
+    def layers_config(self, conf):
+        self.__layers_config = conf

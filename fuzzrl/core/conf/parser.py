@@ -4,7 +4,6 @@ from fuzzrl.core.conf.fuzzynetxsd import CreateFromDocument as createFuzzyNet
 from fuzzrl.core.conf.linvars import CreateFromDocument as createLinvars
 from fuzzrl.core.fuzzy.gfs import GeneticFuzzySystem
 from fuzzrl.core.reg.registry import Registry
-import pyxb.namespace.builtin as pyxb
 
 
 def xmlToLinvars(xmlText, registry=Registry("default_reg")):
@@ -50,7 +49,7 @@ def xmlToFuzzyNet(xmlText, registry):
     method is to be used across all layers, then that method shall be the only element in the tuple.
     :return: Updated registry containing the created network
     """
-    pyxb.XMLSchema_instance
+
     # create the fuzzy net object from configuration file content
     fn_config = createFuzzyNet(xmlText)
 
@@ -61,10 +60,16 @@ def xmlToFuzzyNet(xmlText, registry):
     registry.fuzzynet_config = fn_config
 
     # combine all layers for GFS creation
-    all_layers = {"input": [fn_config.input], "hidden": [h_layer for h_layer in fn_config.hidden],
-                  "output": [fn_config.output]}
+    all_layers = {"input": [fn_config.input]}
+    if len(fn_config.hidden) > 0:
+        all_layers.update({"hidden": [h_layer for h_layer in fn_config.hidden]})
+    if fn_config.output is not None:
+        all_layers.update({"output": [fn_config.output]})
+
+    registry.layers_config = all_layers
 
     # create all nodes of the net
     for k, layer_segment in all_layers.items():
         for layer in layer_segment:
             _create_layer_nodes(layer, linvars, registry, layer=k)
+    return registry

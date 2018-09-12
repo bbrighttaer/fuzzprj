@@ -133,7 +133,7 @@ def main():
                 agent_id = 0
 
                 # get an action
-                actions_dict, input_vec_dict = alg.executebfc(obs_accessor, agent_id, add_noise=True)
+                actions_dict, input_vec_dict = alg.execute_fuzzy_net(obs_accessor, agent_id, add_noise=True)
 
                 # mark the GFSs that executed for the agent in this time step
                 cache.mark(output_dict_keys=actions_dict.keys())

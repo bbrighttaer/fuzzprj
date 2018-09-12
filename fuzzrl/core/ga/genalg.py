@@ -83,26 +83,34 @@ class GeneticAlgorithm(object):
         population = []
         for _ in range(pop_size):
             # construct the individual
-            rb_segment, mf_segment, rb_operator_seg, out_mf_seg = [], [], [], []
-            for _, fis in self.__registry.gft_dict.items():
-                descriptor = fis.descriptor
-                rb_segment.append(self.__create_rb_partial_chrom(descriptor.rbSize, descriptor.outputGeneRange))
-                mf_segment.append(self.__create_mf_partial_chrom(descriptor.mfSize))
+            input_seg, hidden_seg, out_seg = [], [], []
+            for seg_label, segment_layers in self.__registry.layers_config.items():
+                for layer in segment_layers:
+                    rb_segment, mf_segment, rb_operator_seg, out_mf_seg = [], [], [], []
+                    for fis in layer.fis:
+                        rb_segment.append(self.__create_rb_partial_chrom(fis.rbSize, fis.outputGeneRange))
+                        mf_segment.append(self.__create_mf_partial_chrom(fis.mfSize))
 
-                if const.LEARN_RULE_OP:
-                    rbopsnum = getrbopsnum(descriptor)
-                    rb_operator_seg.append(self.__create_rb_operators_chrom(rbopsnum))
+                        if const.LEARN_RULE_OP:
+                            rbopsnum = getrbopsnum(fis)
+                            rb_operator_seg.append(self.__create_rb_operators_chrom(rbopsnum))
 
-                if const.ACTION_SPACE == const.CONTINUOUS:
-                    p_size = 0
-                    output_var = descriptor.outputVariable
-                    var_config = self.__registry.linvar_dict[output_var.type]
-                    for term in var_config.terms.term:
-                        p_size += gettuningparamsize(term.mf)
-                    out_mf_seg.append(self.__create_mf_partial_chrom(p_size))
+                        if const.ACTION_SPACE == const.CONTINUOUS:
+                            p_size = 0
+                            output_var = fis.outputVariable
+                            var_config = self.__registry.linvar_dict[output_var.type]
+                            for term in var_config.terms.term:
+                                p_size += gettuningparamsize(term.mf)
+                            out_mf_seg.append(self.__create_mf_partial_chrom(p_size))
 
-            individual = rb_segment + mf_segment + rb_operator_seg + out_mf_seg
-
+                    layer_individual = [rb_segment + mf_segment + rb_operator_seg + out_mf_seg]
+                    if seg_label == "input":
+                        input_seg.append(layer_individual)
+                    elif seg_label == "hidden":
+                        hidden_seg.append(layer_individual)
+                    else:
+                        out_seg.append(layer_individual)
+            individual = input_seg + hidden_seg + out_seg
             # convert the individual to DEAP individual and add it to the population (wrapping)
             individual = creator.Individual(individual)
             population.append(individual)
@@ -173,8 +181,11 @@ class GeneticAlgorithm(object):
         # Apply crossover on the offspring
         for child1, child2 in zip(offspring[::2], offspring[1::2]):
             if random.random() < cross_prob:
-                for p1, p2 in zip(child1, child2):
-                    func(p1, p2, **kwargs)
+                for seg_label, segment_layers in self.__registry.layers_config.items():
+                    idx = list(self.__registry.layers_config.keys()).index(seg_label)
+                    for i, layer in enumerate(segment_layers):
+                        for p1, p2 in zip(child1[idx][i], child2[idx][i]):
+                            func(p1, p2, **kwargs)
                 next_gen.append(self.__toolbox.clone(child1))
                 next_gen.append(self.__toolbox.clone(child2))
 
@@ -205,53 +216,59 @@ class GeneticAlgorithm(object):
         # Apply mutation on the offspring
         for member in offspring:
             if member not in self.__mut_avoid and random.random() < mut_prob:
-            # if random.random() < mut_prob:
-                for part in member:
-                    func(part, **kwargs)
+                # if random.random() < mut_prob:
+                for seg_label, segment_layers in self.__registry.layers_config.items():
+                    idx = list(self.__registry.layers_config.keys()).index(seg_label)
+                    for i, layer in enumerate(segment_layers):
+                        for part in member[idx][i]:
+                            func(part, **kwargs)
             del member.fitness.values
 
         # check bounds of mutation of RB & MF parts
-        num_gfts = len(self.__registry.gft_dict)
-        for _, fis in self.__registry.gft_dict.items():
-            for member in offspring:
-                # RB segment
-                self.__checkbounds(member[fis.descriptor.position],
-                                   fis.descriptor.outputGeneRange[0],
-                                   fis.descriptor.outputGeneRange[1])
-                # MF segment
-                self.__checkbounds(member[fis.descriptor.position + num_gfts],
-                                   const.MF_TUNING_RANGE[0],
-                                   const.MF_TUNING_RANGE[1], apply_round=False)
-                seg_skip = 1
-                # RB operator segment
-                if const.LEARN_RULE_OP:
-                    seg_skip += 1
-                    self.__checkbounds(member[fis.descriptor.position + (seg_skip * n0jium_gfts)], 0, 1)
+        for seg_label, segment_layers in self.__registry.layers_config.items():
+            idx = list(self.__registry.layers_config.keys()).index(seg_label)
+            for i, layer in enumerate(segment_layers):
+                num_gfts = len(layer.fis)
+                for fis in layer.fis:
+                    for member in offspring:
+                        # RB segment: member[segment][layer_number][fis]
+                        self.__checkbounds(member[idx][i][fis.position],
+                                           fis.outputGeneRange[0],
+                                           fis.outputGeneRange[1])
+                        # MF segment
+                        self.__checkbounds(member[idx][i][fis.position + num_gfts],
+                                           const.MF_TUNING_RANGE[0],
+                                           const.MF_TUNING_RANGE[1], apply_round=False)
+                        seg_skip = 1
+                        # RB operator segment
+                        if const.LEARN_RULE_OP:
+                            seg_skip += 1
+                            self.__checkbounds(member[idx][i][fis.position + (seg_skip * num_gfts)], 0, 1)
 
-                if const.ACTION_SPACE == const.CONTINUOUS:
-                    seg_skip += 1
-                    # Output MF tuning segment
-                    self.__checkbounds(member[fis.descriptor.position + (seg_skip * num_gfts)],
-                                       const.MF_TUNING_RANGE[0],
-                                       const.MF_TUNING_RANGE[1], apply_round=False)
+                        if const.ACTION_SPACE == const.CONTINUOUS:
+                            seg_skip += 1
+                            # Output MF tuning segment
+                            self.__checkbounds(member[idx][i][fis.position + (seg_skip * num_gfts)],
+                                               const.MF_TUNING_RANGE[0],
+                                               const.MF_TUNING_RANGE[1], apply_round=False)
 
-    def __checkbounds(self, child, min, max, apply_round=True):
+    def __checkbounds(self, child, min_val, max_val, apply_round=True):
         """
         Ensures that all genes are within defined ranges.
 
         Parameters
         ------------
         :param child: The child or chromosome under inspection
-        :param min: The minimum value of the range
-        :param max: The maximum value of the range
+        :param min_val: The minimum value of the range
+        :param max_val: The maximum value of the range
         :param apply_round: Whether gene values should be rounded to the nearest integer
         :return: An inspected child or chromosome
         """
         for i in range(len(child)):
-            if child[i] > max:
-                child[i] = max
-            elif child[i] < min:
-                child[i] = min
+            if child[i] > max_val:
+                child[i] = max_val
+            elif child[i] < min_val:
+                child[i] = min_val
             if apply_round:
                 child[i] = round(child[i])
         return child

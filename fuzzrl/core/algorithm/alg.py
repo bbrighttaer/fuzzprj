@@ -22,7 +22,7 @@ class Algorithm(object):
         self.__random_process = random_process
         self.__reg = registry
         # get the name of the root GFS of the GFT
-        self.__root = self.__reg.fuzzynet_config.rootInfSystem
+        self.__root = None  # self.__reg.fuzzynet_config.rootInfSystem
         print("root =", self.__root)
 
     def configuregft(self, chromosome):
@@ -31,26 +31,33 @@ class Algorithm(object):
 
         :param chromosome: The multi-part chromosome for KB construction.
         """
-        num_gfs = len(self.__reg.gft_dict.items())
-        for _, gfs in self.__reg.gft_dict.items():
-            rb_segment = chromosome[gfs.descriptor.position]
-            mf_segment = chromosome[gfs.descriptor.position + num_gfs]
-            rb_op_segment = None
-            out_mf_seg = None
+        for seg_label, segment_layers in self.__reg.layers_config.items():
+            seg_ind = chromosome[list(self.__reg.layers_config.keys()).index(seg_label)]
 
-            seg_skip = 1
-            # check for rule operator learning
-            if const.LEARN_RULE_OP:
-                seg_skip += 1
-                rb_op_segment = chromosome[gfs.descriptor.position + (seg_skip * num_gfs)]
+            for i, layer in enumerate(segment_layers):
+                num_gfs = len(layer.fis)
+                layer_ind = seg_ind[i]
+                for fis in layer.fis:
+                    gfs = self.__reg.gft_dict.get(fis.name)
+                    rb_segment = layer_ind[gfs.descriptor.position]
+                    mf_segment = layer_ind[gfs.descriptor.position + num_gfs]
+                    rb_op_segment = None
+                    out_mf_seg = None
 
-            # check for output variable membership functions tuning (thus, continuous action space activated)
-            if const.ACTION_SPACE == const.CONTINUOUS:
-                seg_skip += 1
-                out_mf_seg = chromosome[gfs.descriptor.position + (seg_skip * num_gfs)]
+                    seg_skip = 1
+                    # check for rule operator learning
+                    if const.LEARN_RULE_OP:
+                        seg_skip += 1
+                        rb_op_segment = layer_ind[gfs.descriptor.position + (seg_skip * num_gfs)]
 
-            gfs.buildControlSystemSim(rb_chrom=rb_segment, mf_chrom=mf_segment,
-                                      rb_op_chrom=rb_op_segment, out_mf_chrom=out_mf_seg)
+                    # check for output variable membership functions tuning (thus, continuous action space
+                    # activated)
+                    if const.ACTION_SPACE == const.CONTINUOUS:
+                        seg_skip += 1
+                        out_mf_seg = layer_ind[gfs.descriptor.position + (seg_skip * num_gfs)]
+
+                    gfs.buildControlSystemSim(rb_chrom=rb_segment, mf_chrom=mf_segment,
+                                              rb_op_chrom=rb_op_segment, out_mf_chrom=out_mf_seg)
 
     def executegft(self, obclassobj, agent_id, gfs_name=None, formatting_func=round):
         return self._executegft(obclassobj, agent_id, gfs_name, formatting_func, OrderedDict(), OrderedDict())
@@ -243,104 +250,130 @@ class Algorithm(object):
             out.append(val)
         return softmax(x=out)
 
-    def executebfc(self, obclassobj, agent_id, add_noise=True):
+    def execute_fuzzy_net(self, obclassobj, agent_id, add_noise=False, bidirectional=False):
         """
-        Executes a Bidirectional Fuzzy Chain (BFC) for continuous action(s)
+        Executes a Feed-Forward or Bidirectional Fuzzy Net (F3N/BFN) for continuous action(s)
+        :param bidirectional:
         :param add_noise:
         :param obclassobj:
         :param agent_id:
-        :param gfs_name:
-        :param input_vec_dict:
-        :param actions_dict:
         :return:
         """
+
+        discrete_sim = const.ACTION_SPACE == const.DISCRETE
+
         # stores the inputs of each node
         input_vec_dict = OrderedDict()
 
         # stores the selected actions using the names of the respective GFSs as keys
         actions_dict = OrderedDict()
 
-        # stores the input values of the currently executing GFS
-        input_vector = []
+        action_probs_dict = OrderedDict() if discrete_sim else None
+        selected_term = None
 
-        # sort GFSs according to position
-        gfs_list = sorted(self.__reg.gft_dict.values(), key=lambda x: x.descriptor.position)
+        # run through the network
+        for seg_label, segment_layers in self.__reg.layers_config.items():
+            for layer in segment_layers:
 
-        # dict for storing forward and backward pass outputs
-        interm_actions_dict = {k.name: () for k in gfs_list}
+                # stores the input values of the currently executing GFS
+                input_vector = []
 
-        # Forward pass
-        next_cell_value = 0
+                # sort GFSs according to position
+                gfs_list = sorted([self.__reg.gft_dict[fis.name] for fis in layer.fis],
+                                  key=lambda x: x.descriptor.position)
 
-        inner_state_required = True if len(gfs_list) > 1 else False
+                # dict for storing forward and backward pass outputs
+                interm_actions_dict = {k.name: () for k in gfs_list}
 
-        for gfs in gfs_list:
-            # clear previous data
-            gfs.reset()
+                # Forward pass
+                next_cell_value = 0
 
-            # set input values
-            for var in gfs.descriptor.inputVariables.inputVar:
-                if var.identity.type == const.INNER_STATE_VAR:
-                    continue
-                # get config details from registry
-                var_config = self.__reg.linvar_dict[var.identity.type]
-                # select procedure for input value
-                func = getattr(obclassobj, var_config.procedure)
-                # set input value of variable
-                input_value = func(agent_id)
-                gfs.controlSystemSimulation.input[var.identity.name] = input_value
-                # if self.__random_process is not None:
-                #     input_value += self.__random_process.sample()[0]
-                input_vector.append(input_value)
+                inner_state_required = True if bidirectional and len(gfs_list) > 1 else False
 
-            if inner_state_required:
-                # set internal state variable
-                gfs.controlSystemSimulation.input[const.INNER_STATE_VAR] = next_cell_value
-                input_vector.append(next_cell_value)
+                for gfs in gfs_list:
+                    # clear previous data
+                    gfs.reset()
 
-            # record the current input vector in the dictionary
-            input_vec_dict[gfs.name] = input_vector
+                    # set input values
+                    for var in gfs.descriptor.inputVariables.inputVar:
+                        if var.identity.type == const.INNER_STATE_VAR:
+                            continue
+                        if seg_label == "input":
+                            # get config details from registry
+                            var_config = self.__reg.linvar_dict[var.identity.type]
+                            # select procedure for input value
+                            func = getattr(obclassobj, var_config.procedure)
+                            # set input value of variable
+                            input_value = func(agent_id)
+                        else:
+                            prev_link = var.input_fis.link
+                            input_value = actions_dict[prev_link]
+                        gfs.controlSystemSimulation.input[var.identity.name] = input_value
+                        # if self.__random_process is not None:
+                        #     input_value += self.__random_process.sample()[0]
+                        input_vector.append(input_value)
 
-            # execute the control system
-            gfs.controlSystemSimulation.compute()
+                    if inner_state_required:
+                        # set internal state variable
+                        gfs.controlSystemSimulation.input[const.INNER_STATE_VAR] = next_cell_value
+                        input_vector.append(next_cell_value)
 
-            # get the crisp value from the control system
-            out = gfs.controlSystemSimulation.output[gfs.consequent.label]
+                    # record the current input vector in the dictionary
+                    input_vec_dict[gfs.name] = input_vector
 
-            # store forward pass output as an intermediate value
-            interm_actions_dict[gfs.name] = interm_actions_dict[gfs.name] + (out,)
+                    # execute the control system
+                    gfs.controlSystemSimulation.compute()
 
-            # update next cell's value
-            next_cell_value = out
+                    # get the crisp value from the control system
+                    out = gfs.controlSystemSimulation.output[gfs.consequent.label]
 
-        # Backward pass
-        next_cell_value = 0
-        for gfs in reversed(gfs_list):
-            if inner_state_required:
-                # set internal variable
-                gfs.controlSystemSimulation.input[const.INNER_STATE_VAR] = next_cell_value
+                    # store forward pass output as an intermediate value
+                    interm_actions_dict[gfs.name] = interm_actions_dict[gfs.name] + (out,)
 
-                # append current internal variable value to the input values list of the GFS
-                input_vec_dict[gfs.name] = input_vec_dict[gfs.name] + [next_cell_value]
+                    # update next cell's value
+                    next_cell_value = out
 
-            # execute the control system
-            gfs.controlSystemSimulation.compute()
+                    # TODO: Review this condition for the bidirectional case. It's currently only using the Forward run
+                    if discrete_sim:
+                        # adds the action probabilities to the dictionary
+                        action_probs = self.__get_action_probs(gfs.consequent, gfs.controlSystemSimulation)
+                        action_probs_dict[gfs.name] = action_probs
 
-            # get the crisp value from the control system
-            out = gfs.controlSystemSimulation.output[gfs.consequent.label]
+                        # search for the corresponding output term
+                        for term in gfs.descriptor.outputVariable.term:
+                            if term.code == out:
+                                selected_term = term
+                                break
 
-            # store forward pass output as an intermediate value
-            interm_actions_dict[gfs.name] = interm_actions_dict[gfs.name] + (out,)
+                # Backward pass
+                next_cell_value = 0
+                if bidirectional and not discrete_sim:
+                    for gfs in reversed(gfs_list):
+                        if inner_state_required:
+                            # set internal variable
+                            gfs.controlSystemSimulation.input[const.INNER_STATE_VAR] = next_cell_value
 
-            # update next cell's value
-            next_cell_value = out
+                            # append current internal variable value to the input values list of the GFS
+                            input_vec_dict[gfs.name] = input_vec_dict[gfs.name] + [next_cell_value]
 
-        # Action selection
-        for k, v in interm_actions_dict.items():
-            # v contains (o_forward, o_backward)
-            a = np.mean(v)
-            if self.__random_process is not None and add_noise:
-                a += self.__random_process.sample()[0]
-            actions_dict[k] = a
+                        # execute the control system
+                        gfs.controlSystemSimulation.compute()
 
-        return actions_dict, input_vec_dict
+                        # get the crisp value from the control system
+                        out = gfs.controlSystemSimulation.output[gfs.consequent.label]
+
+                        # store forward pass output as an intermediate value
+                        interm_actions_dict[gfs.name] = interm_actions_dict[gfs.name] + (out,)
+
+                        # update next cell's value
+                        next_cell_value = out
+
+                # Action selection
+                for k, v in interm_actions_dict.items():
+                    # v contains (o_forward, o_backward)
+                    a = np.mean(v)
+                    if self.__random_process is not None and add_noise:
+                        a += self.__random_process.sample()[0]
+                    actions_dict[k] = a
+
+        return actions_dict, input_vec_dict, selected_term, action_probs_dict

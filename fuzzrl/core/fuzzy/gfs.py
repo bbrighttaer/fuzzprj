@@ -242,7 +242,7 @@ class GeneticFuzzySystem(object):
         try:
             for term in self.__descriptor.outputVariable.term:
                 if term.code == code:
-                    return term.successOpTitle
+                    return term.label
             raise ex.OutputCodeError(
                 "corresponding term for code {0} in {1} could not be mapped to an output variable term"
                     .format(code, self.name))
