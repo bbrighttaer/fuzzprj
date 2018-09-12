@@ -22,7 +22,7 @@ class Algorithm(object):
         self.__random_process = random_process
         self.__reg = registry
         # get the name of the root GFS of the GFT
-        self.__root = self.__reg.gft_config.rootInfSystem
+        self.__root = self.__reg.fuzzynet_config.rootInfSystem
         print("root =", self.__root)
 
     def configuregft(self, chromosome):

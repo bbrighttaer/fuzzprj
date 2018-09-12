@@ -6,9 +6,9 @@
 	<xs:element name="fuzzynet">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element maxOccurs="1" name="input" type="layer"/>
-				<xs:element minOccurs="0" name="hidden" type="layer"/>
-				<xs:element name="ouput" type="layer"/>
+				<xs:element name="input" type="layer"/>
+				<xs:element maxOccurs="unbounded" minOccurs="0" name="hidden" type="layer"/>
+				<xs:element minOccurs="0" name="output" type="layer"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -34,6 +34,7 @@
 											<xs:sequence>
 												<xs:element name="tune" type="xs:boolean"/>
 												<xs:element name="identity" type="varInfo"/>
+												<xs:element minOccurs="0" type="input_link" name="input_fis"/>
 											</xs:sequence>
 										</xs:complexType>
 									</xs:element>
@@ -42,7 +43,8 @@
 						</xs:element>
 						<xs:element name="outputVariable" type="OutputVariableTerm"/>
 					</xs:sequence>
-					<xs:attribute name="name" use="required"/>
+					<xs:attribute name="name" use="required" id="fis" type="xs:ID"/>
+					<xs:attribute name="defuzz" use="required"/>
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
@@ -70,5 +72,13 @@
 	<xs:complexType name="varInfo">
 		<xs:attribute name="name" use="required"/>
 		<xs:attribute name="type" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType name="input_link">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="link" type="xs:IDREF"/>
+			</xs:extension>
+		</xs:simpleContent>
 	</xs:complexType>
 </xs:schema>

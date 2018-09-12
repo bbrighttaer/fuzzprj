@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<fuzzynet xsi:noNamespaceSchemaLocation="E:\gftlv1.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<input>
+		<fis name="VALUE">
+			<outputGeneRange>VALUE</outputGeneRange>
+			<rbSize>VALUE</rbSize>
+			<mfSize>VALUE</mfSize>
+			<position>VALUE</position>
+			<description>VALUE</description>
+			<inputVariables>
+				<inputVar>
+					<tune>VALUE</tune>
+					<identity name="VALUE" type="VALUE"/>
+				</inputVar>
+			</inputVariables>
+			<outputVariable type="VALUE">
+				<term label="VALUE" code="VALUE"/>
+			</outputVariable>
+		</fis>
+	</input>
+	<hidden>
+		<fis name="VALUE">
+			<outputGeneRange>VALUE</outputGeneRange>
+			<rbSize>VALUE</rbSize>
+			<mfSize>VALUE</mfSize>
+			<position>VALUE</position>
+			<description>VALUE</description>
+			<inputVariables>
+				<inputVar>
+					<tune>VALUE</tune>
+					<identity name="VALUE" type="VALUE"/>
+				</inputVar>
+			</inputVariables>
+			<outputVariable type="VALUE">
+				<term label="VALUE" code="VALUE"/>
+			</outputVariable>
+		</fis>
+	</hidden>
+	<hidden>
+		<fis name="VALUE">
+			<outputGeneRange>VALUE</outputGeneRange>
+			<rbSize>VALUE</rbSize>
+			<mfSize>VALUE</mfSize>
+			<position>VALUE</position>
+			<description>VALUE</description>
+			<inputVariables>
+				<inputVar>
+					<tune>VALUE</tune>
+					<identity name="VALUE" type="VALUE"/>
+				</inputVar>
+			</inputVariables>
+			<outputVariable type="VALUE">
+				<term label="VALUE" code="VALUE"/>
+			</outputVariable>
+		</fis>
+	</hidden>
+	<ouput>
+		<fis name="VALUE">
+			<outputGeneRange>VALUE</outputGeneRange>
+			<rbSize>VALUE</rbSize>
+			<mfSize>VALUE</mfSize>
+			<position>VALUE</position>
+			<description>VALUE</description>
+			<inputVariables>
+				<inputVar>
+					<tune>VALUE</tune>
+					<identity name="VALUE" type="VALUE"/>
+				</inputVar>
+			</inputVariables>
+			<outputVariable type="VALUE">
+				<term label="VALUE" code="VALUE"/>
+			</outputVariable>
+		</fis>
+	</ouput>
+</fuzzynet>

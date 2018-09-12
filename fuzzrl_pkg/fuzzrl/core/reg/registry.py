@@ -21,8 +21,8 @@ class Registry(object):
         # an object representing the parsed details of the linguistic variables configuration file.
         self.__linvar_config = None
 
-        # an object representing the parsed details of the GFT configuration file
-        self.__gft_config = None
+        # an object representing the parsed details of the configuration file
+        self.__fuzzynet_config = None
 
         # dictionary of NN models corresponding to the nodes in the GFT.
         self.__nn_models_dict = {}
@@ -60,12 +60,12 @@ class Registry(object):
         self.__linvar_config = config
 
     @property
-    def gft_config(self):
-        return self.__gft_config
+    def fuzzynet_config(self):
+        return self.__fuzzynet_config
 
-    @gft_config.setter
-    def gft_config(self, config):
-        self.__gft_config = config
+    @fuzzynet_config.setter
+    def fuzzynet_config(self, config):
+        self.__fuzzynet_config = config
 
     @property
     def nn_models_dict(self):

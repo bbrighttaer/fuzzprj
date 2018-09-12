@@ -177,7 +177,7 @@ if __name__ == "__main__":
         # cart pole
         0: Simulation(env_id="CartPole-v1",
                       lin_vars_file="res/cartpole_linvars.xml",
-                      gft_file="res/cartpole_gft.xml",
+                      gft_file="res/fuzzynet_cartpole.xml",
                       action_space_type=Const.DISCRETE,
                       defuzz_method=dfz.max_of_maximum,
                       obs_class=CartPoleObs,
@@ -236,4 +236,4 @@ if __name__ == "__main__":
                       tuning=[-0.01, 0.01],
                       reward_shaping_callback=None)}
 
-    main(sims[3])
+    main(sims[0])

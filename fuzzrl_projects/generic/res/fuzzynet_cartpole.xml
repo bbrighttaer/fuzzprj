@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<fuzzynet xsi:noNamespaceSchemaLocation="../../../fuzzrl_pkg/fuzzrl/core/res/gftlv1.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<input>
+		<fis name="CartPoleMovement" defuzz="centroid">
+			<outputGeneRange>0 1</outputGeneRange>
+			<rbSize>81</rbSize>
+			<mfSize>24</mfSize>
+			<position>0</position>
+			<description>Determines the direction of the force applied to the cart</description>
+			<inputVariables>
+				<inputVar>
+					<tune>true</tune>
+					<identity name="cartPosition" type="cartPosition"/>
+				</inputVar>
+				<inputVar>
+					<tune>true</tune>
+					<identity name="cartVelocity" type="cartVelocity"/>
+				</inputVar>
+				<inputVar>
+					<tune>true</tune>
+					<identity name="poleAngle" type="poleAngle"/>
+				</inputVar>
+				<inputVar>
+					<tune>true</tune>
+					<identity name="poleVelocity" type="poleVelocity"/>
+				</inputVar>
+			</inputVariables>
+			<outputVariable type="Movement">
+				<term code="0" label="left"/>
+				<term code="1" label="right"/>
+			</outputVariable>
+		</fis>
+	</input>
+	<hidden>
+		<fis name="cartpole_hidden1" defuzz="centroid">
+			<outputGeneRange>0 1</outputGeneRange>
+			<rbSize>2</rbSize>
+			<mfSize>4</mfSize>
+			<position>0</position>
+			<description>Determines the direction of the force applied to the cart</description>
+			<inputVariables>
+				<inputVar>
+					<tune>true</tune>
+					<identity name="cartPosition" type="Movement"/>
+					<input_fis link="CartPoleMovement" />
+				</inputVar>
+			</inputVariables>
+			<outputVariable type="Movement">
+				<term code="0" label="left"/>
+				<term code="1" label="right"/>
+			</outputVariable>
+		</fis>
+	</hidden>
+	<output>
+		<fis name="cartoutput" defuzz="lom">
+			<outputGeneRange>0 1</outputGeneRange>
+			<rbSize>2</rbSize>
+			<mfSize>4</mfSize>
+			<position>0</position>
+			<description>Determines the direction of the force applied to the cart</description>
+			<inputVariables>
+				<inputVar>
+					<tune>true</tune>
+					<identity name="cartPosition" type="Movement"/>
+					<input_fis link="cartpole_hidden1" />
+				</inputVar>
+			</inputVariables>
+			<outputVariable type="Movement">
+				<term code="0" label="left"/>
+				<term code="1" label="right"/>
+			</outputVariable>
+		</fis>
+	</output>
+</fuzzynet>

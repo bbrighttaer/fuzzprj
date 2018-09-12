@@ -82,7 +82,7 @@ class GeneticAlgConfiguration(object):
         reg = xmlToLinvars(open(self.lin_vars_file).read())
 
         # create GFT with linguistic variables in the registry
-        reg = xmlToGFT(open(self.gft_file).read(), registry=reg, defuzz_method=self.defuzz_method)
+        reg = xmlToFuzzyNet(open(self.gft_file).read(), registry=reg)
 
         # set registry object
         self.__reg = reg
