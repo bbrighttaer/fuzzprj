@@ -220,34 +220,34 @@ class Runner(object):
                             # show the environment
                             env.render()
 
-                        a = None
                         for agent in agents:
                             if self.sim_config.action_space_type == Const.DISCRETE:
                                 # get an action
-                                actions_dict, input_vec_dict, action, probs_dict = alg.execute_fuzzy_net(
+                                out_vec, actions_dict, input_vec_dict, probs_dict = alg.execute_fuzzy_net(
                                     agent.obs_accessor, agent_id=agent.id)
 
                                 # mark the GFSs that executed for the agent in this time step
                                 cache.mark(output_dict_keys=probs_dict.keys())
 
                                 # store intermediate values
-                                last_node = list(actions_dict.keys())[-1]
-                                action_code = actions_dict[last_node]
-                                agent.temp_values = (action_code, action, input_vec_dict, probs_dict)
+                                # last_node = list(actions_dict.keys())[-1]
+                                # action_code = actions_dict[last_node]
+                                agent.temp_values = (out_vec, actions_dict, input_vec_dict, probs_dict)
                             else:
                                 # get an action
-                                actions_dict, input_vec_dict = alg.execute_fuzzy_net(agent.obs_accessor,
-                                                                                     agent_id=agent.id,
-                                                                                     add_noise=True)
-                                agent.temp_values = (actions_dict, input_vec_dict)
+                                out_vec, actions_dict, input_vec_dict, _ = alg.execute_fuzzy_net(agent.obs_accessor,
+                                                                                                 agent_id=agent.id,
+                                                                                                 add_noise=True)
+                                agent.temp_values = (out_vec, actions_dict, input_vec_dict)
                                 cache.mark(output_dict_keys=actions_dict.keys())
 
                         # apply the selected action to the environment and observe feedback
-                        a = agents[0].temp_values[0] if len(agents) == 1 else [a.temp_values[0] for a in agents]
+                        a = np.squeeze(np.array([a.temp_values[0] for a in agents]))
                         if self.sim_config.action_space_type == Const.DISCRETE:
-                            a = np.array(a).astype('int').tolist() if hasattr(a, "__iter__") else int(a)
+                            a = a.astype('int')
                         else:
-                            a = list(a.values())
+                            a = [a] if len(agents) == 1 else a
+
                         next_state, reward, done, _ = env.step(a)
 
                         if self.r_shaping_callback is not None and callable(self.r_shaping_callback):
@@ -267,15 +267,15 @@ class Runner(object):
 
                         for i, agent in enumerate(agents):
                             if self.sim_config.action_space_type == Const.DISCRETE:
-                                code, action, input_vec_dict, probs_dict = agent.temp_values
+                                out_vec, action, input_vec_dict, probs_dict = agent.temp_values
                                 # create experiences for the agent with respect to each GFSs that executed for the agent
-                                exp_dict = cache.createExperiences(agent_id=agent.id, action=code,
+                                exp_dict = cache.createExperiences(agent_id=agent.id, action=out_vec,
                                                                    dec_reward_dict=reward_dict,
                                                                    input_vec_dict=input_vec_dict,
                                                                    output_dict=probs_dict,
                                                                    next_state_dict=None)
                             else:
-                                actions_dict, input_vec_dict = agent.temp_values
+                                out_vec, actions_dict, input_vec_dict = agent.temp_values
                                 exp_dict = cache.createExperiences(agent_id=agent.id,
                                                                    action=list(actions_dict.values()),
                                                                    dec_reward_dict=reward_dict,

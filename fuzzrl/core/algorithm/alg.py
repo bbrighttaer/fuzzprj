@@ -296,11 +296,11 @@ class Algorithm(object):
 
                     # set input values
                     for var in gfs.descriptor.inputVariables.inputVar:
+                        var_config = self.__reg.linvar_dict[var.identity.type]
                         if var.identity.type == const.INNER_STATE_VAR:
                             continue
-                        if seg_label == "input":
+                        if seg_label == "input" or "input" not in self.__reg.layers_config:
                             # get config details from registry
-                            var_config = self.__reg.linvar_dict[var.identity.type]
                             # select procedure for input value
                             func = getattr(obclassobj, var_config.procedure)
                             # set input value of variable
@@ -308,6 +308,7 @@ class Algorithm(object):
                         else:
                             prev_link = var.input_fis.link
                             input_value = actions_dict[prev_link]
+                            input_value = sorted((var_config.rangeMin, input_value, var_config.rangeMax))[1]
                         gfs.controlSystemSimulation.input[var.identity.name] = input_value
                         # if self.__random_process is not None:
                         #     input_value += self.__random_process.sample()[0]
@@ -339,11 +340,11 @@ class Algorithm(object):
                         action_probs = self.__get_action_probs(gfs.consequent, gfs.controlSystemSimulation)
                         action_probs_dict[gfs.name] = action_probs
 
-                        # search for the corresponding output term
-                        for term in gfs.descriptor.outputVariable.term:
-                            if term.code == out:
-                                selected_term = term
-                                break
+                        # # search for the corresponding output term
+                        # for term in gfs.descriptor.outputVariable.term:
+                        #     if term.code == out:
+                        #         selected_term = term
+                        #         break
 
                 # Backward pass
                 next_cell_value = 0
@@ -376,4 +377,10 @@ class Algorithm(object):
                         a += self.__random_process.sample()[0]
                     actions_dict[k] = a
 
-        return actions_dict, input_vec_dict, selected_term, action_probs_dict
+        # collect output layer value(s)
+        output_vec = []
+        for fis in self.__reg.layers_config["output"][0].fis:
+            node_out = actions_dict[fis.name]
+            output_vec.append(node_out)
+
+        return output_vec, actions_dict, input_vec_dict, action_probs_dict

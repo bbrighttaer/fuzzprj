@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <fuzzynet xsi:noNamespaceSchemaLocation="../../../fuzzrl/core/res/gftlv1.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<input>
+	<output>
 		<fis name="CartPoleMovement" defuzz="lom">
 			<outputGeneRange>0 1</outputGeneRange>
 			<rbSize>81</rbSize>
@@ -30,7 +30,7 @@
 				<term code="1" label="RIGHT"/>
 			</outputVariable>
 		</fis>
-	</input>
+	</output>
 	<!--<hidden>-->
 		<!--<fis name="cartpole_hidden1" defuzz="centroid">-->
 			<!--<outputGeneRange>0 1</outputGeneRange>-->

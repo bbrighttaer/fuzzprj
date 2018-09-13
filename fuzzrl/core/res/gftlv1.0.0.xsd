@@ -6,9 +6,9 @@
 	<xs:element name="fuzzynet">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="input" type="layer"/>
+				<xs:element minOccurs="0"  name="input" type="layer"/>
 				<xs:element maxOccurs="unbounded" minOccurs="0" name="hidden" type="layer"/>
-				<xs:element minOccurs="0" name="output" type="layer"/>
+				<xs:element name="output" type="layer"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -44,7 +44,7 @@
 						<xs:element name="outputVariable" type="OutputVariableTerm"/>
 					</xs:sequence>
 					<xs:attribute name="name" use="required" id="fis" type="xs:ID"/>
-					<xs:attribute name="defuzz" use="required"/>
+					<xs:attribute name="defuzz" use="required" type="defuzz_method"/>
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
@@ -67,6 +67,14 @@
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="input_layer"/>
 			<xs:enumeration value="hidden_layer"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="defuzz_method">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="lom"/>
+			<xs:enumeration value="centroid"/>
+			<xs:enumeration value="mom"/>
+			<xs:enumeration value="som"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="varInfo">

@@ -102,7 +102,7 @@ def main(sim):
                                       mf_tuning_range=sim.tuning,
                                       lin_vars_file=sim.lin_vars_file,
                                       gft_file=sim.gft_file,
-                                      load_init_pop_file=sim.qlfd_ind_file,
+                                      load_init_pop_file=None,  # sim.qlfd_ind_file,
                                       apply_evolution=True,
                                       mutation_prob_schdl=mut_sch,
                                       cross_prob_schdl=cross_sch,
@@ -112,7 +112,7 @@ def main(sim):
     # Sim execution configuration
     sim_conf = SimExecutionConfiguration(env=gym.make(sim.env_id),
                                          agents=[Agent(0, sim.obs_class)],
-                                         max_time_steps=500,
+                                         max_time_steps=200,
                                          episodes_per_ind=1,
                                          noise_process=sim.rand_proc,
                                          action_space=sim.action_space_type,
@@ -177,7 +177,7 @@ if __name__ == "__main__":
                       gft_file="res/fuzzynet_cartpole.xml",
                       action_space_type=Const.DISCRETE,
                       obs_class=CartPoleObs,
-                      qlfd_ind_file=None,  # "data/cart_pole_qlfd.txt",
+                      qlfd_ind_file="data/cart_pole_qlfd.txt",
                       score_threshold=400,
                       rand_proc=None,
                       tuning=[-0.1, 0.1]),
@@ -196,7 +196,7 @@ if __name__ == "__main__":
         # pendulum
         2: Simulation(env_id="Pendulum-v0",
                       lin_vars_file="res/pendulum_linvars.xml",
-                      gft_file="res/pendulum.xml",
+                      gft_file="res/fuzzynet_pendulum.xml",
                       action_space_type=Const.CONTINUOUS,
                       obs_class=PendulumObs,
                       qlfd_ind_file="data/pendulum_qlfd.txt",
@@ -228,4 +228,4 @@ if __name__ == "__main__":
                       tuning=[-0.01, 0.01],
                       reward_shaping_callback=None)}
 
-    main(sims[0])
+    main(sims[2])

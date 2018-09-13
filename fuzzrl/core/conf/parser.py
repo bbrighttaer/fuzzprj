@@ -60,11 +60,12 @@ def xmlToFuzzyNet(xmlText, registry):
     registry.fuzzynet_config = fn_config
 
     # combine all layers for GFS creation
-    all_layers = {"input": [fn_config.input]}
+    all_layers = {}
+    if fn_config.input is not None:
+        all_layers = {"input": [fn_config.input]}
     if len(fn_config.hidden) > 0:
         all_layers.update({"hidden": [h_layer for h_layer in fn_config.hidden]})
-    if fn_config.output is not None:
-        all_layers.update({"output": [fn_config.output]})
+    all_layers.update({"output": [fn_config.output]})
 
     registry.layers_config = all_layers
 

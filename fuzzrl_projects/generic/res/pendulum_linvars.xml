@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!-- Linguistic variables for OpenAI Gym Pendulum-v0 -->
 <linguisticVariables xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                     xsi:noNamespaceSchemaLocation="../../../fuzzrl/fuzzrl/core/res/linguisticVariables.xsd">
+                     xsi:noNamespaceSchemaLocation="../../../fuzzrl/core/res/linguisticVariables.xsd">
     <variable name="cosTheta" rangeMin="-1.0" rangeMax="1.0" type="input" procedure="getCosTheta">
         <terms>
             <term name="LOW">
