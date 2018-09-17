@@ -1,5 +1,5 @@
 import sys
-
+import traceback
 import fuzzrl.core.conf.exceptions as ex
 import numpy as np
 import skfuzzy as fuzz
@@ -149,8 +149,9 @@ class GeneticFuzzySystem(object):
                         params = term.params
                     antecedent[term.name] = self.__createMF(term.mf, params=params, universe=antecedent.universe)
                     # antecedent.view()
-        except IndexError:
-            print("Error creating antecedents for {}".format(self.name))
+        except Exception as ex:
+            print("Error creating antecedents for {}".format(self.name), str(ex))
+            traceback.print_stack()
             sys.exit(-1)
         # else:
         #     print("All antecedents for {} GFS created successfully".format(self.name))

@@ -103,7 +103,7 @@ class GeneticAlgorithm(object):
                                 p_size += gettuningparamsize(term.mf)
                             out_mf_seg.append(self.__create_mf_partial_chrom(p_size))
 
-                    layer_individual = [rb_segment + mf_segment + rb_operator_seg + out_mf_seg]
+                    layer_individual = rb_segment + mf_segment + rb_operator_seg + out_mf_seg
                     if seg_label == "input":
                         input_seg.append(layer_individual)
                     elif seg_label == "hidden":
@@ -180,12 +180,13 @@ class GeneticAlgorithm(object):
 
         # Apply crossover on the offspring
         for child1, child2 in zip(offspring[::2], offspring[1::2]):
+            layer_count = 0
             if random.random() < cross_prob:
                 for seg_label, segment_layers in self.__registry.layers_config.items():
-                    idx = list(self.__registry.layers_config.keys()).index(seg_label)
-                    for i, layer in enumerate(segment_layers):
-                        for p1, p2 in zip(child1[idx][i], child2[idx][i]):
+                    for _ in segment_layers:  # for each layer
+                        for p1, p2 in zip(child1[layer_count], child2[layer_count]):
                             func(p1, p2, **kwargs)
+                        layer_count += 1
                 next_gen.append(self.__toolbox.clone(child1))
                 next_gen.append(self.__toolbox.clone(child2))
 
@@ -215,42 +216,44 @@ class GeneticAlgorithm(object):
         """
         # Apply mutation on the offspring
         for member in offspring:
+            layer_count = 0
             if member not in self.__mut_avoid and random.random() < mut_prob:
                 # if random.random() < mut_prob:
                 for seg_label, segment_layers in self.__registry.layers_config.items():
-                    idx = list(self.__registry.layers_config.keys()).index(seg_label)
-                    for i, layer in enumerate(segment_layers):
-                        for part in member[idx][i]:
+                    for _ in segment_layers:
+                        for part in member[layer_count]:
                             func(part, **kwargs)
+                        layer_count += 1
             del member.fitness.values
 
         # check bounds of mutation of RB & MF parts
+        layer_count = 0
         for seg_label, segment_layers in self.__registry.layers_config.items():
-            idx = list(self.__registry.layers_config.keys()).index(seg_label)
-            for i, layer in enumerate(segment_layers):
+            for layer in segment_layers:
                 num_gfts = len(layer.fis)
                 for fis in layer.fis:
                     for member in offspring:
                         # RB segment: member[segment][layer_number][fis]
-                        self.__checkbounds(member[idx][i][fis.position],
+                        self.__checkbounds(member[layer_count][fis.position],
                                            fis.outputGeneRange[0],
                                            fis.outputGeneRange[1])
                         # MF segment
-                        self.__checkbounds(member[idx][i][fis.position + num_gfts],
+                        self.__checkbounds(member[layer_count][fis.position + num_gfts],
                                            const.MF_TUNING_RANGE[0],
                                            const.MF_TUNING_RANGE[1], apply_round=False)
                         seg_skip = 1
                         # RB operator segment
                         if const.LEARN_RULE_OP:
                             seg_skip += 1
-                            self.__checkbounds(member[idx][i][fis.position + (seg_skip * num_gfts)], 0, 1)
+                            self.__checkbounds(member[layer_count][fis.position + (seg_skip * num_gfts)], 0, 1)
 
                         if const.ACTION_SPACE == const.CONTINUOUS:
                             seg_skip += 1
                             # Output MF tuning segment
-                            self.__checkbounds(member[idx][i][fis.position + (seg_skip * num_gfts)],
+                            self.__checkbounds(member[layer_count][fis.position + (seg_skip * num_gfts)],
                                                const.MF_TUNING_RANGE[0],
                                                const.MF_TUNING_RANGE[1], apply_round=False)
+                layer_count += 1
 
     def __checkbounds(self, child, min_val, max_val, apply_round=True):
         """

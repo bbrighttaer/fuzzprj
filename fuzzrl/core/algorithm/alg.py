@@ -31,12 +31,12 @@ class Algorithm(object):
 
         :param chromosome: The multi-part chromosome for KB construction.
         """
+        count = 0
         for seg_label, segment_layers in self.__reg.layers_config.items():
-            seg_ind = chromosome[list(self.__reg.layers_config.keys()).index(seg_label)]
-
             for i, layer in enumerate(segment_layers):
                 num_gfs = len(layer.fis)
-                layer_ind = seg_ind[i]
+                layer_ind = chromosome[count]
+                count += 1
                 for fis in layer.fis:
                     gfs = self.__reg.gft_dict.get(fis.name)
                     rb_segment = layer_ind[gfs.descriptor.position]

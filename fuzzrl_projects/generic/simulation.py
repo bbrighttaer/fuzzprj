@@ -120,7 +120,7 @@ def main(sim):
                                          visualize_env=True)
     runner = Runner(ga_config=ga_conf,
                     sim_config=sim_conf,
-                    seed=5,
+                    seed=0,
                     episode_finished_callback=
                     create_episode_finished_callback(score_threshold=sim.score_threshold,
                                                      qlfd_ind_file=sim.qlfd_ind_file) if ep_calbk else None,
@@ -202,7 +202,7 @@ if __name__ == "__main__":
                       qlfd_ind_file="data/pendulum_qlfd.txt",
                       score_threshold=-200,
                       rand_proc=OrnsteinUhlenbeckProcess(theta=0.1),
-                      tuning=[-0.01, 0.01]),
+                      tuning=[-0.05, 0.05]),
 
         # mountain car continuous
         3: Simulation(env_id="MountainCarContinuous-v0",
