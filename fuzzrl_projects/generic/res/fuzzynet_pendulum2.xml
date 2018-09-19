@@ -1,0 +1,236 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- GFT for OpenAI Gym CartPole-v1 control -->
+<fuzzynet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="../../../fuzzrl/core/res/gftlv1.0.0.xsd">
+    <input>
+        <fis name="pendulum_in_0" defuzz="centroid">
+            <outputGeneRange>0 2</outputGeneRange>
+            <rbSize>3</rbSize>
+            <mfSize>6</mfSize>
+            <position>0</position>
+            <description></description>
+            <inputVariables>
+                <inputVar>
+                    <tune>true</tune>
+                    <identity name="cosTheta" type="cosTheta"/>
+                </inputVar>
+            </inputVariables>
+            <outputVariable type="JointEffort">
+				<term code="0" label="low"/>
+				<term code="1" label="medium"/>
+				<term code="2" label="high"/>
+			</outputVariable>
+        </fis>
+        <fis name="pendulum_in_1" defuzz="centroid">
+            <outputGeneRange>0 2</outputGeneRange>
+            <rbSize>3</rbSize>
+            <mfSize>6</mfSize>
+            <position>1</position>
+            <description></description>
+            <inputVariables>
+                <inputVar>
+                    <tune>true</tune>
+                    <identity name="sinTheta" type="sinTheta"/>
+                </inputVar>
+            </inputVariables>
+            <outputVariable type="JointEffort">
+				<term code="0" label="low"/>
+				<term code="1" label="medium"/>
+				<term code="2" label="high"/>
+			</outputVariable>
+        </fis>
+        <fis name="pendulum_in_2" defuzz="centroid">
+            <outputGeneRange>0 2</outputGeneRange>
+            <rbSize>5</rbSize>
+            <mfSize>10</mfSize>
+            <position>2</position>
+            <description></description>
+            <inputVariables>
+                <inputVar>
+                    <tune>true</tune>
+                    <identity name="thetaDot" type="thetaDot"/>
+                </inputVar>
+            </inputVariables>
+            <outputVariable type="JointEffort">
+				<term code="0" label="low"/>
+				<term code="1" label="medium"/>
+				<term code="2" label="high"/>
+			</outputVariable>
+        </fis>
+    </input>
+    <output>
+        <fis name="hidden_pend_0" defuzz="centroid">
+            <outputGeneRange>0 2</outputGeneRange>
+            <rbSize>27</rbSize>
+            <mfSize>18</mfSize>
+            <position>0</position>
+            <description></description>
+            <inputVariables>
+                <inputVar>
+                    <tune>true</tune>
+                    <identity name="pend_hd_0" type="JointEffort"/>
+                    <input_fis link="pendulum_in_0"/>
+                </inputVar>
+                <inputVar>
+                    <tune>true</tune>
+                    <identity name="pend_hd_1" type="JointEffort"/>
+                    <input_fis link="pendulum_in_1"/>
+                </inputVar>
+                <inputVar>
+                    <tune>true</tune>
+                    <identity name="pend_hd_2" type="JointEffort"/>
+                    <input_fis link="pendulum_in_2"/>
+                </inputVar>
+            </inputVariables>
+            <outputVariable type="JointEffort">
+				<term code="0" label="low"/>
+				<term code="1" label="medium"/>
+				<term code="2" label="high"/>
+			</outputVariable>
+        </fis>
+        <fis name="hidden_pend_1" defuzz="centroid">
+            <outputGeneRange>0 2</outputGeneRange>
+            <rbSize>27</rbSize>
+            <mfSize>18</mfSize>
+            <position>1</position>
+            <description></description>
+            <inputVariables>
+                <inputVar>
+                    <tune>true</tune>
+                    <identity name="pend_hd_0" type="JointEffort"/>
+                    <input_fis link="pendulum_in_0"/>
+                </inputVar>
+                <inputVar>
+                    <tune>true</tune>
+                    <identity name="pend_hd_1" type="JointEffort"/>
+                    <input_fis link="pendulum_in_1"/>
+                </inputVar>
+                <inputVar>
+                    <tune>true</tune>
+                    <identity name="pend_hd_2" type="JointEffort"/>
+                    <input_fis link="pendulum_in_2"/>
+                </inputVar>
+            </inputVariables>
+            <outputVariable type="JointEffort">
+				<term code="0" label="low"/>
+				<term code="1" label="medium"/>
+				<term code="2" label="high"/>
+			</outputVariable>
+        </fis>
+        <fis name="hidden_pend_2" defuzz="centroid">
+            <outputGeneRange>0 2</outputGeneRange>
+            <rbSize>27</rbSize>
+            <mfSize>18</mfSize>
+            <position>2</position>
+            <description></description>
+            <inputVariables>
+                <inputVar>
+                    <tune>true</tune>
+                    <identity name="pend_hd_0" type="JointEffort"/>
+                    <input_fis link="pendulum_in_0"/>
+                </inputVar>
+                <inputVar>
+                    <tune>true</tune>
+                    <identity name="pend_hd_1" type="JointEffort"/>
+                    <input_fis link="pendulum_in_1"/>
+                </inputVar>
+                <inputVar>
+                    <tune>true</tune>
+                    <identity name="pend_hd_2" type="JointEffort"/>
+                    <input_fis link="pendulum_in_2"/>
+                </inputVar>
+            </inputVariables>
+            <outputVariable type="JointEffort">
+				<term code="0" label="low"/>
+				<term code="1" label="medium"/>
+				<term code="2" label="high"/>
+			</outputVariable>
+        </fis>
+    </output>
+    <!--<hidden>-->
+        <!--<fis name="hidden2_pend_0" defuzz="centroid">-->
+            <!--<outputGeneRange>0 2</outputGeneRange>-->
+            <!--<rbSize>27</rbSize>-->
+            <!--<mfSize>18</mfSize>-->
+            <!--<position>0</position>-->
+            <!--<description></description>-->
+            <!--<inputVariables>-->
+                <!--<inputVar>-->
+                    <!--<tune>true</tune>-->
+                    <!--<identity name="pend_hd2_0" type="JointEffort"/>-->
+                    <!--<input_fis link="hidden_pend_0"/>-->
+                <!--</inputVar>-->
+                <!--<inputVar>-->
+                    <!--<tune>true</tune>-->
+                    <!--<identity name="pend_hd2_1" type="JointEffort"/>-->
+                    <!--<input_fis link="hidden_pend_1"/>-->
+                <!--</inputVar>-->
+                <!--<inputVar>-->
+                    <!--<tune>true</tune>-->
+                    <!--<identity name="pend_hd2_2" type="JointEffort"/>-->
+                    <!--<input_fis link="hidden_pend_2"/>-->
+                <!--</inputVar>-->
+            <!--</inputVariables>-->
+            <!--<outputVariable type="JointEffort">-->
+				<!--<term code="0" label="low"/>-->
+				<!--<term code="1" label="medium"/>-->
+				<!--<term code="2" label="high"/>-->
+			<!--</outputVariable>-->
+        <!--</fis>-->
+        <!--<fis name="hidden2_pend_1" defuzz="centroid">-->
+            <!--<outputGeneRange>0 2</outputGeneRange>-->
+            <!--<rbSize>27</rbSize>-->
+            <!--<mfSize>18</mfSize>-->
+            <!--<position>1</position>-->
+            <!--<description></description>-->
+            <!--<inputVariables>-->
+                <!--<inputVar>-->
+                    <!--<tune>true</tune>-->
+                    <!--<identity name="pend_hd2_0" type="JointEffort"/>-->
+                    <!--<input_fis link="hidden_pend_0"/>-->
+                <!--</inputVar>-->
+                <!--<inputVar>-->
+                    <!--<tune>true</tune>-->
+                    <!--<identity name="pend_hd2_1" type="JointEffort"/>-->
+                    <!--<input_fis link="hidden_pend_1"/>-->
+                <!--</inputVar>-->
+                <!--<inputVar>-->
+                    <!--<tune>true</tune>-->
+                    <!--<identity name="pend_hd2_2" type="JointEffort"/>-->
+                    <!--<input_fis link="hidden_pend_2"/>-->
+                <!--</inputVar>-->
+            <!--</inputVariables>-->
+            <!--<outputVariable type="JointEffort">-->
+				<!--<term code="0" label="low"/>-->
+				<!--<term code="1" label="medium"/>-->
+				<!--<term code="2" label="high"/>-->
+			<!--</outputVariable>-->
+        <!--</fis>-->
+    <!--</hidden>-->
+    <!--<output>-->
+        <!--<fis name="pendulum_out" defuzz="centroid">-->
+            <!--<outputGeneRange>0 2</outputGeneRange>-->
+            <!--<rbSize>9</rbSize>-->
+            <!--<mfSize>12</mfSize>-->
+            <!--<position>0</position>-->
+            <!--<description></description>-->
+            <!--<inputVariables>-->
+                <!--<inputVar>-->
+                    <!--<tune>true</tune>-->
+                    <!--<identity name="hidden_pend_0" type="JointEffort"/>-->
+                    <!--<input_fis link="hidden2_pend_0"/>-->
+                <!--</inputVar>-->
+                <!--<inputVar>-->
+                    <!--<tune>true</tune>-->
+                    <!--<identity name="hidden_pend_1" type="JointEffort"/>-->
+                    <!--<input_fis link="hidden2_pend_1"/>-->
+                <!--</inputVar>-->
+            <!--</inputVariables>-->
+            <!--<outputVariable type="JointEffort">-->
+				<!--<term code="0" label="low"/>-->
+				<!--<term code="1" label="medium"/>-->
+				<!--<term code="2" label="high"/>-->
+			<!--</outputVariable>-->
+        <!--</fis>-->
+    <!--</output>-->
+</fuzzynet>

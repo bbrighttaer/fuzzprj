@@ -80,12 +80,12 @@ class Simulation(object):
 
 def main(sim):
     # create a mutation probability schedule
-    mut_sch = sch.ExponentialDecaySchedule(initial_prob=.4, decay_factor=1e-2)
+    mut_sch = sch.ExponentialDecaySchedule(initial_prob=.2, decay_factor=1e-2)
 
     # cross over probability schedule
     cross_sch = sch.ConstantSchedule(0.8)
 
-    pop_size = 30
+    pop_size = 10
 
     # Evolution operators information
     ev_conf = EvolutionConfig(sel_args={"k": pop_size, "tournsize": 3},
@@ -117,7 +117,7 @@ def main(sim):
                                          noise_process=sim.rand_proc,
                                          action_space=sim.action_space_type,
                                          persist_cache_per_ind=False,
-                                         visualize_env=True)
+                                         visualize_env=False)
     runner = Runner(ga_config=ga_conf,
                     sim_config=sim_conf,
                     seed=0,
