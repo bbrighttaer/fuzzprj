@@ -39,17 +39,16 @@ class ActorNetwork(object):
 
         # actor net
         self.inputs, self.out, self.scaled_out = self.create_actor_network(self.actor_net_label)
-        self.actor_net_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=self.actor_net_label)
-        print(len(self.actor_net_params))
+        self.actor_net_params = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=self.actor_net_label)
 
         # target net
         self.target_inputs, self.target_out, self.target_scaled_out = self.create_actor_network(self.target_net_label)
-        self.target_net_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=self.target_net_label)
+        self.target_net_params = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=self.target_net_label)
 
         # Operations for periodic update of target network parameters using actor net weights
         self.update_target_network_params = [self.target_net_params[i].assign(
-            tf.multiply(self.actor_net_params[i], tau) + tf.multiply(self.actor_net_params[i], 1.0 - self.tau)) for i in
-            range(len(self.target_net_params))]
+            tf.multiply(self.actor_net_params[i], tau) + tf.multiply(self.target_net_params[i], 1.0 - self.tau)) for i
+            in range(len(self.target_net_params))]
 
         # placeholder for action gradients from the critic net
         self.action_gradient = tf.placeholder(tf.float32, shape=[None, self.a_dim])
@@ -115,15 +114,15 @@ class CriticNetwork(object):
 
         # critic network
         self.observation, self.action, self.out = self.create_critic_network(self.critic_net_label)
-        self.critic_net_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=self.critic_net_label)
+        self.critic_net_params = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=self.critic_net_label)
 
         # target network
         self.target_observation, self.target_action, self.target_out = self.create_critic_network(self.target_net_label)
-        self.target_net_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=self.target_net_label)
+        self.target_net_params = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=self.target_net_label)
 
         # target network update operations
         self.update_target_net_params = [self.target_net_params[i].assign(
-            tf.multiply(self.critic_net_params[i], self.tau) + tf.multiply(self.critic_net_params[i], 1.0 - self.tau))
+            tf.multiply(self.critic_net_params[i], self.tau) + tf.multiply(self.target_net_params[i], 1.0 - self.tau))
             for i in range(len(self.target_net_params))]
 
         # network target
@@ -343,6 +342,7 @@ def build_summaries():
 
 def train(sess, env, args, actor, critic, sim, actor_noise):
     ga_config = get_ga_config(sim)
+    activate_fuzzynet = False
     fuzzynet = FuzzyNet(ga_config, seed=args['random_seed'])
 
     # Set up summary Ops
@@ -375,7 +375,8 @@ def train(sess, env, args, actor, critic, sim, actor_noise):
             ep_reward = 0
             ep_ave_max_q = 0
 
-            fuzzynet.next()
+            if activate_fuzzynet:
+                fuzzynet.next()
 
             for j in range(int(args['max_episode_len'])):
 
@@ -385,12 +386,14 @@ def train(sess, env, args, actor, critic, sim, actor_noise):
                 # Added exploration noise
                 # a = actor.predict(np.reshape(s, (1, 3))) + (1. / (1. + i))
                 agent.obs_accessor.current_observation = s
-                s = fuzzynet.predict(agent)
+                if activate_fuzzynet:
+                    s = fuzzynet.predict(agent)
                 a = actor.predict(np.reshape(s, (1, actor.s_dim))) + actor_noise()
 
                 s2, r, terminal, info = env.step(a[0])
                 agent.obs_accessor.current_observation = s2
-                s2 = fuzzynet.predict(agent)
+                if activate_fuzzynet:
+                    s2 = fuzzynet.predict(agent)
 
                 replay_buffer.add(np.reshape(s, (actor.s_dim,)), np.reshape(a, (actor.a_dim,)), r,
                                   terminal, np.reshape(s2, (actor.s_dim,)))
@@ -445,9 +448,10 @@ def train(sess, env, args, actor, critic, sim, actor_noise):
             ind_fit_vals.append(ep_reward)
 
         # fuzzy net training ops
-        record, epoch = fuzzynet.evaluate(ind_fit_vals)
-        print_stats(record, epoch)
-        fuzzynet.evolve()
+        if activate_fuzzynet:
+            record, epoch = fuzzynet.evaluate(ind_fit_vals)
+            print_stats(record, epoch)
+            fuzzynet.evolve()
 
 
 def main(args, sim):
@@ -508,7 +512,7 @@ if __name__ == '__main__':
     parser.add_argument('--monitor-dir', help='directory for storing gym results', default='./results/gym_ddpg')
     parser.add_argument('--summary-dir', help='directory for storing tensorboard info', default='./results/tf_ddpg')
 
-    parser.set_defaults(render_env=True)
+    parser.set_defaults(render_env=False)
     parser.set_defaults(use_gym_monitor=False)
 
     args = vars(parser.parse_args())
