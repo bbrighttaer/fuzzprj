@@ -19,7 +19,7 @@ from fuzzrl.core.io.randomprocess import OrnsteinUhlenbeckProcess
 import fuzzrl.core.ga.schedule as sch
 from gym import wrappers
 from fuzzrl.core.fuzzy.runner import EvolutionConfig, GeneticAlgConfiguration, Agent
-from .replay_buffer import ReplayBuffer
+from fuzzrl_projects.generic.replay_buffer import ReplayBuffer
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
 log.basicConfig(level=log.DEBUG, format=LOG_FORMAT)
@@ -40,6 +40,7 @@ class ActorNetwork(object):
         # actor net
         self.inputs, self.out, self.scaled_out = self.create_actor_network(self.actor_net_label)
         self.actor_net_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=self.actor_net_label)
+        print(len(self.actor_net_params))
 
         # target net
         self.target_inputs, self.target_out, self.target_scaled_out = self.create_actor_network(self.target_net_label)
@@ -51,21 +52,21 @@ class ActorNetwork(object):
             range(len(self.target_net_params))]
 
         # placeholder for action gradients from the critic net
-        self.action_gradient = tf.placeholder(tf.float32, shape=[self.a_dim, None])
+        self.action_gradient = tf.placeholder(tf.float32, shape=[None, self.a_dim])
 
         # combine and normalize gradients
         self.unnormalized_actor_gradients = tf.gradients(self.scaled_out, self.actor_net_params, -self.action_gradient)
-        self.actor_gradients = list(map(lambda x: tf.div(x, self.batch_size), self.unnormalized_actor_gradients))
+        self.actor_grads = list(map(lambda x: tf.div(x, self.batch_size), self.unnormalized_actor_gradients))
 
         # optimization operation
         self.optimize = tf.train.AdamOptimizer(self.learning_rate).apply_gradients(
-            zip(self.actor_gradients, self.actor_net_params))
+            zip(self.actor_grads, self.actor_net_params))
 
         self.num_trainable_vars = len(self.actor_net_params) + len(self.target_net_params)
 
     def create_actor_network(self, label):
         with tf.variable_scope(label, reuse=False):
-            inputs = tflearn.input_data(shape=[self.s_dim, None])
+            inputs = tflearn.input_data(shape=[None, self.s_dim])
             # input layer
             net = tflearn.fully_connected(inputs, 400)
             net = tflearn.layers.normalization.batch_normalization(net)
@@ -86,13 +87,13 @@ class ActorNetwork(object):
         return inputs, out, scaled_out
 
     def train(self, inputs, a_gradient):
-        self.sess.run(self.optimize, feed_dict={self.inputs: inputs, self.actor_gradients: a_gradient})
+        self.sess.run(self.optimize, feed_dict={self.inputs: inputs, self.action_gradient: a_gradient})
 
     def predict(self, inputs):
         return self.sess.run(self.scaled_out, feed_dict={self.inputs: inputs})
 
     def predict_target(self, inputs):
-        return self.sess.run(self.target_scaled_out, feed_dict={self.inputs: inputs})
+        return self.sess.run(self.target_scaled_out, feed_dict={self.target_inputs: inputs})
 
     def update_target_network(self):
         self.sess.run(self.update_target_network_params)
@@ -102,22 +103,23 @@ class ActorNetwork(object):
 
 
 class CriticNetwork(object):
-    def __init__(self, sess, state_dim, action_dim, learning_rate, tau):
+    def __init__(self, sess, state_dim, action_dim, learning_rate, tau, gamma):
         self.sess = sess
         self.s_dim = state_dim
         self.a_dim = action_dim
         self.tau = tau
+        self.gamma = gamma
         self.learning_rate = learning_rate
         self.critic_net_label = "ddpg/critic_net"
         self.target_net_label = "ddpg/critic_target_net"
 
         # critic network
         self.observation, self.action, self.out = self.create_critic_network(self.critic_net_label)
-        self.critic_net_params = tf.get_collection(tf.GraphKeys, scope=self.critic_net_label)
+        self.critic_net_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=self.critic_net_label)
 
         # target network
         self.target_observation, self.target_action, self.target_out = self.create_critic_network(self.target_net_label)
-        self.target_net_params = tf.get_collection(tf.GraphKeys, scope=self.target_net_label)
+        self.target_net_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=self.target_net_label)
 
         # target network update operations
         self.update_target_net_params = [self.target_net_params[i].assign(
@@ -125,7 +127,7 @@ class CriticNetwork(object):
             for i in range(len(self.target_net_params))]
 
         # network target
-        self.predicted_q_value = tf.placeholder(tf.float32, shape=[1, None])
+        self.predicted_q_value = tf.placeholder(tf.float32, shape=[None, 1])
 
         # optimization op
         self.loss = tflearn.mean_square(self.predicted_q_value, self.out)
@@ -136,8 +138,8 @@ class CriticNetwork(object):
 
     def create_critic_network(self, label):
         with tf.variable_scope(label, reuse=False):
-            observation = tflearn.input_data(shape=[self.s_dim, None])
-            action = tflearn.input_data(shape=[self.a_dim, None])
+            observation = tflearn.input_data(shape=[None, self.s_dim])
+            action = tflearn.input_data(shape=[None, self.a_dim])
 
             # input layer
             net = tflearn.fully_connected(observation, 400)
@@ -158,17 +160,17 @@ class CriticNetwork(object):
         return observation, action, out
 
     def train(self, observation, action, predicted_q_value):
-        self.sess.run(self.optimize, feed_dict={self.observation: observation,
-                                                self.action: action,
-                                                self.predicted_q_value: predicted_q_value})
+        return self.sess.run([self.out, self.optimize], feed_dict={self.observation: observation,
+                                                                   self.action: action,
+                                                                   self.predicted_q_value: predicted_q_value})
 
     def predict(self, observation, action):
         return self.sess.run(self.out, feed_dict={self.observation: observation,
                                                   self.action: action})
 
     def predict_target(self, observation, action):
-        return self.sess.run(self.target_out, feed_dict={self.observation: observation,
-                                                         self.action: action})
+        return self.sess.run(self.target_out, feed_dict={self.target_observation: observation,
+                                                         self.target_action: action})
 
     def action_gradients(self, observation, action):
         return self.sess.run(self.action_grads, feed_dict={self.observation: observation,
@@ -189,6 +191,7 @@ class FuzzyNet(object):
         self.reg = ga_config.registry
         self.ga = ga_config.ga
         self.epoch = 0
+        self.record = None
 
         # create algorithm instance
         self.alg = Algorithm(registry=self.reg, random_process=self.noise)
@@ -212,6 +215,9 @@ class FuzzyNet(object):
     def evaluate(self, fit_vals):
         for ind, val in zip(self.pop, fit_vals):
             ind.fitness.values = (val,)
+        record = self.ga.stats.compile(self.pop)
+        self.ga.logbook.record(epoch=self.epoch, **record)
+        return record, self.epoch
 
     def next(self):
         self.current_ind_idx += 1
@@ -234,6 +240,7 @@ class FuzzyNet(object):
             if self.evolution_finished_callback is not None and callable(self.evolution_finished_callback):
                 self.evolution_finished_callback(self.pop, m_prob, c_prob, self.epoch)
             self.epoch += 1
+            self.current_ind_idx = -1
 
 
 # Taken from https://github.com/openai/baselines/blob/master/baselines/ddpg/noise.py, which is
@@ -264,7 +271,7 @@ class OrnsteinUhlenbeckActionNoise:
 class Simulation(object):
 
     def __init__(self, env_id, lin_vars_file, gft_file, action_space_type, obs_class,
-                 qlfd_ind_file, score_threshold, rand_proc, tuning, reward_shaping_callback=None):
+                 qlfd_ind_file, score_threshold, rand_proc, tuning, pop_size, reward_shaping_callback=None):
         self.env_id = env_id
         self.lin_vars_file = lin_vars_file
         self.gft_file = gft_file
@@ -274,8 +281,14 @@ class Simulation(object):
         self.tuning = tuning
         self.rand_proc = rand_proc
         self.reward_shaping = reward_shaping_callback
+        self.pop_size = pop_size
         assert type(obs_class) == type
         self.obs_class = obs_class
+
+
+def print_stats(record, epoch):
+    print("Epoch {} completed".format(epoch))
+    print("Statistics for epoch {} = {}".format(epoch, record))
 
 
 def get_ga_config(sim):
@@ -285,19 +298,17 @@ def get_ga_config(sim):
     # cross over probability schedule
     cross_sch = sch.ConstantSchedule(0.8)
 
-    pop_size = 10
-
     # Evolution operators information
-    ev_conf = EvolutionConfig(sel_args={"k": pop_size, "tournsize": 3},
+    ev_conf = EvolutionConfig(sel_args={"k": sim.pop_size, "tournsize": 3},
                               sel_func=tools.selTournament,
-                              cross_args={"indpb": 0.5},
+                              cross_args={"indpb": 0.1},
                               cross_func=tools.cxUniform,
                               mut_args={"mu": 0, "sigma": 0.1, "indpb": 0.1},
                               mut_func=tools.mutGaussian)
 
     # GA configuration
     ga_conf = GeneticAlgConfiguration(evol_config=ev_conf,
-                                      pop_size=pop_size,
+                                      pop_size=sim.pop_size,
                                       num_gens=10,
                                       mf_tuning_range=sim.tuning,
                                       lin_vars_file=sim.lin_vars_file,
@@ -318,7 +329,7 @@ def build_summaries():
     episode_reward = tf.Variable(0.)
     tf.summary.scalar("Reward", episode_reward)
     episode_ave_max_q = tf.Variable(0.)
-    tf.summary.scalar("Qmax Value", episode_ave_max_q)
+    tf.summary.scalar("Qmax_Value", episode_ave_max_q)
 
     summary_vars = [episode_reward, episode_ave_max_q]
     summary_ops = tf.summary.merge_all()
@@ -331,7 +342,8 @@ def build_summaries():
 # ===========================
 
 def train(sess, env, args, actor, critic, sim, actor_noise):
-    fuzzynet = FuzzyNet(get_ga_config(sim), seed=5)
+    ga_config = get_ga_config(sim)
+    fuzzynet = FuzzyNet(ga_config, seed=args['random_seed'])
 
     # Set up summary Ops
     summary_ops, summary_vars = build_summaries()
@@ -353,78 +365,89 @@ def train(sess, env, args, actor, critic, sim, actor_noise):
 
     agent = Agent(0, sim.obs_class)
 
-    for i in range(int(args['max_episodes'])):
+    for g_epoch in range(ga_config.num_gens):
+        print("epoch {e} of {e_total}".format(e=g_epoch, e_total=ga_config.num_gens * ga_config.pop_size))
+        ind_fit_vals = []
+        for i in range(ga_config.pop_size):
 
-        s = env.reset()
+            s = env.reset()
 
-        ep_reward = 0
-        ep_ave_max_q = 0
+            ep_reward = 0
+            ep_ave_max_q = 0
 
-        fuzzynet.next()
+            fuzzynet.next()
 
-        for j in range(int(args['max_episode_len'])):
+            for j in range(int(args['max_episode_len'])):
 
-            if args['render_env']:
-                env.render()
+                if args['render_env']:
+                    env.render()
 
-            # Added exploration noise
-            # a = actor.predict(np.reshape(s, (1, 3))) + (1. / (1. + i))
-            agent.obs_accessor.current_observation = s
-            actor.s_dim = fuzzynet.predict(agent)
-            a = actor.predict(np.reshape(s, (1, actor.s_dim))) + actor_noise()
+                # Added exploration noise
+                # a = actor.predict(np.reshape(s, (1, 3))) + (1. / (1. + i))
+                agent.obs_accessor.current_observation = s
+                s = fuzzynet.predict(agent)
+                a = actor.predict(np.reshape(s, (1, actor.s_dim))) + actor_noise()
 
-            s2, r, terminal, info = env.step(a[0])
+                s2, r, terminal, info = env.step(a[0])
+                agent.obs_accessor.current_observation = s2
+                s2 = fuzzynet.predict(agent)
 
-            replay_buffer.add(np.reshape(s, (actor.s_dim,)), np.reshape(a, (actor.a_dim,)), r,
-                              terminal, np.reshape(s2, (actor.s_dim,)))
+                replay_buffer.add(np.reshape(s, (actor.s_dim,)), np.reshape(a, (actor.a_dim,)), r,
+                                  terminal, np.reshape(s2, (actor.s_dim,)))
 
-            # Keep adding experience to the memory until
-            # there are at least minibatch size samples
-            if replay_buffer.size() > int(args['minibatch_size']):
-                s_batch, a_batch, r_batch, t_batch, s2_batch = \
-                    replay_buffer.sample_batch(int(args['minibatch_size']))
+                # Keep adding experience to the memory until
+                # there are at least minibatch size samples
+                if replay_buffer.size() > int(args['minibatch_size']):
+                    s_batch, a_batch, r_batch, t_batch, s2_batch = \
+                        replay_buffer.sample_batch(int(args['minibatch_size']))
 
-                # Calculate targets
-                target_q = critic.predict_target(
-                    s2_batch, actor.predict_target(s2_batch))
+                    # Calculate targets
+                    target_q = critic.predict_target(
+                        s2_batch, actor.predict_target(s2_batch))
 
-                y_i = []
-                for k in range(int(args['minibatch_size'])):
-                    if t_batch[k]:
-                        y_i.append(r_batch[k])
-                    else:
-                        y_i.append(r_batch[k] + critic.gamma * target_q[k])
+                    y_i = []
+                    for k in range(int(args['minibatch_size'])):
+                        if t_batch[k]:
+                            y_i.append(r_batch[k])
+                        else:
+                            y_i.append(r_batch[k] + critic.gamma * target_q[k])
 
-                # Update the critic given the targets
-                predicted_q_value, _ = critic.train(
-                    s_batch, a_batch, np.reshape(y_i, (int(args['minibatch_size']), 1)))
+                    # Update the critic given the targets
+                    predicted_q_value, _ = critic.train(
+                        s_batch, a_batch, np.reshape(y_i, (int(args['minibatch_size']), 1)))
 
-                ep_ave_max_q += np.amax(predicted_q_value)
+                    ep_ave_max_q += np.amax(predicted_q_value)
 
-                # Update the actor policy using the sampled gradient
-                a_outs = actor.predict(s_batch)
-                grads = critic.action_gradients(s_batch, a_outs)
-                actor.train(s_batch, grads[0])
+                    # Update the actor policy using the sampled gradient
+                    a_outs = actor.predict(s_batch)
+                    grads = critic.action_gradients(s_batch, a_outs)
+                    actor.train(s_batch, grads[0])
 
-                # Update target networks
-                actor.update_target_network()
-                critic.update_target_network()
+                    # Update target networks
+                    actor.update_target_network()
+                    critic.update_target_network()
 
-            s = s2
-            ep_reward += r
+                s = s2
+                ep_reward += r
 
-            if terminal:
-                summary_str = sess.run(summary_ops, feed_dict={
-                    summary_vars[0]: ep_reward,
-                    summary_vars[1]: ep_ave_max_q / float(j)
-                })
+                if terminal:
+                    summary_str = sess.run(summary_ops, feed_dict={
+                        summary_vars[0]: ep_reward,
+                        summary_vars[1]: ep_ave_max_q / float(j)
+                    })
 
-                writer.add_summary(summary_str, i)
-                writer.flush()
+                    writer.add_summary(summary_str, i)
+                    writer.flush()
 
-                print('| Reward: {:d} | Episode: {:d} | Qmax: {:.4f}'.format(int(ep_reward), i,
-                                                                             (ep_ave_max_q / float(j))))
-                break
+                    print('| Reward: {:d} | Episode: {:d} | Qmax: {:.4f}'.format(int(ep_reward), i,
+                                                                                 (ep_ave_max_q / float(j))))
+                    break
+            ind_fit_vals.append(ep_reward)
+
+        # fuzzy net training ops
+        record, epoch = fuzzynet.evaluate(ind_fit_vals)
+        print_stats(record, epoch)
+        fuzzynet.evolve()
 
 
 def main(args, sim):
@@ -446,7 +469,8 @@ def main(args, sim):
                              int(args['minibatch_size']))
 
         critic = CriticNetwork(sess, state_dim, action_dim,
-                               float(args['critic_lr']), float(args['tau']))
+                               float(args['critic_lr']), float(args['tau']),
+                               float(args['gamma']))
 
         actor_noise = OrnsteinUhlenbeckActionNoise(mu=np.zeros(action_dim))
 
@@ -477,7 +501,7 @@ if __name__ == '__main__':
     # run parameters
     parser.add_argument('--env', help='choose the gym env- tested on {Pendulum-v0}', default='Pendulum-v0')
     parser.add_argument('--random-seed', help='random seed for repeatability', default=1234)
-    parser.add_argument('--max-episodes', help='max num of episodes to do while training', default=50000)
+    parser.add_argument('--max-episodes', help='max num of episodes to do while training', default=20)
     parser.add_argument('--max-episode-len', help='max length of 1 episode', default=1000)
     parser.add_argument('--render-env', help='render the gym env', action='store_true')
     parser.add_argument('--use-gym-monitor', help='record gym results', action='store_true')
@@ -485,7 +509,7 @@ if __name__ == '__main__':
     parser.add_argument('--summary-dir', help='directory for storing tensorboard info', default='./results/tf_ddpg')
 
     parser.set_defaults(render_env=True)
-    parser.set_defaults(use_gym_monitor=True)
+    parser.set_defaults(use_gym_monitor=False)
 
     args = vars(parser.parse_args())
 
@@ -495,13 +519,14 @@ if __name__ == '__main__':
         # pendulum
         1: Simulation(env_id="Pendulum-v0",
                       lin_vars_file="res/pendulum_linvars.xml",
-                      gft_file="res/fuzzynet_pendulum.xml",
+                      gft_file="res/fuzzynet_pendulum2.xml",
                       action_space_type=Const.CONTINUOUS,
                       obs_class=PendulumObs,
                       qlfd_ind_file="data/pendulum_qlfd.txt",
                       score_threshold=-200,
                       rand_proc=OrnsteinUhlenbeckProcess(theta=0.1),
-                      tuning=[-0.05, 0.05]),
+                      pop_size=int(args['max_episodes']),
+                      tuning=[-0.1, 0.1]),
 
         # mountain car continuous
         2: Simulation(env_id="MountainCarContinuous-v0",
@@ -513,6 +538,7 @@ if __name__ == '__main__':
                       score_threshold=90,
                       rand_proc=OrnsteinUhlenbeckProcess(theta=0.1),
                       tuning=[-0.01, 0.01],
+                      pop_size=int(args['max_episodes']),
                       reward_shaping_callback=None),
 
         # bipedal walker v2
@@ -525,6 +551,7 @@ if __name__ == '__main__':
                       score_threshold=300,
                       rand_proc=OrnsteinUhlenbeckProcess(theta=0.1),
                       tuning=[-0.01, 0.01],
+                      pop_size=int(args['max_episodes']),
                       reward_shaping_callback=None)}
 
     main(args, sims[1])

@@ -112,7 +112,7 @@ def main(sim):
     # Sim execution configuration
     sim_conf = SimExecutionConfiguration(env=gym.make(sim.env_id),
                                          agents=[Agent(0, sim.obs_class)],
-                                         max_time_steps=200,
+                                         max_time_steps=1000,
                                          episodes_per_ind=1,
                                          noise_process=sim.rand_proc,
                                          action_space=sim.action_space_type,

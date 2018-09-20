@@ -112,7 +112,7 @@ class GeneticFuzzySystem(object):
 
         # step 4
         self.__controlSystemSimulation = ctrl.ControlSystemSimulation(control_system=self.__controlSystem,
-                                                                      clip_to_bounds=False)
+                                                                      clip_to_bounds=True)
         self.__controlSystem_created = True
 
     def _initialize(self):
