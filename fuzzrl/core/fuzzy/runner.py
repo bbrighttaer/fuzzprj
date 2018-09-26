@@ -49,7 +49,8 @@ class GeneticAlgConfiguration(object):
     """
 
     def __init__(self, evol_config, pop_size, num_gens, mf_tuning_range, lin_vars_file, gft_file, load_init_pop_file,
-                 apply_evolution, mutation_prob_schdl, cross_prob_schdl, learn_rb_ops=False):
+                 apply_evolution, mutation_prob_schdl, cross_prob_schdl, learn_rb_ops=False,
+                 fitness_weight=(-1.0,)):
         self.pop_size = pop_size
         self.num_gens = num_gens
         self.mf_tuning_range = mf_tuning_range
@@ -61,6 +62,7 @@ class GeneticAlgConfiguration(object):
         self.learn_rb_ops = learn_rb_ops
         self.evol_config = evol_config
         self.cross_prob_schdl = cross_prob_schdl
+        self.fitness_weight = fitness_weight
 
         self.__ga = None
         self.__reg = None
@@ -87,7 +89,7 @@ class GeneticAlgConfiguration(object):
         self.__reg = reg
 
         # create GA instance with the registry object
-        self.__ga = GeneticAlgorithm(registry=reg, seed=seed)
+        self.__ga = GeneticAlgorithm(registry=reg, seed=seed, weights=self.fitness_weight)
 
         try:
             assert hasattr(self.mutation_prob_schdl, "get_prob") and hasattr(self.cross_prob_schdl, "get_prob")

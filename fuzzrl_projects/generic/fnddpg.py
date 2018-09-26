@@ -58,8 +58,8 @@ class ActorNetwork(object):
         self.actor_grads = list(map(lambda x: tf.div(x, self.batch_size), self.unnormalized_actor_gradients))
 
         # optimization operation
-        self.optimize = tf.train.AdamOptimizer(self.learning_rate).apply_gradients(
-            zip(self.actor_grads, self.actor_net_params))
+        self.optimize = tf.train.AdamOptimizer(self.learning_rate) \
+            .apply_gradients(zip(self.actor_grads, self.actor_net_params))
 
         self.num_trainable_vars = len(self.actor_net_params) + len(self.target_net_params)
 
@@ -159,9 +159,10 @@ class CriticNetwork(object):
         return observation, action, out
 
     def train(self, observation, action, predicted_q_value):
-        return self.sess.run([self.out, self.optimize], feed_dict={self.observation: observation,
-                                                                   self.action: action,
-                                                                   self.predicted_q_value: predicted_q_value})
+        return self.sess.run([self.out, self.loss, self.optimize],
+                             feed_dict={self.observation: observation,
+                                        self.action: action,
+                                        self.predicted_q_value: predicted_q_value})
 
     def predict(self, observation, action):
         return self.sess.run(self.out, feed_dict={self.observation: observation,
@@ -212,8 +213,8 @@ class FuzzyNet(object):
         return out_vec
 
     def evaluate(self, fit_vals):
-        for ind, val in zip(self.pop, fit_vals):
-            ind.fitness.values = (val,)
+        for ind, val1, val2 in zip(self.pop, fit_vals):
+            ind.fitness.values = (val1, val2)
         record = self.ga.stats.compile(self.pop)
         self.ga.logbook.record(epoch=self.epoch, **record)
         return record, self.epoch
@@ -240,6 +241,9 @@ class FuzzyNet(object):
                 self.evolution_finished_callback(self.pop, m_prob, c_prob, self.epoch)
             self.epoch += 1
             self.current_ind_idx = -1
+
+    def train(self):
+        pass
 
 
 # Taken from https://github.com/openai/baselines/blob/master/baselines/ddpg/noise.py, which is
@@ -340,118 +344,105 @@ def build_summaries():
 #   Agent Training
 # ===========================
 
-def train(sess, env, args, actor, critic, sim, actor_noise):
-    ga_config = get_ga_config(sim)
-    activate_fuzzynet = False
-    fuzzynet = FuzzyNet(ga_config, seed=args['random_seed'])
-
-    # Set up summary Ops
-    summary_ops, summary_vars = build_summaries()
+def objective(sess, env, args, actor, critic, actor_noise, sim, fuzzynet, replay_buffer, summary_ops, summary_vars):
+    activate_fuzzynet = True
+    agent = Agent(0, sim.obs_class)
 
     sess.run(tf.global_variables_initializer())
-    writer = tf.summary.FileWriter(args['summary_dir'], sess.graph)
+    # writer = tf.summary.FileWriter(args['summary_dir'], sess.graph)
 
     # Initialize target network weights
     actor.update_target_network()
     critic.update_target_network()
 
-    # Initialize replay memory
-    replay_buffer = ReplayBuffer(int(args['buffer_size']), int(args['random_seed']))
-
     # Needed to enable BatchNorm.
     # This hurts the performance on Pendulum but could be useful
     # in other environments.
-    # tflearn.is_training(True)
+    tflearn.is_training(True)
 
-    agent = Agent(0, sim.obs_class)
+    scores, losses = [], []
 
-    for g_epoch in range(ga_config.num_gens):
-        print("epoch {e} of {e_total}".format(e=g_epoch, e_total=ga_config.num_gens * ga_config.pop_size))
-        ind_fit_vals = []
-        for i in range(ga_config.pop_size):
+    for i in range(int(args['max_episodes'])):
 
-            s = env.reset()
+        s = env.reset()
 
-            ep_reward = 0
-            ep_ave_max_q = 0
+        ep_reward = 0
+        ep_ave_max_q = 0
 
+        for j in range(int(args['max_episode_len'])):
+
+            if args['render_env']:
+                env.render()
+
+            # Added exploration noise
+            # a = actor.predict(np.reshape(s, (1, 3))) + (1. / (1. + i))
+            agent.obs_accessor.current_observation = s
             if activate_fuzzynet:
-                fuzzynet.next()
+                s = fuzzynet.predict(agent)
+            a = actor.predict(np.reshape(s, (1, actor.s_dim))) + actor_noise()
 
-            for j in range(int(args['max_episode_len'])):
+            s2, r, terminal, info = env.step(a[0])
 
-                if args['render_env']:
-                    env.render()
+            agent.obs_accessor.current_observation = s2
+            if activate_fuzzynet:
+                s2 = fuzzynet.predict(agent)
 
-                # Added exploration noise
-                # a = actor.predict(np.reshape(s, (1, 3))) + (1. / (1. + i))
-                agent.obs_accessor.current_observation = s
-                if activate_fuzzynet:
-                    s = fuzzynet.predict(agent)
-                a = actor.predict(np.reshape(s, (1, actor.s_dim))) + actor_noise()
+            replay_buffer.add(np.reshape(s, (actor.s_dim,)), np.reshape(a, (actor.a_dim,)), r,
+                              terminal, np.reshape(s2, (actor.s_dim,)))
 
-                s2, r, terminal, info = env.step(a[0])
-                agent.obs_accessor.current_observation = s2
-                if activate_fuzzynet:
-                    s2 = fuzzynet.predict(agent)
+            # Keep adding experience to the memory until
+            # there are at least minibatch size samples
+            if replay_buffer.size() > int(args['minibatch_size']):
+                s_batch, a_batch, r_batch, t_batch, s2_batch = \
+                    replay_buffer.sample_batch(int(args['minibatch_size']))
 
-                replay_buffer.add(np.reshape(s, (actor.s_dim,)), np.reshape(a, (actor.a_dim,)), r,
-                                  terminal, np.reshape(s2, (actor.s_dim,)))
+                # Calculate targets
+                target_q = critic.predict_target(s2_batch, actor.predict_target(s2_batch))
 
-                # Keep adding experience to the memory until
-                # there are at least minibatch size samples
-                if replay_buffer.size() > int(args['minibatch_size']):
-                    s_batch, a_batch, r_batch, t_batch, s2_batch = \
-                        replay_buffer.sample_batch(int(args['minibatch_size']))
+                y_i = []
+                for k in range(int(args['minibatch_size'])):
+                    if t_batch[k]:
+                        y_i.append(r_batch[k])
+                    else:
+                        y_i.append(r_batch[k] + critic.gamma * target_q[k])
 
-                    # Calculate targets
-                    target_q = critic.predict_target(
-                        s2_batch, actor.predict_target(s2_batch))
+                # actor score
+                state_vals = critic.predict_target(s_batch, actor.predict_target(s_batch))
+                score = np.mean(state_vals)
+                scores.append(score)
 
-                    y_i = []
-                    for k in range(int(args['minibatch_size'])):
-                        if t_batch[k]:
-                            y_i.append(r_batch[k])
-                        else:
-                            y_i.append(r_batch[k] + critic.gamma * target_q[k])
+                # Update the critic given the targets
+                predicted_q_value, loss, _ = critic.train(s_batch, a_batch,
+                                                          np.reshape(y_i, (int(args['minibatch_size']), 1)))
+                losses.append(loss)
 
-                    # Update the critic given the targets
-                    predicted_q_value, _ = critic.train(
-                        s_batch, a_batch, np.reshape(y_i, (int(args['minibatch_size']), 1)))
+                ep_ave_max_q += np.amax(predicted_q_value)
 
-                    ep_ave_max_q += np.amax(predicted_q_value)
+                # Update the actor policy using the sampled gradient
+                a_outs = actor.predict(s_batch)
+                grads = critic.action_gradients(s_batch, a_outs)
+                actor.train(s_batch, grads[0])
 
-                    # Update the actor policy using the sampled gradient
-                    a_outs = actor.predict(s_batch)
-                    grads = critic.action_gradients(s_batch, a_outs)
-                    actor.train(s_batch, grads[0])
+                # Update target networks
+                actor.update_target_network()
+                critic.update_target_network()
 
-                    # Update target networks
-                    actor.update_target_network()
-                    critic.update_target_network()
+            s = s2
+            ep_reward += r
 
-                s = s2
-                ep_reward += r
+            if terminal:
+                summary_str = sess.run(summary_ops, feed_dict={
+                    summary_vars[0]: ep_reward,
+                    summary_vars[1]: ep_ave_max_q / float(j)
+                })
 
-                if terminal:
-                    summary_str = sess.run(summary_ops, feed_dict={
-                        summary_vars[0]: ep_reward,
-                        summary_vars[1]: ep_ave_max_q / float(j)
-                    })
+                # writer.add_summary(summary_str, i)
+                # writer.flush()
 
-                    writer.add_summary(summary_str, i)
-                    writer.flush()
-
-                    print('| Reward: {:d} | Episode: {:d} | Qmax: {:.4f}'.format(int(ep_reward), i,
-                                                                                 (ep_ave_max_q / float(j))))
-                    break
-            ind_fit_vals.append(ep_reward)
-
-        # fuzzy net training ops
-        if activate_fuzzynet:
-            record, epoch = fuzzynet.evaluate(ind_fit_vals)
-            print_stats(record, epoch)
-            fuzzynet.evolve()
+                print('| Reward: {:d} | Episode: {:d} | Qmax: {:.4f}'.format(int(ep_reward), i,
+                                                                             (ep_ave_max_q / float(j))))
+                break
+    return np.mean(scores), np.mean(losses)
 
 
 def main(args, sim):
@@ -467,6 +458,10 @@ def main(args, sim):
         action_bound = env.action_space.high
         # Ensure action bound is symmetric
         assert (env.action_space.high == -env.action_space.low)
+
+        ga_config = get_ga_config(sim)
+        ga_config.fitness_weight = (1.0, -1.0)
+        fuzzynet = FuzzyNet(ga_config, seed=args['random_seed'])
 
         actor = ActorNetwork(sess, state_dim, action_dim, action_bound,
                              float(args['actor_lr']), float(args['tau']),
@@ -485,7 +480,23 @@ def main(args, sim):
             else:
                 env = wrappers.Monitor(env, args['monitor_dir'], force=True)
 
-        train(sess, env, args, actor, critic, sim, actor_noise)
+        # Initialize replay memory
+        replay_buffer = ReplayBuffer(int(args['buffer_size']), int(args['random_seed']))
+
+        # Set up summary Ops
+        summary_ops, summary_vars = build_summaries()
+
+        for i in range(10):
+            fitness = []
+            for j in range(sim.pop_size):
+                fuzzynet.next()
+                score, loss = objective(sess, env, args, actor, critic, actor_noise, sim, fuzzynet,
+                                        replay_buffer, summary_ops, summary_vars)
+                fitness.append((abs(score), abs(loss)))
+                print("individual {ind} - gen {g}; score = {s}, loss = {loss}".format(ind=j, g=i, s=score, loss=loss))
+            record, epoch = fuzzynet.evaluate(fitness)
+            print_stats(record, epoch)
+            fuzzynet.evolve()
 
         if args['use_gym_monitor']:
             env.monitor.close()
@@ -505,8 +516,8 @@ if __name__ == '__main__':
     # run parameters
     parser.add_argument('--env', help='choose the gym env- tested on {Pendulum-v0}', default='Pendulum-v0')
     parser.add_argument('--random-seed', help='random seed for repeatability', default=1234)
-    parser.add_argument('--max-episodes', help='max num of episodes to do while training', default=20)
-    parser.add_argument('--max-episode-len', help='max length of 1 episode', default=1000)
+    parser.add_argument('--max-episodes', help='max num of episodes to do while training', default=5)
+    parser.add_argument('--max-episode-len', help='max length of 1 episode', default=200)
     parser.add_argument('--render-env', help='render the gym env', action='store_true')
     parser.add_argument('--use-gym-monitor', help='record gym results', action='store_true')
     parser.add_argument('--monitor-dir', help='directory for storing gym results', default='./results/gym_ddpg')
@@ -529,7 +540,7 @@ if __name__ == '__main__':
                       qlfd_ind_file="data/pendulum_qlfd.txt",
                       score_threshold=-200,
                       rand_proc=OrnsteinUhlenbeckProcess(theta=0.1),
-                      pop_size=int(args['max_episodes']),
+                      pop_size=10,
                       tuning=[-0.1, 0.1]),
 
         # mountain car continuous
@@ -542,7 +553,7 @@ if __name__ == '__main__':
                       score_threshold=90,
                       rand_proc=OrnsteinUhlenbeckProcess(theta=0.1),
                       tuning=[-0.01, 0.01],
-                      pop_size=int(args['max_episodes']),
+                      pop_size=20,
                       reward_shaping_callback=None),
 
         # bipedal walker v2
@@ -555,7 +566,7 @@ if __name__ == '__main__':
                       score_threshold=300,
                       rand_proc=OrnsteinUhlenbeckProcess(theta=0.1),
                       tuning=[-0.01, 0.01],
-                      pop_size=int(args['max_episodes']),
+                      pop_size=20,
                       reward_shaping_callback=None)}
 
     main(args, sims[1])

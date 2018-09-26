@@ -22,9 +22,9 @@ class GeneticAlgorithm(object):
         """
         if seed is not None:
             random.seed(seed)
-        creator.create("FitnessMax", base.Fitness, weights=weights)
+        creator.create("Fitness", base.Fitness, weights=weights)
         creator.create("Partial_Individual", list)
-        creator.create("Individual", list, fitness=creator.FitnessMax)
+        creator.create("Individual", list, fitness=creator.Fitness)
         self.__registry = registry
         self.__toolbox = base.Toolbox()
         self.__toolbox.register("partial_ind", tools.initRepeat, creator.Partial_Individual)
