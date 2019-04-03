@@ -213,7 +213,7 @@ class FuzzyNet(object):
         return out_vec
 
     def evaluate(self, fit_vals):
-        for ind, val1, val2 in zip(self.pop, fit_vals):
+        for ind, (val1, val2) in zip(self.pop, fit_vals):
             ind.fitness.values = (val1, val2)
         record = self.ga.stats.compile(self.pop)
         self.ga.logbook.record(epoch=self.epoch, **record)
@@ -516,7 +516,7 @@ if __name__ == '__main__':
     # run parameters
     parser.add_argument('--env', help='choose the gym env- tested on {Pendulum-v0}', default='Pendulum-v0')
     parser.add_argument('--random-seed', help='random seed for repeatability', default=1234)
-    parser.add_argument('--max-episodes', help='max num of episodes to do while training', default=5)
+    parser.add_argument('--max-episodes', help='max num of episodes to do while training', default=20)
     parser.add_argument('--max-episode-len', help='max length of 1 episode', default=200)
     parser.add_argument('--render-env', help='render the gym env', action='store_true')
     parser.add_argument('--use-gym-monitor', help='record gym results', action='store_true')
@@ -540,7 +540,7 @@ if __name__ == '__main__':
                       qlfd_ind_file="data/pendulum_qlfd.txt",
                       score_threshold=-200,
                       rand_proc=OrnsteinUhlenbeckProcess(theta=0.1),
-                      pop_size=10,
+                      pop_size=20,
                       tuning=[-0.1, 0.1]),
 
         # mountain car continuous
