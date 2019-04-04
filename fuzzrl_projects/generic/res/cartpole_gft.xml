@@ -1,14 +1,14 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- GFT for OpenAI Gym CartPole-v1 control -->
 <fuzzyInferenceSystems xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                       xsi:noNamespaceSchemaLocation="../../fuzzrl/fuzzrl/core/res/gftlv0.1.1.xsd" rootInfSystem="CartPoleMovement">
+                       xsi:noNamespaceSchemaLocation="../../../fuzzrl/fuzzrl/core/res/gftlv0.1.1.xsd" rootInfSystem="CartPoleMovement">
     <fuzzyInferenceSystem name="CartPoleMovement">
         <outputGeneRange>0 1</outputGeneRange>
         <rbSize>81</rbSize>
         <mfSize>24</mfSize>
         <position>0</position>
-        <rbOffset>0</rbOffset>
-        <mfOffset>81</mfOffset>
+        <!--<rbOffset>0</rbOffset>-->
+        <!--<mfOffset>81</mfOffset>-->
         <description>Determines the direction of the force applied to the cart</description>
         <inputVariables>
             <inputVar>

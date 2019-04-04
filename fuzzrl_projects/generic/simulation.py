@@ -9,7 +9,7 @@ import fuzzrl.core.plot.analysis as ana
 import gym
 import matplotlib.pyplot as plt
 import seaborn as sb
-import rlmarsenvs
+# import rlmarsenvs
 from fuzzrl.core.conf import Defuzz as dfz
 from fuzzrl.core.fuzzy.runner import *
 from fuzzrl.core.io.randomprocess import OrnsteinUhlenbeckProcess
@@ -187,18 +187,18 @@ if __name__ == "__main__":
                       tuning=[-0.1, 0.1]),
 
         # carmunk
-        1: Simulation(env_id=rlmarsenvs.carmunk_id,
-                      lin_vars_file="res/carmunk_linvars.xml",
-                      gft_file="res/carmunk_gft.xml",
-                      action_space_type=Const.DISCRETE,
-                      defuzz_method=dfz.max_of_maximum,
-                      obs_class=CarmunkObs,
-                      qlfd_ind_file="data/carmunk_qlfd.txt",
-                      score_threshold=5000,
-                      rand_proc= None,
-                      tuning=[-1.0, 1.0],
-                      reward_shaping_callback=None),
-        # pendulum
+        # 1: Simulation(env_id=rlmarsenvs.carmunk_id,
+        #               lin_vars_file="res/carmunk_linvars.xml",
+        #               gft_file="res/carmunk_gft.xml",
+        #               action_space_type=Const.DISCRETE,
+        #               defuzz_method=dfz.max_of_maximum,
+        #               obs_class=CarmunkObs,
+        #               qlfd_ind_file="data/carmunk_qlfd.txt",
+        #               score_threshold=5000,
+        #               rand_proc= None,
+        #               tuning=[-1.0, 1.0],
+        #               reward_shaping_callback=None),
+        # # pendulum
         2: Simulation(env_id="Pendulum-v0",
                       lin_vars_file="res/pendulum_linvars.xml",
                       gft_file="res/pendulum.xml",

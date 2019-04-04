@@ -3,6 +3,7 @@
 # Author: bbrighttaer
 
 import skfuzzy.control as ctrl
+import networkx as nx
 
 
 class ControlSystem(ctrl.ControlSystem):
@@ -25,4 +26,8 @@ class ControlSystem(ctrl.ControlSystem):
             labels.append(r.label)
 
         # Combine the two graphs, which may not be disjoint
-        # self.graph = nx.compose(self.graph, rule.graph)
+        self.graph = nx.compose(self.graph, rule.graph)
+        try:
+            self.add_rule_n(rule)
+        except:
+            pass
