@@ -23,16 +23,16 @@ style.use("seaborn-paper")
 Constants.MF_TUNING_RANGE = [-0.1, 0.1]
 Constants.LEARN_RULE_OP = False
 
-NUM_OF_GENS = 20
+NUM_OF_GENS = 10
 NUM_EPISODES_PER_IND = 1
-MAX_TIME_STEPS = 700
+MAX_TIME_STEPS = 500
 POP_SIZE = 100
 LIN_VARS_FILE = "cartpole_linvars.xml"
 GFT_FILE = "cartpole_gft.xml"
 LOAD_INIT_POP = False
 APPLY_EVO = True
 QLFD_IND_FILE = "qualified.txt"
-SAVE_BEST = True
+SAVE_BEST = False
 SCORE_THRESHOLD = 300
 
 
@@ -62,7 +62,7 @@ def main():
     # create a mutation probability schedule
     mut_sch = sch.ExponentialDecaySchedule(initial_prob=.2, decay_factor=1e-2)
 
-    tau_sch = sch.ExponentialDecaySchedule(initial_prob=.5, decay_factor=1e-1)
+    # tau_sch = sch.ExponentialDecaySchedule(initial_prob=.5, decay_factor=1e-1)
 
     # create GFT algorithm object with the registry
     rand_proc = OrnsteinUhlenbeckProcess(theta=0.01)
@@ -264,7 +264,7 @@ def applyEvolution(population, ga_alg, mut_sch, epoch):
     # create mutation operator
     mutargs = {"mu": 0,
                "sigma": 0.1,
-               "indpb": 0.1}
+               "indpb": 0.0001}
     mutop = Operator(tools.mutGaussian, **mutargs)
 
     # Perform one step of evolution
